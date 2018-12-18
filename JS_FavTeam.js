@@ -1,6 +1,6 @@
 'use strict';
 
-var Omnisurvey = function($, leagueData, leagueLevelTerms) {
+var Omnisurvey = function($, leagueData) {
 
 	// Eventually, these are what will be passed to the Qualtrics embedded data
 	this.FavoriteTeamName = '';
@@ -8,31 +8,21 @@ var Omnisurvey = function($, leagueData, leagueLevelTerms) {
 	this.SelectedLeague = null;
 	
 	var strTeamLogoRootDir = 'https://knowrivalry.com/images/logos/', // This is the folder that holds the logos (PNG files) for each team
-			aryTeamNames = leagueData['teamName'],
-			aryTeamIDs = leagueData['teamID'],
-			aryTeamNameSlugs = leagueData['teamNameSlug'],
 			$filters = $('#filters'),
 			$favTeamLogo = $('#DivFavTeamLogo'),
 			$favTeamList = $('#DivFavTeamList'),
 			$favTeamBtns = null;
 	
 	function createFilters() {
-		for (var i=1; i<=leagueLevelTerms.length; i++) {
-			// get unique values and strip empty values
-			var filterLevelUnique = leagueData['dvcfLevel'+i].filter(function(value, index, self) {
-				return value !== '' && self.indexOf(value) === index;
+		for (var i=1; i<=leagueData.divisionLevelTerms.length; i++) {
+			// create container for league level filter
+			$filters.append('<h3>'+leagueData.divisionLevelTerms[i-1]+'</h3>');
+			var $filterLevel = $('<div class="league-level-filter clearfix" id="DivFiltersLevel'+i+'" data-level="'+i+'"></div>').appendTo($filters);
+
+			// create filters
+			$.each(leagueData.divisionLevels[i-1], function(index, value) {
+				$filterLevel.append('<div class="ClassFilter ClassFilterLevel'+i+'">'+value+'</div>');
 			});
-
-			if (filterLevelUnique.length > 0) {
-				// create container for league level filter
-				$filters.append('<h3>'+leagueLevelTerms[i-1]+'</h3>');
-				var $filterLevel = $('<div class="league-level-filter clearfix" id="DivFiltersLevel'+i+'" data-level="'+i+'"></div>').appendTo($filters);
-
-				// create filters
-				$.each(filterLevelUnique, function(index, value) {
-					$filterLevel.append('<div class="ClassFilter ClassFilterLevel'+i+'">'+value+'</div>');
-				});
-			}
 		}
 
 		// add click handler for all filters
@@ -40,10 +30,10 @@ var Omnisurvey = function($, leagueData, leagueLevelTerms) {
 	}
 	
 	function createFavTeamButtons(){
-		for (var i=0; i<=aryTeamNames.length-1; i++) {
-			var strTeamImgFilename = strTeamLogoRootDir + aryTeamNameSlugs[i] + '-logo-sm.png';
-			$favTeamList.append('<div style="background-image: url('+strTeamImgFilename+')" id="btnTeamID'+('0' + aryTeamIDs[i]).slice(-4)+'" class="ClassFavTeam" data-id="'+aryTeamIDs[i]+'">'+aryTeamNames[i]+'</div>');
-		};
+		$.each(leagueData.teams, function(index, team) {
+			var strTeamImgFilename = strTeamLogoRootDir + team.slug + '-logo-sm.png';
+			$favTeamList.append('<div style="background-image: url('+strTeamImgFilename+')" id="btnTeamID'+('0' + team.id).slice(-4)+'" class="ClassFavTeam" data-id="'+team.id+'">'+team.name+'</div>');
+		});
 
 		$favTeamBtns = $('.ClassFavTeam');
 		$favTeamBtns.on('click', favTeamClicked);
@@ -63,9 +53,9 @@ var Omnisurvey = function($, leagueData, leagueLevelTerms) {
 			showAllFavTeamButtons(false);
 
 			// show filtered teams
-			$.each(leagueData['dvcfLevel'+filterLevel], function(index, value) {
-				if (value === filterValue) {
-					$favTeamBtns.filter('[data-id='+aryTeamIDs[index]+']').show();
+			$.each(leagueData.teams, function(index, team) {
+				if (team.divisionLevels[filterLevel-1] == filterValue) {
+					$favTeamBtns.filter('[data-id='+team.id+']').show();
 				}
 			});
 		}
@@ -84,7 +74,9 @@ var Omnisurvey = function($, leagueData, leagueLevelTerms) {
 	// Change the team image shown
 	function changeTeamImage(teamId) {
 		// This function will dynamically change the image to show the correct image for the Favorite Team.
-		var teamNameSlug = aryTeamNameSlugs[aryTeamIDs.indexOf(teamId)],
+		var teamNameSlug = leagueData.teams.filter(function(team) {
+					return team.id == teamId;
+				})[0].slug, 
 				imgPath = strTeamLogoRootDir + teamNameSlug + '-logo.png';
 
 		$favTeamLogo.css('background-image', 'url(' + imgPath + ')')
@@ -143,9 +135,13 @@ var Omnisurvey_Data = {
 		lgID_007: { lgID:7, teamName:["Adelaide Strikers", "Brisbane Heat", "Hobart Hurricanes", "Melbourne Renegades", "Melbourne Stars", "Perth Scorchers", "Sydney Sixers", "Sydney Thunder"], dvcfLevel1:["BBL", "BBL", "BBL", "BBL", "BBL", "BBL", "BBL", "BBL"], dvcfLevel2:["", "", "", "", "", "", "", ""], dvcfLevel3:["", "", "", "", "", "", "", ""], teamNameSlug:["adelaide_strikers", "brisbane_heat", "hobart_hurricanes", "melbourne_renegades", "melbourne_stars", "perth_scorchers", "sydney_sixers", "sydney_thunder"], teamID:[273, 274, 275, 276, 277, 278, 279, 280]}, 
 	},
 
-	favoriteTeams: function() {
+	getUniqueValues: function(value, index, self) {
+		return value !== '' && self.indexOf(value) === index;
+	},
+
+	getAllLeagueData: function() {
 		var self = this;
-		return Object.keys(self.tbljsFavTeams).map(function(key) {
+		var leagueData = Object.keys(self.tbljsFavTeams).map(function(key) {
 			return [key, self.tbljsFavTeams[key]];
 		}).map(function(leagueData) {
 			var league = leagueData[1];
@@ -162,16 +158,31 @@ var Omnisurvey_Data = {
 							league.dvcfLevel3[index],
 						]
 					};
-				})
+				}),
+				divisionLevels: [
+					league.dvcfLevel1.filter(self.getUniqueValues),
+					league.dvcfLevel2.filter(self.getUniqueValues),
+					league.dvcfLevel3.filter(self.getUniqueValues)
+				]
 			};
 		});
-	}
+
+		$.each(leagueData, function(index, league) {
+			league.divisionLevels = league.divisionLevels.filter(function(level) {
+				return level != null && level.length > 0;
+			});
+		});
+
+		return leagueData;
+	},
+
+
 };
 
 
 (function () {
 	var OMNISURVEY_TEST = true,
-			leagueID = -1,
+			leagueId = -1,
 			leagueLevelTerms = [];
 
 	if (OMNISURVEY_TEST) {
@@ -179,13 +190,13 @@ var Omnisurvey_Data = {
 		/*****************************************************
 			TESTING
 		*****************************************************/
-		leagueID = 2;
+		leagueId = 2;
 		leagueLevelTerms = ['Conferences', 'Divisions'];
 
 	} else {
 		
 		Qualtrics.SurveyEngine.addOnload(function() {
-			leagueID = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
+			leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
 			
 			// If any more levels are added just modify the for length here
 			for (var i=1; i<=3; i++) {
@@ -206,9 +217,13 @@ var Omnisurvey_Data = {
 
 	}
 
-	var leagueJSName = 'lgID_'+('00' + leagueID).slice(-3),
-			leagueData = Omnisurvey_Data.tbljsFavTeams[leagueJSName],
-			omnisurvey = new Omnisurvey(jQuery, leagueData, leagueLevelTerms); // this is what loads the Omnisurvey
+	var leagueData = Omnisurvey_Data.getAllLeagueData().filter(function(league) {
+		return league.id == leagueId;
+	})[0];
+	
+	leagueData.divisionLevelTerms = leagueLevelTerms;
+
+	var omnisurvey = new Omnisurvey(jQuery, leagueData); // this is what loads the Omnisurvey
 })();
 
 
