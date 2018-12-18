@@ -1,0 +1,50 @@
+<html>
+
+<head>
+	<!-- This is here for testing purposes. The real link will be within the Qualtrics Advanced Look & Feel section -->
+	<link rel="stylesheet" type="text/css" href="https://dl.dropbox.com/s/dqwfc96r76f22fc/Stylesheet_KnowRivalry_OmniSurvey.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <style>
+    .clearfix:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    
+    /* Some styles to mimick the actual survey */
+    @media (min-width: 770px) {
+      body {
+          width: 770px;
+          max-width: 95%;
+      }
+    }
+
+    @media (min-width: 980px) {
+      body {
+          display: table;
+          min-width: 770px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div><h2>Filters</h2></div>
+  <div id="DivFilterReset" class="FilterResetText">Reset all filters</div>
+  <div id="filters"></div>
+  <!--<div id="DivFiltersLevel1Header"></div>
+  <div id="DivFiltersLevel1"></div>
+  <div id="DivFiltersLevel2Header"></div>
+  <div id="DivFiltersLevel2"></div>
+  <div id="DivFiltersLevel3Header"></div>
+  <div id="DivFiltersLevel3"></div>-->
+  <div style="clear:both;"><!--temporary--></div>
+  <div id="DivFavTeamListHeader">Teams</div>
+  <div id="DivFavTeamList"></div>
+  <div id="DivFavTeamLogo"></div>
+
+  <script src="JS_FavTeam.js"></script>
+</body>
+
+</html>
