@@ -1,0 +1,43 @@
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+#testing {
+  background-color: #aa0000;
+  color: #fff;
+}
+
+/* Some styles to mimick the actual survey */
+@media (min-width: 770px) {
+  body {
+      width: 770px;
+      max-width: 95%;
+  }
+}
+
+@media (min-width: 980px) {
+  body {
+      display: table;
+      min-width: 770px;
+  }
+}
+
+fieldset {
+  border: none;
+}
+
+.Skin .ChoiceGroupStructure {
+  margin-left: 10px;
+  padding: 0;
+}
+
+#testing {
+  background-color: #aa0000;
+  color: #fff;
+}
+
+.QuestionBody {
+  backface-visibility: hidden; /* Fixes hidden content bug with jQuery toggle */
+}
