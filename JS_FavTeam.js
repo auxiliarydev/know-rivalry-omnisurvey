@@ -181,17 +181,19 @@ var Omnisurvey_Data = {
 
 
 (function () {
-	var OMNISURVEY_TEST = true,
+	var OMNISURVEY_TEST = false,
 			leagueId = -1,
 			leagueLevelTerms = [];
 
-	if (OMNISURVEY_TEST) {
+	if (OMNISURVEY_TEST || !window.Qualtrics) {
 
 		/*****************************************************
 			TESTING
 		*****************************************************/
 		leagueId = 2;
 		leagueLevelTerms = ['Conferences', 'Divisions'];
+
+		jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');
 
 	} else {
 		
