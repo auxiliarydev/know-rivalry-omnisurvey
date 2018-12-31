@@ -2,7 +2,10 @@
 
 var Omnisurvey = function($, data, leagueId, surveyId) {
 
-	var surveySelectionQuestionId = 'QID182',
+	this.nextButtonHandler = function() {};
+
+	var self = this,
+			surveySelectionQuestionId = 'QID182',
 			$surveySelectionQuestion = $('#'+surveySelectionQuestionId),
 			$nextButton = $('#SplashMyNextButton'),
 			$SplashChangeLeagueBtnDiv = $('#SplashChangeLeagueBtnDiv'),
@@ -59,16 +62,12 @@ var Omnisurvey = function($, data, leagueId, surveyId) {
 		document.getElementById(paramElementID).innerHTML = strErrorText; // Set the text within the HTML element
 	}
 
-	// TODO: Talk to David about what this is trying to accomplish
-	function fSubmitPageData(){
+	function submitPageData(){
 		// TASKS BEFORE ADVANCING IN SURVEY
 		// The main thing this function does is to write the values into the embedded data variables within Qualtrics.
 		// In some cases we want to write new embedded data, in other cases we don't, thus we need to write it with code rather than within the Qualtrics Survey Flow.
 		// Also, something like the survID can only be set using the JavaScript.
 		
-		// This function is mostly about doing stuff (i.e., reading and writing data). But, it also provides information about whether it was successful in its reading/writing.
-		// It will return true/false so that other parts of the code will know if it completed successfully or not; specifically, the blnPageSubmitSuccess uses this information.
-
 		
 		// DETERMINE THE OFFICIAL ID NUMBERS
 		// For every data table we have, we need to know the ID number for the important lookup data within that table.
@@ -76,81 +75,51 @@ var Omnisurvey = function($, data, leagueId, surveyId) {
 		
 		// DETERMINE THE OFFICIAL lgID
 		// If the lgID is null/empty/NaN/0, check to see if the user has made a selection
-		if (Boolean(leagueId) === false) {
+		if (leagueId <= 0) {
 			// Read lgID value as selected by the user. Note that this is the RE-CODED VALUE that I set within Qualtrics to match the lgID within our database.
-			var theReturnedSelectedChoice = fMCQuesSelectedChoice(surveySelectionQuestionId);
+			//var theReturnedSelectedChoice = fMCQuesSelectedChoice(surveySelectionQuestionId);
 			
 			// ERROR HANDLING
 			// Because I created my own next button (among all the other JS code), I need to do my own custom validation to not let the user advance if ldID is null.
-			if (Boolean(theReturnedSelectedChoice) === false) {
+			//if (Boolean(theReturnedSelectedChoice) === false) {
 				// The user STILL hasn't selected a league. Don't let them move on.
 				fErrorText("SplashErrorSelectLeague", true); // Put error text above the league selector question
 				fScrollToSelectLgID(); // Scroll user back to the league selector question
-				return false; // fSubmitPageData() returns false because it was unsuccessful in its mission to write valid data to Qualtrics
-			}
+				return false; // submitPageData() returns false because it was unsuccessful in its mission to write valid data to Qualtrics
+			//}
 		}
-		
-		// DETERMINE THE OFFICIAL survID
-		// If the function has moved down this far, it means we have a valid lgID. We'll use that to assign the survID, if that hasn't been assigned already through the URL.
-		// If the survID is null/empty/NaN/0, assign the survID based on the lgID				
-		if (Boolean(surveyId) === false) {
-			surveyId = data.tbljsLeagues[fLeagueJSName(leagueId)].lgCurrentSurvID;
-		}
-
-		// These values are set now, so I'm writing them to function-level variables so I don't need to repeatedly call the fLeagueJSName/fSurveyJSName functions. The code is cleaner and faster this way.
-		var strLgObjName = fLeagueJSName(leagueId); // e.g., "lgID_001"
-		var strSurvObjName = fSurveyJSName(surveyId); // e.g., "survID_001"
-
-		
+				
 		// WRITE THE EMBEDDED DATA TO QUALTRICS
 		// This will write EVERY property within the data table variables (e.g., tbljsLeagues, tbljsSurveys) as an embedded data variable within Qualtrics (whether we end up using it or not).
 		// If the embedded data element doesn't exist in the survey flow yet, Qualtrics will create that variable.
 		// You won't see it in the Qualtrics survey flow, but it exists [at least, I think that's what's happening].
 	
-		// First, declare an object variable that holds the data we're going to put into the Qualtrics embedded data.
-		var objDataToEmbed = {};
-
+		var dataToEmbed = {};
 		
-		// This is an array of only the relevant rows within each data table that we use. Each "row" is the object named something like "lgID_001" or "survID_001".
-		// If you add a new data table, you need to add a new value to this array. We cannot define this earlier because we need to wait to know the correct lgID and survID to use
-		objDataTableRows = [data.tbljsLeagues[strLgObjName], data.tbljsSurveys[strSurvObjName]];
-		var objTableRow = {};
-
-		// ITERATION #1: EACH DATA TABLE ROW
-			// The first iteration is through the data tables; right now (July 2018) there are only two: tbljsLeagues, tbljsSurveys.
-			// Remmber that it's not pulling the whole table object. Because of how we defined objDataTableRows, it's saving us a step by only pulling the object that defines the specific row.
-			// Each paramTableRow is the equivalent of the tbljsLeagues["lgID_008"] object, then the tbljsSurveys["survID_008"] object, etc.
-			$.each(objDataTableRows, function(paramTableRow) {
-
-				// We define a new object variable here each time through the iteration (e.g., if there are two tables, this will be defined twice).
-				// Each iteration creates an object of all the key:value pairs for the specific row within that data table. i.e., the actual data we want want to write to Qualtrics.
-				objTableRow = objDataTableRows[paramTableRow];
-				
-			// ITERATION #2: EACH PROPERTY ENTRY
-				// In this second iteration, we loop through each property (key:value) within the table row.
-				// The paramTblProperty variable is the property name, which is also the name of the field within RivalryDB and the Qualtrics Embedded Data (e.g., lgID, lgSlug, survLaunchDate, BLOCKIntro, BLOCKFavTeam)
-				$.each(objTableRow, function (paramTblProperty) {
-					
-					// The objTableRow[paramTblProperty] statement dynamically creates the key:value pair and writes a new line into the objDataToEmbed object
-					// e.g., the first iteration would write "lgID: 2", the second iteration would write "lgSport: Ice hockey", etc. 
-					
-					objDataToEmbed[paramTblProperty] = objTableRow[paramTblProperty];
-					
-					// We could put at third iteration in here to write the data directly into Qualtrics. If we did that, we wouldn't bother with the objDataToEmbed variable. 
-					// But, my preference is to write to the variable first so I can see what's happening and to give me a little more control over the data values, should I need it.
-					// Having the ^Writing to Qualtrics^ step broken out is a little cleaner, too. This code is already complicated enough for a rookie like me.
-					
-				}); // close off the key:value iteration
-			}); // close off the data table itereation
-
-		// This actually writes the data to Qualtrics by iterating through the objDataToEmbed object.
-		// It reads each property key:value pair (which I called propKeyED:propValueED) and stores it as embedded data within Qualtrics
-		$.each(objDataToEmbed, function(propKeyED, propValueED) {
-			// The Qualtrics setEmbeddedData('name',value) method takes two parameters. The first is the name of the embedded data variable (string), the second is the value we want stored.
-			Qualtrics.SurveyEngine.setEmbeddedData(propKeyED, propValueED);
+		// write all properties of tbljsLeagues for selected league to embedded data
+		var selectedLeague = data.tbljsLeagues[fLeagueJSName(leagueId)];
+		$.each(selectedLeague, function(key) {
+			dataToEmbed[key] = selectedLeague[key];
 		});
 
-		// The fSubmitPageData() function returns true because it was successful in its mission (e.g., writing valid data to Qualtrics)
+		// write all properties of tbljsSurveys for selected survey to embedded data
+		var surveyId = selectedLeague.lgCurrentSurvID;
+		var selectedSurvey = data.tbljsSurveys[fSurveyJSName(surveyId)];
+		$.each(selectedSurvey, function(key) {
+			dataToEmbed[key] = selectedSurvey[key];
+		});
+
+		console.log('Submitting data:');
+		console.log(dataToEmbed);
+
+		$.each(dataToEmbed, function(key, value) {
+			// The Qualtrics setEmbeddedData('name',value) method takes two parameters. The first is the name of the embedded data variable (string), the second is the value we want stored.
+			// TODO: This needs to move outside of this class.
+			if (window.Qualtrics && Qualtrics.SurveyEngine) {
+				Qualtrics.SurveyEngine.setEmbeddedData(key, value);
+			}
+		});
+
 		return true;
 	}
 
@@ -180,21 +149,16 @@ var Omnisurvey = function($, data, leagueId, surveyId) {
 
 		if (leagueId > 0) {
 			selectLeague(leagueId);
-			//DisplayHideElementsIfLeaguePicked(leagueId);	
 		} else {
 			toggleLeagueSelect();
-			//NoLeaguePickedShowHideElements();
 		}
 
 		$SplashChangeLeagueBtn.on('click', changeLeagueButtonHandler);
 
 		// RUN CODE ON PAGE SUBMIT
 		$nextButton.on('click', function() {
-			var blnPageSubmitSuccess = fSubmitPageData(); // If the code runs smoothly, it will return true. If not, it will return false (or worse).
-			if (blnPageSubmitSuccess === true) { // only advance in the survey if the validation checks out, the data were successfully read and written to Qualtrics, etc.
-				//TheJSThis.clickNextButton();
-				// TODO: This needs to move outside of this class
-				Qualtrics.SurveyEngine.Page.pageButtons.clickNextButton();
+			if (submitPageData()) { // only advance in the survey if the validation checks out, the data were successfully read and written to Qualtrics, etc.
+				self.nextButtonHandler();
 			}
 		});
 
@@ -207,7 +171,7 @@ var Omnisurvey = function($, data, leagueId, surveyId) {
 					var leagues = leagueQuestion.getQuestionInfo().Choices;
 					var selectedLeagueId = parseInt(leagues[selectedChoice].RecodeValue);
 
-					leagueId = selectedLeagueId;
+					selectLeague(selectedLeagueId);
 					toggleLeagueSelect();
 				}
 			};
@@ -223,7 +187,7 @@ var Omnisurvey = function($, data, leagueId, surveyId) {
 		}
 	}
 
-	init();
+	init();	
 };
 
 var Omnisurvey_Data = {
@@ -301,17 +265,26 @@ var Omnisurvey_Data = {
 (function () {
 	var OMNISURVEY_TEST = true,
 			leagueId = -1,
-			surveyId = -1;
+			surveyId = -1,
+			nextButtonHandler = function() {};
 
 	if (OMNISURVEY_TEST || !window.Qualtrics) {
 
 		/*****************************************************
 			TESTING
 		*****************************************************/
-		leagueId = 2; //7
+		// TODO: POLYFILL THIS FOR IE
+		var searchParams = new URLSearchParams(window.location.search);
+		if (searchParams.has('lgID')) {
+			leagueId = searchParams.get('lgID'); //7
+		}
 		//surveyId = 2;
 
 		jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');
+
+		nextButtonHandler = function() {
+			console.log('data would be submitted here');
+		};
 
 	} else {
 		
@@ -323,6 +296,10 @@ var Omnisurvey_Data = {
 			}
 
 			this.hideNextButton();
+
+			nextButtonHandler = function() {
+				Qualtrics.SurveyEngine.Page.pageButtons.clickNextButton();
+			};
 		});
 
 		Qualtrics.SurveyEngine.addOnReady(function() {
@@ -336,6 +313,7 @@ var Omnisurvey_Data = {
 	}
 
 	var omnisurvey = new Omnisurvey(jQuery, Omnisurvey_Data, leagueId, surveyId); // this is what loads the Omnisurvey
+	omnisurvey.nextButtonHandler = nextButtonHandler;
 })();
 
 

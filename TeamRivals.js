@@ -6,13 +6,28 @@ var Omnisurvey = function($, data, leagueId) {
       $question = $('#'+questionId),
       selectedLeague = null;
   
+  function populateTeams($select) {
+    var thisLeague = parseInt($select.val());
+    var teams = data.getLeagues().filter(function(league) {
+      return league.lgID === thisLeague;
+    })[0].teams;
+    console.log(teams);
+    //TODO: POPULATE DROPDOWN VALUES
+  }
+
+  function validate() {
+    // TODO: Make sure rivalry points add up, check on form submit
+  }
+
 	function init() {
+    // set selected league (survey level)
     selectedLeague = data.getLeagues().filter(function(league) {
       return league.lgID === leagueId;
     })[0];
 
+    // determine if there are sibling leagues to choose rivals from
     if (selectedLeague.leagueGroupId != null) {
-      var $select = $('<select></select>').prependTo($question.find('select').parent());
+      var $select = $('<select class="league-select"></select>').prependTo($question.find('select').parent());
       var $leagues = data.getLeagues().filter(function(league) {
         return league.leagueGroupId === selectedLeague.leagueGroupId;
       });
@@ -21,6 +36,12 @@ var Omnisurvey = function($, data, leagueId) {
         $select.append('<option value="'+league.lgID+'" '+(league.lgID === selectedLeague.lgID ? 'selected' : '')+'>'+league.lgFullName+'</option');
       });
     }
+
+    $question.on('change', 'select.league-select', function() {
+      populateTeams($(this));
+    });
+
+    // TODO: Hookup Rivalry Points stuff
 	}
 
 	init();
@@ -41,8 +62,16 @@ var Omnisurvey_Data = {
 		lgID_009: {lgID:9, leagueGroupId:null, lgSport:"Basketball", lgName:"NCAAM", lgCurrentSurvID:21, lgSlug:"s_m_bkb_ncaad1", lgFullName:"NCAA Division I men's basketball", lgTheFullName:"NCAA Division I men's basketball", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:1}, 
 		lgID_010: {lgID:10, leagueGroupId:null, lgSport:"Basketball", lgName:"NCAAW", lgCurrentSurvID:22, lgSlug:"s_w_bkb_ncaad1", lgFullName:"NCAA Division I women's basketball", lgTheFullName:"NCAA Division I women's basketball", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:1}, 
 		lgID_011: {lgID:11, leagueGroupId:null, lgSport:"American football", lgName:"NCAA DI-AA", lgCurrentSurvID:23, lgSlug:"s_m_afb_ncaad1aa", lgFullName:"NCAA Division I FCS football", lgTheFullName:"NCAA Division I FCS football", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:1}, 
-		lgID_012: {lgID:12, leagueGroupId:1, lgSport:"Soccer", lgName:"England men", lgCurrentSurvID:24, lgSlug:"s_m_soc_eng", lgFullName:"English men's football", lgTheFullName:"English men's football", lgHasProRel:true, lgBritishSpelling:true, lgNumOfFavteamSublevels:1}, 
-		lgID_013: {lgID:13, leagueGroupId:1, lgSport:"Soccer", lgName:"Spain men", lgCurrentSurvID:25, lgSlug:"s_m_soc_esp", lgFullName:"Spanish men's football", lgTheFullName:"Spanish men's football", lgHasProRel:true, lgBritishSpelling:true, lgNumOfFavteamSublevels:1}, 
+    lgID_012: {lgID:12, leagueGroupId:1, lgSport:"Soccer", lgName:"England men", lgCurrentSurvID:24, lgSlug:"s_m_soc_eng", lgFullName:"English men's football", lgTheFullName:"English men's football", lgHasProRel:true, lgBritishSpelling:true, lgNumOfFavteamSublevels:1,
+      teams: [
+        { id: 1, name: 'test 1' }, { id: 2, name: 'test 2' }
+      ]
+    }, 
+    lgID_013: {lgID:13, leagueGroupId:1, lgSport:"Soccer", lgName:"Spain men", lgCurrentSurvID:25, lgSlug:"s_m_soc_esp", lgFullName:"Spanish men's football", lgTheFullName:"Spanish men's football", lgHasProRel:true, lgBritishSpelling:true, lgNumOfFavteamSublevels:1,
+      teams: [
+        { id: 3, name: 'test 3' }, { id: 4, name: 'test 4' }
+      ]
+    }, 
 		lgID_014: {lgID:14, leagueGroupId:1, lgSport:"Soccer", lgName:"Germany men", lgCurrentSurvID:26, lgSlug:"s_m_soc_deu", lgFullName:"German men's football", lgTheFullName:"German men's football", lgHasProRel:true, lgBritishSpelling:true, lgNumOfFavteamSublevels:1}, 
 		lgID_015: {lgID:15, leagueGroupId:null, lgSport:"Soccer", lgName:"International men", lgCurrentSurvID:27, lgSlug:"s_m_soc_intl", lgFullName:"International men's football", lgTheFullName:"International men's football", lgHasProRel:false, lgBritishSpelling:true, lgNumOfFavteamSublevels:1}, 
 		lgID_016: {lgID:16, leagueGroupId:null, lgSport:"Soccer", lgName:"International women", lgCurrentSurvID:28, lgSlug:"s_w_soc_intl", lgFullName:"International women's football", lgTheFullName:"International women's football", lgHasProRel:false, lgBritishSpelling:true, lgNumOfFavteamSublevels:1}, 
