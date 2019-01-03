@@ -1,29 +1,26 @@
 'use strict';
 
-var Omnisurvey = function($, data, leagueId, surveyId) {
+var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 
-	this.nextButtonHandler = function() {};
+	this.nextButtonHandler = function() { return true; };
+	this.dataToEmbed = {}; // this object holds the data to embed in the survey
 
 	var self = this,
 			surveySelectionQuestionId = 'QID182',
 			$surveySelectionQuestion = $('#'+surveySelectionQuestionId),
 			$nextButton = $('#SplashMyNextButton'),
-			$SplashChangeLeagueBtnDiv = $('#SplashChangeLeagueBtnDiv'),
-			$SplashChangeLeagueBtn = $SplashChangeLeagueBtnDiv.find('button'),
+			$splashChangeLeagueBtn = $('#SplashChangeLeagueBtn'),
 			strLeagueImageRootDir = 'https://knowrivalry.com/images/logos/';
 
-	//var strSurvqSelectLgID = "QID182"; // Manually set the name of the Qualtrics QuestionID for the question where the user selects the league
-	// Additional note: I need to put something like console.log(this.getQuestionInfo().QuestionID) on the SelectLgID question's JS or else the JS in here won't work
-	
-	// Toward the end of this JS code, the "objDataTableRows" is defined. This is used to create the Embedded Data within Qualtrics.
-	// If you add more data tables, you need to also add entries to that variable definition.
-	// We can declare objDataTableRows here, but we can't define the variable because we need to wait until lgID is finalized.
-	// We declare this as an object by using {}. While technically its data type could change later on, this at least tells JS (and you, future reader) what the data type is supposed to be.
-	var objDataTableRows = {};
-		
 	function toggleLeagueSelect() {
 		$surveySelectionQuestion.slideToggle();
-		$SplashChangeLeagueBtnDiv.toggle();
+
+		if ($splashChangeLeagueBtn.css('visibility') === 'hidden') {
+			$splashChangeLeagueBtn.css('visibility', 'visible');
+		} else {
+			$splashChangeLeagueBtn.css('visibility', 'hidden');
+		}
+		//$splashChangeLeagueBtn.toggle();
 	}
 		
 	// Return user to the Select lgID question
@@ -62,7 +59,7 @@ var Omnisurvey = function($, data, leagueId, surveyId) {
 		document.getElementById(paramElementID).innerHTML = strErrorText; // Set the text within the HTML element
 	}
 
-	function submitPageData(){
+	function submitPageData() {
 		// TASKS BEFORE ADVANCING IN SURVEY
 		// The main thing this function does is to write the values into the embedded data variables within Qualtrics.
 		// In some cases we want to write new embedded data, in other cases we don't, thus we need to write it with code rather than within the Qualtrics Survey Flow.
@@ -80,13 +77,9 @@ var Omnisurvey = function($, data, leagueId, surveyId) {
 			//var theReturnedSelectedChoice = fMCQuesSelectedChoice(surveySelectionQuestionId);
 			
 			// ERROR HANDLING
-			// Because I created my own next button (among all the other JS code), I need to do my own custom validation to not let the user advance if ldID is null.
-			//if (Boolean(theReturnedSelectedChoice) === false) {
-				// The user STILL hasn't selected a league. Don't let them move on.
-				fErrorText("SplashErrorSelectLeague", true); // Put error text above the league selector question
-				fScrollToSelectLgID(); // Scroll user back to the league selector question
-				return false; // submitPageData() returns false because it was unsuccessful in its mission to write valid data to Qualtrics
-			//}
+			fErrorText("SplashErrorSelectLeague", true); // Put error text above the league selector question
+			fScrollToSelectLgID(); // Scroll user back to the league selector question
+			return false;
 		}
 				
 		// WRITE THE EMBEDDED DATA TO QUALTRICS
@@ -94,31 +87,23 @@ var Omnisurvey = function($, data, leagueId, surveyId) {
 		// If the embedded data element doesn't exist in the survey flow yet, Qualtrics will create that variable.
 		// You won't see it in the Qualtrics survey flow, but it exists [at least, I think that's what's happening].
 	
-		var dataToEmbed = {};
+		self.dataToEmbed = {};
 		
 		// write all properties of tbljsLeagues for selected league to embedded data
 		var selectedLeague = data.tbljsLeagues[fLeagueJSName(leagueId)];
 		$.each(selectedLeague, function(key) {
-			dataToEmbed[key] = selectedLeague[key];
+			self.dataToEmbed[key] = selectedLeague[key];
 		});
 
 		// write all properties of tbljsSurveys for selected survey to embedded data
 		var surveyId = selectedLeague.lgCurrentSurvID;
 		var selectedSurvey = data.tbljsSurveys[fSurveyJSName(surveyId)];
 		$.each(selectedSurvey, function(key) {
-			dataToEmbed[key] = selectedSurvey[key];
+			self.dataToEmbed[key] = selectedSurvey[key];
 		});
 
 		console.log('Submitting data:');
-		console.log(dataToEmbed);
-
-		$.each(dataToEmbed, function(key, value) {
-			// The Qualtrics setEmbeddedData('name',value) method takes two parameters. The first is the name of the embedded data variable (string), the second is the value we want stored.
-			// TODO: This needs to move outside of this class.
-			if (window.Qualtrics && Qualtrics.SurveyEngine) {
-				Qualtrics.SurveyEngine.setEmbeddedData(key, value);
-			}
-		});
+		console.log(self.dataToEmbed);
 
 		return true;
 	}
@@ -144,22 +129,20 @@ var Omnisurvey = function($, data, leagueId, surveyId) {
 		//TheJSThis.hideNextButton(); // hide the real [qualtrics] next button	
 		
 		// If there is a lgID assigned, hide/show the appropriate elements
-		$surveySelectionQuestion.hide();
-		$nextButton.show();
-
 		if (leagueId > 0) {
+			$surveySelectionQuestion.hide();
+			//$nextButton.show();
+
 			selectLeague(leagueId);
 		} else {
 			toggleLeagueSelect();
 		}
 
-		$SplashChangeLeagueBtn.on('click', changeLeagueButtonHandler);
+		$splashChangeLeagueBtn.on('click', changeLeagueButtonHandler);
 
 		// RUN CODE ON PAGE SUBMIT
 		$nextButton.on('click', function() {
-			if (submitPageData()) { // only advance in the survey if the validation checks out, the data were successfully read and written to Qualtrics, etc.
-				self.nextButtonHandler();
-			}
+			return submitPageData() && self.nextButtonHandler();
 		});
 
 		// TODO: This needs to move outside of this class. The functionality should stay, but getting the league ID can happen when the next button is clicked.
@@ -190,77 +173,9 @@ var Omnisurvey = function($, data, leagueId, surveyId) {
 	init();	
 };
 
-var Omnisurvey_Data = {
-	// The data tables below are copy/pasted from data outputted by Access (RivDB_BuildSurvey)
-	tbljsLeagues: { 
-		lgID_001: {lgID:1, lgSport:"American football", lgName:"NCAA DI-A", lgCurrentSurvID:13, lgSlug:"s_m_afb_ncaad1a", lgFullName:"NCAA Division I FBS football", lgTheFullName:"NCAA Division I FBS football", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:1}, 
-		lgID_002: {lgID:2, lgSport:"Ice hockey", lgName:"NHL", lgCurrentSurvID:14, lgSlug:"s_m_hok_nhl", lgFullName:"National Hockey League", lgTheFullName:"the National Hockey League", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:0}, 
-		lgID_003: {lgID:3, lgSport:"American football", lgName:"NFL", lgCurrentSurvID:15, lgSlug:"s_m_afb_nfl", lgFullName:"National Football League", lgTheFullName:"the National Football League", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:0}, 
-		lgID_004: {lgID:4, lgSport:"Soccer", lgName:"MLS", lgCurrentSurvID:16, lgSlug:"s_m_soc_mls", lgFullName:"Major League Soccer", lgTheFullName:"Major League Soccer", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:0}, 
-		lgID_005: {lgID:5, lgSport:"Baseball", lgName:"MLB", lgCurrentSurvID:17, lgSlug:"s_m_bas_mlb", lgFullName:"Major League Baseball", lgTheFullName:"Major League Baseball", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:0}, 
-		lgID_006: {lgID:6, lgSport:"Basketball", lgName:"NBA", lgCurrentSurvID:18, lgSlug:"s_m_bkb_nba", lgFullName:"National Basketball Association", lgTheFullName:"the National Basketball Association", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:0}, 
-		lgID_007: {lgID:7, lgSport:"Cricket", lgName:"BBL", lgCurrentSurvID:19, lgSlug:"s_m_t20_bbl", lgFullName:"Big Bash League", lgTheFullName:"the Big Bash League", lgHasProRel:false, lgBritishSpelling:true, lgNumOfFavteamSublevels:0}, 
-		lgID_008: {lgID:8, lgSport:"Cricket", lgName:"IPL", lgCurrentSurvID:20, lgSlug:"s_m_t20_ipl", lgFullName:"Indian Premier League", lgTheFullName:"the Indian Premier League", lgHasProRel:false, lgBritishSpelling:true, lgNumOfFavteamSublevels:0}, 
-		lgID_009: {lgID:9, lgSport:"Basketball", lgName:"NCAAM", lgCurrentSurvID:21, lgSlug:"s_m_bkb_ncaad1", lgFullName:"NCAA Division I men's basketball", lgTheFullName:"NCAA Division I men's basketball", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:1}, 
-		lgID_010: {lgID:10, lgSport:"Basketball", lgName:"NCAAW", lgCurrentSurvID:22, lgSlug:"s_w_bkb_ncaad1", lgFullName:"NCAA Division I women's basketball", lgTheFullName:"NCAA Division I women's basketball", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:1}, 
-		lgID_011: {lgID:11, lgSport:"American football", lgName:"NCAA DI-AA", lgCurrentSurvID:23, lgSlug:"s_m_afb_ncaad1aa", lgFullName:"NCAA Division I FCS football", lgTheFullName:"NCAA Division I FCS football", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:1}, 
-		lgID_012: {lgID:12, lgSport:"Soccer", lgName:"England men", lgCurrentSurvID:24, lgSlug:"s_m_soc_eng", lgFullName:"English men's football", lgTheFullName:"English men's football", lgHasProRel:true, lgBritishSpelling:true, lgNumOfFavteamSublevels:1}, 
-		lgID_013: {lgID:13, lgSport:"Soccer", lgName:"Spain men", lgCurrentSurvID:25, lgSlug:"s_m_soc_esp", lgFullName:"Spanish men's football", lgTheFullName:"Spanish men's football", lgHasProRel:true, lgBritishSpelling:true, lgNumOfFavteamSublevels:1}, 
-		lgID_014: {lgID:14, lgSport:"Soccer", lgName:"Germany men", lgCurrentSurvID:26, lgSlug:"s_m_soc_deu", lgFullName:"German men's football", lgTheFullName:"German men's football", lgHasProRel:true, lgBritishSpelling:true, lgNumOfFavteamSublevels:1}, 
-		lgID_015: {lgID:15, lgSport:"Soccer", lgName:"International men", lgCurrentSurvID:27, lgSlug:"s_m_soc_intl", lgFullName:"International men's football", lgTheFullName:"International men's football", lgHasProRel:false, lgBritishSpelling:true, lgNumOfFavteamSublevels:1}, 
-		lgID_016: {lgID:16, lgSport:"Soccer", lgName:"International women", lgCurrentSurvID:28, lgSlug:"s_w_soc_intl", lgFullName:"International women's football", lgTheFullName:"International women's football", lgHasProRel:false, lgBritishSpelling:true, lgNumOfFavteamSublevels:1}, 
-	},
 
-	tbljsSurveys: {
-		survID_001: { survID:1, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_002: { survID:2, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_003: { survID:3, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_004: { survID:4, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_005: { survID:5, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_006: { survID:6, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_007: { survID:7, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_008: { survID:8, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_009: { survID:9, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_010: { survID:10, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_011: { survID:11, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_012: { survID:12, survLaunchDate:0, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:false, BLOCKInformedConsent:false, BLOCKFavTeam:false, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_013: { survID:13, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_014: { survID:14, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_015: { survID:15, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_016: { survID:16, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_017: { survID:17, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_018: { survID:18, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_019: { survID:19, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_020: { survID:20, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:true},
-		survID_021: { survID:21, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_022: { survID:22, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_023: { survID:23, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_024: { survID:24, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_025: { survID:25, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_026: { survID:26, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_027: { survID:27, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-		survID_028: { survID:28, survLaunchDate:43302.3388888889, survInfConsTLDR:"InformedConsent_Sport_TLDR", survInfConsFullText:"InformedConsent_Sport_FullText", BLOCKIntro:true, BLOCKInformedConsent:false, BLOCKFavTeam:true, BLOCKFavTeamIden:false, BLOCKRivalTeam:false},
-	},
+/****************************************************************************************/
 
-	testChoices: {
-		1: {RecodeValue: "5", VariableName: "s_m_bas_mlb", Text: "MLB (Major League Baseball)", Exclusive: false},
-		2: {RecodeValue: "4", VariableName: "s_m_soc_mls", Text: "MLS (Major League Soccer)", Exclusive: false},
-		3: {RecodeValue: "6", VariableName: "s_m_bkb_nba", Text: "NBA (National Basketball Association)", Exclusive: false},
-		4: {RecodeValue: "3", VariableName: "s_m_afb_nfl", Text: "NFL (National Football League)", Exclusive: false},
-		5: {RecodeValue: "2", VariableName: "s_m_hok_nhl", Text: "NHL (National Hockey League)", Exclusive: false},
-		6: {RecodeValue: "8", VariableName: "s_m_t20_ipl", Text: "IPL (Indian Premier League cricket, men)", Exclusive: false},
-		7: {RecodeValue: "4", VariableName: "s_m_soc_mls", Text: "Canada/USA (MLS)", Exclusive: false},
-		8: {RecodeValue: "1", VariableName: "s_m_afb_ncaad1a", Text: "FBS football (DI-A)", Exclusive: false},
-		9: {RecodeValue: "11", VariableName: "s_m_afb_ncaad1aa", Text: "FCS football (DI-AA)", Exclusive: false},
-		10: {RecodeValue: "9", VariableName: "s_m_bkb_ncaad1", Text: "Men's basketball (DI)", Exclusive: false},
-		11: {RecodeValue: "10", VariableName: "s_w_bkb_ncaad1", Text: "Women's basketball (DI)", Exclusive: false},
-		12: {RecodeValue: "12", VariableName: "s_m_soc_eng", Text: "English (and UK teams in Football League & EPL), men", Exclusive: false},
-		13: {RecodeValue: "14", VariableName: "s_m_soc_deu", Text: "Germany, men", Exclusive: false},
-		14: {RecodeValue: "13", VariableName: "s_m_soc_esp", Text: "Spain, men", Exclusive: false},
-		15: {RecodeValue: "15", VariableName: "s_m_soc_intl", Text: "National teams, men", Exclusive: false},
-		16: {RecodeValue: "16", VariableName: "s_w_soc_intl", Text: "National teams, women", Exclusive: false}
-	}
-};
 
 (function () {
 	var OMNISURVEY_TEST = true,
@@ -284,6 +199,9 @@ var Omnisurvey_Data = {
 
 		nextButtonHandler = function() {
 			console.log('data would be submitted here');
+			console.log(this.dataToEmbed);
+
+			return true;
 		};
 
 	} else {
@@ -298,7 +216,14 @@ var Omnisurvey_Data = {
 			this.hideNextButton();
 
 			nextButtonHandler = function() {
+				$.each(this.dataToEmbed, function(key, value) {
+					// The Qualtrics setEmbeddedData('name',value) method takes two parameters. The first is the name of the embedded data variable (string), the second is the value we want stored.
+					Qualtrics.SurveyEngine.setEmbeddedData(key, value);
+				});
+
 				Qualtrics.SurveyEngine.Page.pageButtons.clickNextButton();
+
+				return true;
 			};
 		});
 
@@ -312,79 +237,6 @@ var Omnisurvey_Data = {
 
 	}
 
-	var omnisurvey = new Omnisurvey(jQuery, Omnisurvey_Data, leagueId, surveyId); // this is what loads the Omnisurvey
-	omnisurvey.nextButtonHandler = nextButtonHandler;
+	var omnisurvey_LeagueSelection = new Omnisurvey_LeagueSelection(jQuery, Omnisurvey_Data, leagueId, surveyId); // this is what loads the Omnisurvey
+	omnisurvey_LeagueSelection.nextButtonHandler = nextButtonHandler;
 })();
-
-
-
-
-
-	/*Place your JavaScript here to run when the page loads*/
-
-	// Using strict mode syntax forces me to write better code. Since I'm new to heavier JS, I WANT the code to throw errors  rather than letting me get away with bad practices that will bite me in the ass later on.
-	// For testing purposes (e.g., JSBin) I need to put a reference to jQuery at the top
-	// <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>	
-	
-	// DECLARE/DEFINE VARIABLES AND VARIABLE OBJECTS (i.e., lookup tables)
-	// This has to be done first, before they can be referenced elsewhere in the code. (actually, I can declare them anywhere and they'll be hoisted up, but values stored in them don't get hoisted.)
-
-	// Several of these variables are set manually. I doubt these will ever change, but I put them up front just in case to make it easier on the developer (i.e., future me).
-	// I know, convention says I should put them in all caps because they're constants, but I can't bring myself to do it; they're just not that important.
-	// These should be set with const instead of var, but since const still doesn't work with all browsers (IE8), I'm sticking with var.
-	
-
-
-	/* UNUSED CODE	
-		
-	/*
-	Originally I was going to completely reload the page when the user clicked the change the league, but then I realized it was easier to just show/hide the important elements.
-		function ResetLgIDOnSplashPage() {
-			var ExistingSurvID = Qualtrics.SurveyEngine.getEmbeddedData('survID');
-			var strOmniSurveyURL = 'https://wcu.az1.qualtrics.com/jfe/form/SV_b8bo2ct7HLrqGUZ?lgID=0';
-			if (Boolean(ExistingSurvID)===true) {
-				var strOmniSurveyURL = strOmniSurveyURL + '&survID=' + ExistingSurvID;
-			}
-			location.assign(strOmniSurveyURL);
-		}
-		
-		
-	/*
-	At first I was defining each embedded data variable. While this was easier to read & understand than the iteration approach I used above,
-	it was a lot of maintenance (when adding/removing variables) and created plenty of opportunity for human error.
-	So, I changed it to the jQuery that just rewrote the corrects rows within the jsTables to new Embedded Data variables within Qualtrics
-	A big downside of my initial approach was that I had to define each ED variable within the Qualtrics survey flow to use the setEmbeddedData function. (later I learned that isn't actually true. Probably was at one time.)
-	A downside of the new approach (jQuery.each iterations) is that the embedded data fields have to have the same name as the fields within the RivalryDB, but that's probably a good thing anyway.
-
-	// The Properties (first column) are the names of the embedded data variables within Qualtrics; the Values (second column) are what we're actually writing.
-	// I broke them out by tbljsLeagues & tbljsSurveys, but only for visual purposes (just like tabbing the columns). There's no programmatic reason for it.
-	// The first two properties are necessary. The others... well, I don't know what we'll use yet, but the harm in writing them is minmimal.			
-
-	var objDataToEmbed = {
-		lgID: 					intLgID,
-		survID: 				intSurvID,
-
-		// Pulled from tbljsLeagues
-		lgSlug: 				tbljsLeagues[strLgObjName].lgSlug,
-		lgFullName: 			tbljsLeagues[strLgObjName].lgFullName,
-		lgSport: 				tbljsLeagues[strLgObjName].lgSport,
-		lgTheFullName: 			tbljsLeagues[strLgObjName].lgTheFullName,
-		lgBritishSpelling:		tbljsLeagues[strLgObjName].lgBritishSpelling,
-
-		// Pulled from tbljsSurveys	
-		survLaunchDate: 		tbljsSurveys[strSurvObjName].survLaunchDate,
-		survInfConsTLDR:		tbljsSurveys[strSurvObjName].survInfConsTLDR,
-		survInfConsFullText:	tbljsSurveys[strSurvObjName].survInfConsFullText
-	}; // Make sure that the last value in the list above does NOT have a comma at the end of it. That's a classic JavaScript error.
-
-	// CHOOSE WHICH SURVEY BLOCKS TO SHOW AS PART OF THE SURVEY
-	// This determines how many characters in the survey block prefix for the Embedded Data variables. Right now it's 5 (B-L-O-C-K), but since that could change, I made this dynamic.
-	var strBlockPrefix = "BLOCK"; // This is the prefix that will start every embedded data variable for the survey blocks [<-- I'd set this at the very top originally]
-	var intBlockPrefixLen = strBlockPrefix.length;
-	// Iterate through tbljsSurveys to write true/false to the embedded data variable for each survey block
-	jQuery.each(tbljsSurveys[fSurveyJSName(intSurvID)], function (propName, propValue) {
-		if (propName.substr(0,intBlockPrefixLen) === strBlockPrefix) { // Does the property name start with the designated prefix? (BLOCK)
-			Qualtrics.SurveyEngine.setEmbeddedData(propName,propValue);
-		};
-	});
-	*/

@@ -2,6 +2,7 @@
 <html>
 
 <head>
+  <meta id="meta-viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.5">
   <!-- This is here for testing purposes. The real link will be within the Qualtrics Advanced Look & Feel section -->
   <link href="https://jfe-cdn.qualtrics.com/themes/skins/qualtrics/v4qualtrics2/version-1540490806023-9bd613/stylesheet.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="omnisurvey.css" />
@@ -11,20 +12,28 @@
 
 <body>
 
-  <div><h2>Filters</h2></div>
-  <div id="DivFilterReset" class="FilterResetText">Reset all filters</div>
-  <div id="filters"></div>
-  <!--<div id="DivFiltersLevel1Header"></div>
-  <div id="DivFiltersLevel1"></div>
-  <div id="DivFiltersLevel2Header"></div>
-  <div id="DivFiltersLevel2"></div>
-  <div id="DivFiltersLevel3Header"></div>
-  <div id="DivFiltersLevel3"></div>-->
-  <div style="clear:both;"><!--temporary--></div>
-  <div id="DivFavTeamListHeader">Teams</div>
-  <div id="DivFavTeamList"></div>
-  <div id="DivFavTeamLogo"></div>
+  <div class="Skin">
 
+    <div class="Questions">
+      <div><h2>Filters</h2></div>
+      <div id="DivFilterReset" class="FilterResetText">Reset all filters</div>
+      <div id="filters"></div>
+      <!--<div id="DivFiltersLevel1Header"></div>
+      <div id="DivFiltersLevel1"></div>
+      <div id="DivFiltersLevel2Header"></div>
+      <div id="DivFiltersLevel2"></div>
+      <div id="DivFiltersLevel3Header"></div>
+      <div id="DivFiltersLevel3"></div>-->
+      <div style="clear:both;"><!--temporary--></div>
+      <div id="DivFavTeamListHeader">Teams</div>
+      <div id="DivFavTeamList" class="clearfix"></div>
+      <div id="DivFavTeamLogo"></div>
+    </div>
+
+    <div id="Buttons" role="navigation"><input id="NextButton" class="NextButton Button" title="Next  >>" type="button" name="NextButton" value="Next  >>" data-runtime-disabled="runtime.Disabled" data-runtime-aria-label="runtime.ariaLabel" data-runtime-hide="runtime.Hide" page-id="P_1546466904154" aria-label="Next  >>"></div>
+  </div>
+
+  <script src="omnisurveyData.js"></script>
   <script src="FavoriteTeams.js"></script>
 </body>
 

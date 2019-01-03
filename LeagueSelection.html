@@ -2,6 +2,7 @@
 <html>
 
 <head>
+	<meta id="meta-viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.5">
 	<!-- This is here for testing purposes. The real link will be within the Qualtrics Advanced Look & Feel section -->
 	<link href="https://jfe-cdn.qualtrics.com/themes/skins/qualtrics/v4qualtrics2/version-1540490806023-9bd613/stylesheet.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="omnisurvey.css" />
@@ -12,18 +13,15 @@
 <div class="Skin">
 	<!-- Splash_Title -->
 	<div>
-		<p id="SplashTitleText">
-			Rivalry Research
-		</p>
+		<p id="SplashTitleText">Rivalry Research</p>
+		<p id="SplashWelcomeText">Welcome to the Know Rivalry research project!</p>
 	</div>
 
 	<!-- Splash_Welcome_LeaguePicked -->
 		<div id="SplashWelcomeLeaguePicked">
 			<div id="SplashWelcomeLeagueLogoDiv">
 			</div>
-			<div id="SplashWelcomeText">
-				<p>Welcome to the Know Rivalry research project!</p>
-			</div>
+
 		</div>
 		
 	<!-- Splash SelectLgID -->
@@ -45,16 +43,7 @@
 			</div>
 
 			<div class="QuestionOuter BorderColor DB  QID189" id="QID189" questionid="QID189" posttag="QID189" data-runtime-remove-class-hidden="runtime.Displayed"> <div id="QR~QID189~VALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.ErrorMsg" data-runtime-html="runtime.ErrorMsg" style="display: none;"></div> <div id="QR~QID189~SDPVALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.PDPErrorMsg" data-runtime-html="runtime.PDPErrorMsg" style="display: none;"></div> <div class="Inner BorderColor TB"> <div class="InnerInner BorderColor"> <fieldset> <legend> <div class="QuestionText BorderColor">
-				<div>
-					
-					<div id="SplashChangeLeagueBtnDiv">
-						<button id="SplashChangeLeagueBtn">
-							Click to select a different league
-						</button>
-					</div>
-			
-					
-				</div></div></legend><div class="QuestionBody"></div> </fieldset> </div> </div>  
+</div></legend><div class="QuestionBody"></div> </fieldset> </div> </div>  
 			</div>
 
 		</div>
@@ -62,7 +51,11 @@
 	<!-- Splash_MyNextButton -->
 		<div id="SplashMyNextButtonDiv">
 			<button id="SplashMyNextButton">
-				Click to begin
+				Begin Survey&nbsp;&nbsp;>
+			</button>
+
+			<button id="SplashChangeLeagueBtn">
+				Select a different league
 			</button>
 		</div>
 	
@@ -160,5 +153,6 @@
 	</div>
 </div>
 
+<script src="omnisurveyData.js"></script>
 <script src="LeagueSelection.js"></script>
 </html>
