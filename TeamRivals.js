@@ -1,31 +1,35 @@
 'use strict';
 
-var Omnisurvey_TeamRivals = function($, data, leagueId) {
+var Omnisurvey_TeamRivals = function($, data, leagueId, teamId) {
   
   var questionId = 'QID164',
       $question = $('#'+questionId),
-      selectedLeague = null,
       isValid = false,
       $rivalryPointsInputs = $question.find('.ChoiceRow input[type="text"]'),
       $rivalryPointsTotal = $('.CSTotal input'),
       $rivalryPointsError = $('<div class="rivalry-points-error"></div>').appendTo($question);
   
-  function populateTeams($select) {
-    // get the league id
-    var thisLeague = parseInt($select.val());
+  function changeLeague($select) {
+    // get the selected group id
+    var groupId = parseInt($select.val()),
+        teamDropdown = $select.next('select');
 
+    populateTeams(teamDropdown, groupId);
+  }
+
+  function populateTeams($select, groupId) {
     // get the teams in the league
-    var teams = data.getLeagues().filter(function(league) {
-      return league.lgID === thisLeague;
-    })[0].teams;
+    var teams = data.getTeamsByGroup(groupId);
 
     var options = '<option value=""></option>';
-    $.each(teams, function(index, team) {
-      options += '<option value="'+team.id+'">'+team.name+'</option>'
+    teams.forEach(function(team) {
+      if (team.id != teamId) {
+        options += '<option value="'+team.id+'">'+team.name+'</option>';
+      }
     });
 
-    // trigger change
-    $select.next('select').html(options).change();
+    $select.html(options) // set options
+           .change(); // trigger change
   }
 
   function selectTeam($select) {
@@ -34,7 +38,7 @@ var Omnisurvey_TeamRivals = function($, data, leagueId) {
     if ($select.val() === '') {
       $rivalryPointsInput.attr({disabled: 'disabled', min: '0'}).val(0);
     } else {
-      $rivalryPointsInput.removeAttr('disabled').attr({min: '1'}).val(100);
+      $rivalryPointsInput.removeAttr('disabled').attr({min: '1'}).val(1);
     }
 
     // trigger change
@@ -72,39 +76,69 @@ var Omnisurvey_TeamRivals = function($, data, leagueId) {
     }
   }
 
+  function createGroupOptions(group, $select, level) {
+    // initialize level if needed
+    level = typeof level !== 'undefined' ? level : 0;
+
+    $.each(group.groups, function(index, childGroup) {
+      // stop at team level / ignore current team
+      if (!childGroup.groups) {
+        return;
+      }
+
+      var disabled = false, //childGroup.groups && childGroup.groups[0] && childGroup.groups[0].groups,
+          selected = childGroup.id == leagueId,
+          space = '';
+
+      for (var i=0; i<level*4; i++) {
+        space += '&nbsp;';
+      }
+
+      var $optGroup = $('<option'+(disabled ? ' disabled="disabled"' : '')+' value="'+childGroup.id+'"'+(selected ? ' selected' : '')+'>'+space+childGroup.name+'</option>').appendTo($select);
+      createGroupOptions(childGroup, $select, level+1);
+    });
+  }
+
 	function init() {
-    // set selected league (survey level)
-    selectedLeague = data.getLeagues().filter(function(league) {
-      return league.lgID === leagueId;
-    })[0];
+    var group = null;
+
+    if (leagueId > 0) {
+      // get the league grouping
+      group = data.getCompetitiveGroupingByTeamId(teamId);
+      console.log(group);
+    } else {
+      // TODO: INVALID DATA, DO SOMETHING
+    }
+
+    // populate teams on league change
+    $question.on('change', 'select.league-select', function() {
+      changeLeague($(this));
+    });
 
     // determine if there are sibling leagues to choose rivals from
-    if (selectedLeague.leagueGroupId != null) {
+    if (group != null) {
       var $select = $('<select class="league-select"></select>').prependTo($question.find('select').parent());
-      var leagues = data.getLeagues().filter(function(league) {
-        return league.leagueGroupId === selectedLeague.leagueGroupId;
-      });
+      createGroupOptions(group, $select);
 
-      $.each(leagues, function(index, league) {
-        $select.append('<option value="'+league.lgID+'" '+(league.lgID === selectedLeague.lgID ? 'selected' : '')+'>'+league.lgFullName+'</option');
-      });
-      populateTeams($select);
+      //$select.change(); // trigger change
     }
 
     // change the rivalry points inputs to range
+    var $range = $('<input type="range" min="0" max="100" disabled="disabled" class="points-range" />');
+    $range.on('input change', function() {
+      var $this = $(this);
+      $this.next('input').val($this.val());
+      validate();
+    });
+    
     $rivalryPointsInputs
-      .val(0)
-      .attr({type: 'range', min: '0', max: '100', disabled: 'disabled'})
-      .after('<span class="points-display">0</span>')
+      .attr({type: 'number', min: 0, max: 100, disabled: 'disabled'})
+      .before($range)
       .on('input change', function() {
         var $this = $(this);
-        $this.next('.points-display').html($this.val());
+        $this.prev('input').val($this.val());
         validate();
       });
-
-    $question.on('change', 'select.league-select', function() {
-      populateTeams($(this));
-    });
 
     // best way to determine team selection dropdown currently
     $question.on('change', 'select:not(.league-select)', function() {
@@ -123,14 +157,16 @@ var Omnisurvey_TeamRivals = function($, data, leagueId) {
 
 (function () {
 	var OMNISURVEY_TEST = false,
-			leagueId = -1;
+      leagueId = -1,
+      teamId = -1;
 
 	if (OMNISURVEY_TEST || !window.Qualtrics) {
 
 		/*****************************************************
 			TESTING
 		*****************************************************/
-		leagueId = 13;
+    leagueId = 10;
+    teamId = 244;
 
 		jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');
 
@@ -150,5 +186,5 @@ var Omnisurvey_TeamRivals = function($, data, leagueId) {
 
 	}
 
-	var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, Omnisurvey_Data, leagueId); // this is what loads the Omnisurvey
+	var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, Omnisurvey_Data, leagueId, teamId); // this is what loads the Omnisurvey
 })();

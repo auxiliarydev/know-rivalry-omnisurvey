@@ -3,6 +3,7 @@
 var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 
 	this.nextButtonHandler = function() { return true; };
+	this.surveySelectionHandler;
 	this.dataToEmbed = {}; // this object holds the data to embed in the survey
 
 	var self = this,
@@ -28,16 +29,6 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 		$('html, body').animate({
 			scrollTop: ($("#SplashTitleText").offset().top)
 		},500);
-	}
-		
-	function fLeagueJSName(paramLgID) {
-		// This converts a lgID into the JavaScript object name within tbljsLeagues (e.g,. 14 --> "lgID_014")
-		return "lgID_"+("00" + paramLgID).slice(-3);
-	}
-
-	function fSurveyJSName(paramSurvID) {
-		// This converts a survID into the JavaScript object name within tbljsSurveys (e.g,. 14 --> "survID_014")
-		return "survID_"+("00" + paramSurvID).slice(-3);
 	}
 
 	//DISPLAY ERROR TEXT
@@ -90,14 +81,14 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 		self.dataToEmbed = {};
 		
 		// write all properties of tbljsLeagues for selected league to embedded data
-		var selectedLeague = data.tbljsLeagues[fLeagueJSName(leagueId)];
+		var selectedLeague = data.getLeague(leagueId);
 		$.each(selectedLeague, function(key) {
 			self.dataToEmbed[key] = selectedLeague[key];
 		});
 
 		// write all properties of tbljsSurveys for selected survey to embedded data
 		var surveyId = selectedLeague.lgCurrentSurvID;
-		var selectedSurvey = data.tbljsSurveys[fSurveyJSName(surveyId)];
+		var selectedSurvey = data.getSurvey(surveyId);
 		$.each(selectedSurvey, function(key) {
 			self.dataToEmbed[key] = selectedSurvey[key];
 		});
@@ -117,7 +108,7 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 		leagueId = id;
 
 		// change league image
-		var leagueSlug = data.tbljsLeagues[fLeagueJSName(leagueId)].lgSlug;
+		var leagueSlug = data.getLeague(leagueId).lgSlug;
 		var leagueImgFilename = strLeagueImageRootDir + 'league_' + leagueSlug + '-md.png';
 		$('#SplashWelcomeLeagueLogoDiv').css('background-image', 'url(' + leagueImgFilename + ')');
 	}
@@ -128,12 +119,38 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 		// I couldn't figure out the problem, so I just created my own next button.
 		//TheJSThis.hideNextButton(); // hide the real [qualtrics] next button	
 		
-		// If there is a lgID assigned, hide/show the appropriate elements
-		if (leagueId > 0) {
-			$surveySelectionQuestion.hide();
-			//$nextButton.show();
+		var league = null,
+				survey = null;
 
-			selectLeague(leagueId);
+		if (leagueId > 0) {
+			league = data.getLeague(leagueId);
+		}
+
+		if (surveyId > 0) {
+			// get the survey data
+			survey = data.getSurvey(surveyId);
+
+			if (survey != null) {
+				// get the leagues associated with this survey
+				var leagues = data.getLeaguesBySurvey(surveyId);
+
+				if (leagues != null) {
+					// TODO: ONLY DISPLAY THESE LEAGUES
+
+				}
+			}
+		}
+
+		// If there is a lgID assigned, hide/show the appropriate elements
+		if (league != null) {
+			// if survey isn't specified or
+			// the survey is specified and the league is associated with the survey
+			if (survey == null || league.lgCurrentSurvID === survey.survID) {
+				$surveySelectionQuestion.hide();	
+				selectLeague(leagueId);
+			} else {
+				toggleLeagueSelect();
+			}
 		} else {
 			toggleLeagueSelect();
 		}
@@ -145,29 +162,21 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 			return submitPageData() && self.nextButtonHandler();
 		});
 
-		// TODO: This needs to move outside of this class. The functionality should stay, but getting the league ID can happen when the next button is clicked.
-		if (window.Qualtrics && Qualtrics.SurveyEngine) {
-			Qualtrics.SurveyEngine.getInstance(surveySelectionQuestionId).questionclick = function(event, element) {
-				if (element.type == 'radio') {  //for a single answer multiple choice question, the element type will be radio
-					var leagueQuestion = Qualtrics.SurveyEngine.getInstance(questionID);
-					var selectedChoice = leagueQuestion.getSelectedChoices()[0];
-					var leagues = leagueQuestion.getQuestionInfo().Choices;
-					var selectedLeagueId = parseInt(leagues[selectedChoice].RecodeValue);
+		$surveySelectionQuestion.find('li.Selection input[type="radio"]').on('click', function() {
+			var selectedLeagueId = '';
 
-					selectLeague(selectedLeagueId);
-					toggleLeagueSelect();
-				}
-			};
-		} else {
-			$surveySelectionQuestion.find('li.Selection input[type="radio"]').on('click', function() {
+			if (typeof this.surveySelectionHandler === 'function') {
+				selectedLeagueId = this.surveySelectionHandler();
+			} else {
 				var selectedValue = $(this).val();
-				var selectedLeagueId = data.testChoices[''+selectedValue].RecodeValue;
-				if (!isNaN(selectedLeagueId)) {
-					selectLeague(selectedLeagueId);
-					toggleLeagueSelect();
-				}
-			});
-		}
+				var selectedLeagueId = parseInt(data.testChoices[''+selectedValue].RecodeValue);
+			}
+
+			if (!isNaN(selectedLeagueId)) {
+				selectLeague(selectedLeagueId);
+				toggleLeagueSelect();
+			}
+		});
 	}
 
 	init();	
@@ -181,7 +190,8 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 	var OMNISURVEY_TEST = true,
 			leagueId = -1,
 			surveyId = -1,
-			nextButtonHandler = function() {};
+			nextButtonHandler = function() {},
+			surveySelectionHandler;
 
 	if (OMNISURVEY_TEST || !window.Qualtrics) {
 
@@ -191,7 +201,11 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 		// TODO: POLYFILL THIS FOR IE
 		var searchParams = new URLSearchParams(window.location.search);
 		if (searchParams.has('lgID')) {
-			leagueId = searchParams.get('lgID'); //7
+			leagueId = parseInt(searchParams.get('lgID')); //7
+		}
+
+		if (searchParams.has('survID')) {
+			leagueId = parseInt(searchParams.get('survID')); //2
 		}
 		//surveyId = 2;
 
@@ -207,7 +221,9 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 	} else {
 		
 		Qualtrics.SurveyEngine.addOnload(function() {
-			leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
+			if (!isNaN(Qualtrics.SurveyEngine.getEmbeddedData('lgID'))) {
+				leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
+			}
 			
 			if (!isNaN(Qualtrics.SurveyEngine.getEmbeddedData('survID'))) {
 				surveyId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('survID'));
@@ -225,6 +241,19 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 
 				return true;
 			};
+
+			surveySelectionHandler = function() {
+				//Qualtrics.SurveyEngine.getInstance(surveySelectionQuestionId).questionclick = function(event, element) {
+					//if (element.type == 'radio') {  //for a single answer multiple choice question, the element type will be radio
+						var leagueQuestion = Qualtrics.SurveyEngine.getInstance('QID182');
+						var selectedChoice = leagueQuestion.getSelectedChoices()[0];
+						var leagues = leagueQuestion.getQuestionInfo().Choices;
+						var selectedLeagueId = parseInt(leagues[selectedChoice].RecodeValue);
+
+						return selectedLeagueId;
+				//	}
+				//};
+			}
 		});
 
 		Qualtrics.SurveyEngine.addOnReady(function() {

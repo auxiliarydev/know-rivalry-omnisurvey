@@ -151,7 +151,7 @@ var Omnisurvey_FavoriteTeams = function($, leagueData) {
 		/*****************************************************
 			TESTING
 		*****************************************************/
-		leagueId = 2;
+		leagueId = 6;
 		leagueLevelTerms = ['Conferences', 'Divisions'];
 
 		jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');
@@ -180,9 +180,7 @@ var Omnisurvey_FavoriteTeams = function($, leagueData) {
 
 	}
 
-	var leagueData = Omnisurvey_Data.getAllLeagueData().filter(function(league) {
-		return league.id == leagueId;
-	})[0];
+	var leagueData = Omnisurvey_Data.getTeamsByLeague(leagueId);
 	
 	leagueData.divisionLevelTerms = leagueLevelTerms;
 
