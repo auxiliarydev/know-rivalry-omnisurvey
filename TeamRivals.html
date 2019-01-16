@@ -7,10 +7,6 @@
   <link href="https://jfe-cdn.qualtrics.com/themes/skins/qualtrics/v4qualtrics2/version-1540490806023-9bd613/stylesheet.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="omnisurvey.css" />
   <link rel="stylesheet" type="text/css" href="omnisurvey_testing.css" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <style>
-
-  </style>
 </head>
 
 <body>
@@ -47,8 +43,44 @@
     <div id="Plug" style="display:none !important"><a style="display:block !important;" href="http://www.qualtrics.com/" target="_blank">Powered by Qualtrics</a></div>
   </div>
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="omnisurveyData.js"></script>
   <script src="TeamRivals.js"></script>
+  <script>
+    (function () {
+      var OMNISURVEY_TEST = false,
+          leagueId = -1,
+          teamId = -1;
+
+      if (OMNISURVEY_TEST || !window.Qualtrics) {
+
+        /*****************************************************
+          TESTING
+        *****************************************************/
+        leagueId = 10;
+        teamId = 244;
+
+        jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');
+
+      } else {
+        
+        Qualtrics.SurveyEngine.addOnload(function() {
+          leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
+        });
+
+        Qualtrics.SurveyEngine.addOnReady(function() {
+          //Place your JavaScript here to run when the page is fully displayed
+        });
+
+        Qualtrics.SurveyEngine.addOnUnload(function() {
+          //Place your JavaScript here to run when the page is unloaded
+        });
+
+      }
+
+      var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, Omnisurvey_Data, leagueId, teamId); // this is what loads the Omnisurvey
+    })();
+  </script>
 </body>
 
 </html>
