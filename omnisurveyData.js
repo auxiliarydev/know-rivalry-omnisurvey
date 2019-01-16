@@ -516,7 +516,7 @@ var Omnisurvey_Data = new function() {
 			};
 		});
 
-		$.each(leagueData, function(index, league) {
+		leagueData.forEach(function(league) {
 			league.divisionLevels = league.divisionLevels.filter(function(level) {
 				return level != null && level.length > 0;
 			});
