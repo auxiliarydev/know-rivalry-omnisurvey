@@ -157,7 +157,7 @@
 <script src="LeagueSelection.js"></script>
 <script>
 	(function () {
-		var OMNISURVEY_TEST = true,
+		var OMNISURVEY_TEST = false,
 				leagueId = -1,
 				surveyId = -1,
 				nextButtonHandler = function() {},
@@ -202,6 +202,7 @@
 				this.hideNextButton();
 
 				nextButtonHandler = function() {
+					console.log('embedding data');
 					$.each(this.dataToEmbed, function(key, value) {
 						// The Qualtrics setEmbeddedData('name',value) method takes two parameters. The first is the name of the embedded data variable (string), the second is the value we want stored.
 						Qualtrics.SurveyEngine.setEmbeddedData(key, value);

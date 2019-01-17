@@ -24,6 +24,7 @@
 	
 body{
   font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  margin: 0 auto;
 }	
 
 /* If the max-width property is set to 100%, the image will scale down if it has to, but never scale up to be larger than its original size */
