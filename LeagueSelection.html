@@ -190,6 +190,8 @@
 				return true;
 			};
 
+			init();
+
 		} else {
 			
 			Qualtrics.SurveyEngine.addOnload(function() {
@@ -227,6 +229,8 @@
 					//	}
 					//};
 				}
+
+				init();
 			});
 
 			Qualtrics.SurveyEngine.addOnReady(function() {
@@ -239,8 +243,10 @@
 
 		}
 
-		var omnisurvey_LeagueSelection = new Omnisurvey_LeagueSelection(jQuery, Omnisurvey_Data, leagueId, surveyId); // this is what loads the Omnisurvey
-		omnisurvey_LeagueSelection.nextButtonHandler = nextButtonHandler;
+		function init() {
+			var omnisurvey_LeagueSelection = new Omnisurvey_LeagueSelection(jQuery, Omnisurvey_Data, leagueId, surveyId); // this is what loads the Omnisurvey
+			omnisurvey_LeagueSelection.nextButtonHandler = nextButtonHandler;
+		}
 	})();
 </script>
 </html>
