@@ -22,7 +22,7 @@
 	
 /* STYLES USED ACROSS SURVEY (or could be, potentially) */
 	
-body{
+body#SurveyEngineBody{
   font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
   margin: 0 auto;
 }	
