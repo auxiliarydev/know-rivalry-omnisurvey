@@ -2,7 +2,7 @@
 
 var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 
-	this.nextButtonHandler = function() { return true; };
+	this.nextButtonHandler;
 	this.surveySelectionHandler;
 	this.dataToEmbed = {}; // this object holds the data to embed in the survey
 
@@ -159,14 +159,14 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 
 		// RUN CODE ON PAGE SUBMIT
 		$nextButton.on('click', function() {
-			return submitPageData() && self.nextButtonHandler();
+			return submitPageData() && (typeof self.nextButtonHandler === 'function' && self.nextButtonHandler());
 		});
 
 		$surveySelectionQuestion.find('li.Selection input[type="radio"]').on('click', function() {
 			var selectedLeagueId = '';
 
-			if (typeof this.surveySelectionHandler === 'function') {
-				selectedLeagueId = this.surveySelectionHandler();
+			if (typeof self.surveySelectionHandler === 'function') {
+				selectedLeagueId = self.surveySelectionHandler();
 			} else {
 				var selectedValue = $(this).val();
 				var selectedLeagueId = parseInt(data.testChoices[''+selectedValue].RecodeValue);
