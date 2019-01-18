@@ -46,10 +46,15 @@
         /*****************************************************
           TESTING
         *****************************************************/
-        leagueId = 6;
-        leagueLevelTerms = ['Conferences', 'Divisions'];
+        var searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.has('lgID')) {
+          leagueId = parseInt(searchParams.get('lgID'));
+        }
+        //leagueLevelTerms = ['Conferences', 'Divisions'];
 
         jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');
+
+        init();
 
       } else {
         
@@ -63,6 +68,8 @@
               leagueLevelTerms.push(leagueLevelTerm);
             }
           }
+
+          init();
         });
 
         Qualtrics.SurveyEngine.addOnReady(function() {
@@ -75,11 +82,12 @@
 
       }
 
-      var leagueData = Omnisurvey_Data.getTeamsByLeague(leagueId);
-      
-      leagueData.divisionLevelTerms = leagueLevelTerms;
+      function init() {
+        //var leagueData = Omnisurvey_Data.getTeamsByLeague(leagueId);
+        //leagueData.divisionLevelTerms = leagueLevelTerms;
 
-      var omnisurvey_FavoriteTeams = new Omnisurvey_FavoriteTeams(jQuery, leagueData); // this is what loads the Omnisurvey
+        var omnisurvey_FavoriteTeams = new Omnisurvey_FavoriteTeams(jQuery, Omnisurvey_Data, leagueId); // this is what loads the Omnisurvey
+      }
     })();
   </script>
 </body>

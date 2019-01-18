@@ -81,8 +81,8 @@ var Omnisurvey_TeamRivals = function($, data, leagueId, teamId) {
     level = typeof level !== 'undefined' ? level : 0;
 
     $.each(group.groups, function(index, childGroup) {
-      // stop at team level / ignore current team
-      if (!childGroup.groups) {
+      // stop at team level, skip groups that shouldn't be displayed
+      if (!childGroup.groups) { // || !childGroup.grpShowSurvSelRival) {
         return;
       }
 

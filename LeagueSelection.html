@@ -205,18 +205,6 @@
 
 				this.hideNextButton();
 
-				nextButtonHandler = function() {
-					console.log('embedding data');
-					$.each(this.dataToEmbed, function(key, value) {
-						// The Qualtrics setEmbeddedData('name',value) method takes two parameters. The first is the name of the embedded data variable (string), the second is the value we want stored.
-						Qualtrics.SurveyEngine.setEmbeddedData(key, value);
-					});
-
-					Qualtrics.SurveyEngine.Page.pageButtons.clickNextButton();
-
-					return true;
-				};
-
 				surveySelectionHandler = function() {
 					//Qualtrics.SurveyEngine.getInstance(surveySelectionQuestionId).questionclick = function(event, element) {
 						//if (element.type == 'radio') {  //for a single answer multiple choice question, the element type will be radio
@@ -232,6 +220,21 @@
 
 				init();
 			});
+
+			nextButtonHandler = function() {
+				console.log('embedding data');
+
+				var data = this.dataToEmbed;
+				Object.keys(data).forEach(function(key) {
+					// The Qualtrics setEmbeddedData('name',value) method takes two parameters. The first is the name of the embedded data variable (string), the second is the value we want stored.
+					//console.log(key + ' : ' + data[key]);
+					Qualtrics.SurveyEngine.setEmbeddedData(key, data[key]);
+				});
+
+				Qualtrics.SurveyEngine.Page.pageButtons.clickNextButton();
+
+				return true;
+			};
 
 			Qualtrics.SurveyEngine.addOnReady(function() {
 				//Place your JavaScript here to run when the page is fully displayed

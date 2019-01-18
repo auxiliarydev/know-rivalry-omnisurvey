@@ -61,7 +61,7 @@ var Omnisurvey_Data = new function() {
   // technically this takes a groupId and will return the competitive group if any descendants have the id passed in
   this.getCompetitiveGroupingByTeamId = function(teamId) {
     var group = self.CompetitiveGroupings.filter(function(group) {
-      return (filterGroups(group, 'id', teamId).length > 0);
+      return (self.filterGroups(group, 'id', teamId).length > 0);
     });
 
     if (group.length > 0) {
@@ -72,7 +72,7 @@ var Omnisurvey_Data = new function() {
   };
 
   this.getGroupById = function(groupId) {
-    var group = filterGroups(self.CompetitiveGroupings, 'id', groupId);
+    var group = self.filterGroups(self.CompetitiveGroupings, 'id', groupId);
 
     if (group.length > 0) {
       return group[0];
@@ -82,21 +82,62 @@ var Omnisurvey_Data = new function() {
   };
 
   this.getTeamsByGroup = function(groupId) {
-    var groups = flattenGroups(self.getGroupById(groupId).groups);
+    var groups = getLowestLevelGroups(self.getGroupById(groupId).groups);
 
     return groups
   };
 
-  function flattenGroups(groups, acc) {
+  this.getGroupTerms = function(groupId) {
+    var groups = getTypeTerms(self.getGroupById(groupId).groups);
+
+    return groups.filter(self.getUniqueValues);
+  }
+
+  // recursive function to filter League Hierarchy
+  this.filterGroups = function(groups, key, value, results) {
+    // initialize results if needed
+    results = typeof results !== 'undefined' ? results : [];
+
+    if (Array.isArray(groups)) {
+      // groups is an array, iterate and filter
+      groups.forEach(function(childGroup) {
+        results = self.filterGroups(childGroup, key, value, results);
+      });
+    } else {
+      // groups is an object, see if it's what we're looking for
+      if (groups[key] == value) {
+        results.push(groups); // found a match
+      }
+
+      // filter child groups if there are any
+      if (groups.groups) {
+        results = self.filterGroups(groups.groups, key, value, results);
+      }
+    }
+
+    return results;
+  };
+
+  function getLowestLevelGroups(groups, acc) {
     // initialize acc if needed
     acc = typeof acc !== 'undefined' ? acc : [];
 
     return groups.reduce(function(acc, group) {
-      return group.groups ? flattenGroups(group.groups, acc) : acc.concat(group);
+      return group.groups ? getLowestLevelGroups(group.groups, acc) : acc.concat(group);
     }, acc);
   };
 
+  function getTypeTerms(groups, acc) {
+    // initialize acc if needed
+    acc = typeof acc !== 'undefined' ? acc : [];
 
+    return groups.reduce(function(acc, group) {
+      if (group.grpTypeTerm) { 
+        acc = acc.concat(group.grpTypeTerm); 
+      }
+      return group.groups ? getTypeTerms(group.groups, acc) : acc;
+    }, acc);
+  };
 
   /* These groupings show how teams can compete across leagues */
   var LeagueHierarchy = [
@@ -106,48 +147,48 @@ var Omnisurvey_Data = new function() {
               { id: 10, name: 'NBA', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
                 { id: 12, name: 'Eastern', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
                     { id: 14, name: 'Atlantic', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
-                      { id: 244, name: 'Boston Celtics' },
-                      { id: 245, name: 'Brooklyn Nets' },
-                      { id: 262, name: 'New York Knicks' },
-                      { id: 265, name: 'Philadelphia 76ers' },
-                      { id: 270, name: 'Toronto Raptors' },
+                      { id: 244, name: 'Boston Celtics', slug: 'boston_celtics' },
+                      { id: 245, name: 'Brooklyn Nets', slug: 'brooklyn_nets' },
+                      { id: 262, name: 'New York Knicks', slug: 'new_york_knicks' },
+                      { id: 265, name: 'Philadelphia 76ers', slug: 'philadelphia_76ers' },
+                      { id: 270, name: 'Toronto Raptors', slug: 'toronto_raptors' },
                     ]}, // closing grpID=14 (Atlantic)
                     { id: 15, name: 'Central', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
-                      { id: 247, name: 'Chicago Bulls' },
-                      { id: 248, name: 'Cleveland Cavaliers' },
-                      { id: 251, name: 'Detroit Pistons' },
-                      { id: 254, name: 'Indiana Pacers' },
-                      { id: 259, name: 'Milwaukee Bucks' },
+                      { id: 247, name: 'Chicago Bulls', slug: 'chicago_bulls' },
+                      { id: 248, name: 'Cleveland Cavaliers', slug: 'cleveland_cavaliers' },
+                      { id: 251, name: 'Detroit Pistons', slug: 'detroit_pistons' },
+                      { id: 254, name: 'Indiana Pacers', slug: 'indiana_pacers' },
+                      { id: 259, name: 'Milwaukee Bucks', slug: 'milwaukee_bucks' },
                     ]}, // closing grpID=15 (Central)
                     { id: 16, name: 'Southeast', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
-                      { id: 243, name: 'Atlanta Hawks' },
-                      { id: 246, name: 'Charlotte Hornets' },
-                      { id: 258, name: 'Miami Heat' },
-                      { id: 264, name: 'Orlando Magic' },
-                      { id: 272, name: 'Washington Wizards' },
+                      { id: 243, name: 'Atlanta Hawks', slug: 'atlanta_hawks' },
+                      { id: 246, name: 'Charlotte Hornets', slug: 'charlotte_hornets' },
+                      { id: 258, name: 'Miami Heat', slug: 'miami_heat' },
+                      { id: 264, name: 'Orlando Magic', slug: 'orlando_magic' },
+                      { id: 272, name: 'Washington Wizards', slug: 'washington_wizards' },
                     ]}, // closing grpID=16 (Southeast)
                 ]}, // closing grpID=12 (Eastern)
                 { id: 13, name: 'Western', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
                     { id: 17, name: 'Northwest', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
-                      { id: 250, name: 'Denver Nuggets' },
-                      { id: 260, name: 'Minnesota Timberwolves' },
-                      { id: 263, name: 'Oklahoma City Thunder' },
-                      { id: 267, name: 'Portland Trail Blazers' },
-                      { id: 271, name: 'Utah Jazz' },
+                      { id: 250, name: 'Denver Nuggets', slug: 'denver_nuggets' },
+                      { id: 260, name: 'Minnesota Timberwolves', slug: 'minnesota_timberwolves' },
+                      { id: 263, name: 'Oklahoma City Thunder', slug: 'oklahoma_city_thunder' },
+                      { id: 267, name: 'Portland Trail Blazers', slug: 'portland_trail_blazers' },
+                      { id: 271, name: 'Utah Jazz', slug: 'utah_jazz' },
                     ]}, // closing grpID=17 (Northwest)
                     { id: 18, name: 'Pacific', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
-                      { id: 252, name: 'Golden State Warriors' },
-                      { id: 255, name: 'Los Angeles Clippers' },
-                      { id: 256, name: 'Los Angeles Lakers' },
-                      { id: 266, name: 'Phoenix Suns' },
-                      { id: 268, name: 'Sacramento Kings' },
+                      { id: 252, name: 'Golden State Warriors', slug: 'golden_state_warriors' },
+                      { id: 255, name: 'Los Angeles Clippers', slug: 'los_angeles_clippers' },
+                      { id: 256, name: 'Los Angeles Lakers', slug: 'los_angeles_lakers' },
+                      { id: 266, name: 'Phoenix Suns', slug: 'phoenix_suns' },
+                      { id: 268, name: 'Sacramento Kings', slug: 'sacramento_kings' },
                     ]}, // closing grpID=18 (Pacific)
                     { id: 19, name: 'Southwest', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
-                      { id: 249, name: 'Dallas Mavericks' },
-                      { id: 253, name: 'Houston Rockets' },
-                      { id: 257, name: 'Memphis Grizzlies' },
-                      { id: 261, name: 'New Orleans Pelicans' },
-                      { id: 269, name: 'San Antonio Spurs' },
+                      { id: 249, name: 'Dallas Mavericks', slug: 'dallas_mavericks' },
+                      { id: 253, name: 'Houston Rockets', slug: 'houston_rockets' },
+                      { id: 257, name: 'Memphis Grizzlies', slug: 'memphis_grizzlies' },
+                      { id: 261, name: 'New Orleans Pelicans', slug: 'new_orleans_pelicans' },
+                      { id: 269, name: 'San Antonio Spurs', slug: 'san_antonio_spurs' },
                     ]}, // closing grpID=19 (Southwest)
                 ]}, // closing grpID=13 (Western)
               ]}, // closing grpID=10 (NBA)
@@ -485,7 +526,7 @@ var Omnisurvey_Data = new function() {
 		lgID_003: { lgID:3, leagueLevelTerms: ['Conferences', 'Divisions'],  teamName:["Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills", "Carolina Panthers", "Chicago Bears", "Cincinnati Bengals", "Cleveland Browns", "Dallas Cowboys", "Denver Broncos", "Detroit Lions", "Green Bay Packers", "Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Kansas City Chiefs", "Los Angeles Rams", "Miami Dolphins", "Minnesota Vikings", "New England Patriots", "New Orleans Saints", "New York Giants", "New York Jets", "Oakland Raiders", "Philadelphia Eagles", "Pittsburgh Steelers", "San Diego Chargers", "San Francisco 49ers", "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Redskins"], dvcfLevel1:["NFC", "NFC", "AFC", "AFC", "NFC", "NFC", "AFC", "AFC", "NFC", "AFC", "NFC", "NFC", "AFC", "AFC", "AFC", "AFC", "NFC", "AFC", "NFC", "AFC", "NFC", "NFC", "AFC", "AFC", "NFC", "AFC", "AFC", "NFC", "NFC", "NFC", "AFC", "NFC"], dvcfLevel2:["West", "South", "North", "East", "South", "North", "North", "North", "East", "West", "North", "North", "South", "South", "South", "West", "West", "East", "North", "East", "South", "East", "East", "West", "East", "North", "West", "West", "West", "South", "South", "East"], dvcfLevel3:["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""], teamNameSlug:["arizona_cardinals", "atlanta_falcons", "baltimore_ravens", "buffalo_bills", "carolina_panthers", "chicago_bears", "cincinnati_bengals", "cleveland_browns", "dallas_cowboys", "denver_broncos", "detroit_lions", "green_bay_packers", "houston_texans", "indianapolis_colts", "jacksonville_jaguars", "kansas_city_chiefs", "los_angeles_rams", "miami_dolphins", "minnesota_vikings", "new_england_patriots", "new_orleans_saints", "new_york_giants", "new_york_jets", "oakland_raiders", "philadelphia_eagles", "pittsburgh_steelers", "san_diego_chargers", "san_francisco_49ers", "seattle_seahawks", "tampa_bay_buccaneers", "tennessee_titans", "washington_redskins"], teamID:[160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 188, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 189, 190, 191]}, 
 		lgID_004: { lgID:4, teamName:["Chicago Fire", "Chivas USA", "Colorado Rapids", "Columbus Crew", "DC United", "FC Dallas", "Houston Dynamo", "LA Galaxy", "Montreal Impact", "New England Revolution", "New York City FC", "New York Red Bulls", "Orlando City FC", "Philadelphia Union", "Portland Timbers", "Real Salt Lake", "San Jose Earthquakes", "Seattle Sounders FC", "Sporting Kansas City", "Toronto FC", "Vancouver Whitecaps FC"], dvcfLevel1:["Eastern", "Western", "Western", "Eastern", "Eastern", "Western", "Western", "Western", "Eastern", "Eastern", "Eastern", "Eastern", "Eastern", "Eastern", "Western", "Western", "Western", "Western", "Western", "Eastern", "Western"], dvcfLevel2:["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""], dvcfLevel3:["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""], teamNameSlug:["chicago_fire", "chivas_usa", "colorado_rapids", "columbus_crew", "dc_united", "fc_dallas", "houston_dynamo", "la_galaxy", "montreal_impact", "new_england_revolution", "new_york_city_fc", "new_york_red_bulls", "orlando_city_fc", "philadelphia_union", "portland_timbers", "real_salt_lake", "san_jose_earthquakes", "seattle_sounders_fc", "sporting_kansas_city", "toronto_fc", "vancouver_whitecaps_fc"], teamID:[192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212]}, 
 		lgID_005: { lgID:5, teamName:["Arizona Diamondbacks", "Atlanta Braves", "Baltimore Orioles", "Boston Red Sox", "Chicago Cubs", "Chicago White Sox", "Cincinnati Reds", "Cleveland Indians", "Colorado Rockies", "Detroit Tigers", "Houston Astros", "Kansas City Royals", "Los Angeles Angels", "Los Angeles Dodgers", "Miami Marlins", "Milwaukee Brewers", "Minnesota Twins", "New York Mets", "New York Yankees", "Oakland Athletics", "Philadelphia Phillies", "Pittsburgh Pirates", "San Diego Padres", "San Francisco Giants", "Seattle Mariners", "St Louis Cardinals", "Tampa Bay Rays", "Texas Rangers", "Toronto Blue Jays", "Washington Nationals"], dvcfLevel1:["NL", "NL", "AL", "AL", "NL", "AL", "NL", "AL", "NL", "AL", "AL", "AL", "AL", "NL", "NL", "NL", "AL", "NL", "AL", "AL", "NL", "NL", "NL", "NL", "AL", "NL", "AL", "AL", "AL", "NL"], dvcfLevel2:["West", "East", "East", "East", "Central", "Central", "Central", "Central", "West", "Central", "West", "Central", "West", "West", "East", "Central", "Central", "East", "East", "West", "East", "Central", "West", "West", "West", "Central", "East", "West", "East", "East"], dvcfLevel3:["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""], teamNameSlug:["arizona_diamondbacks", "atlanta_braves", "baltimore_orioles", "boston_red_sox", "chicago_cubs", "chicago_white_sox", "cincinnati_reds", "cleveland_indians", "colorado_rockies", "detroit_tigers", "houston_astros", "kansas_city_royals", "los_angeles_angels", "los_angeles_dodgers", "miami_marlins", "milwaukee_brewers", "minnesota_twins", "new_york_mets", "new_york_yankees", "oakland_athletics", "philadelphia_phillies", "pittsburgh_pirates", "san_diego_padres", "san_francisco_giants", "seattle_mariners", "st_louis_cardinals", "tampa_bay_rays", "texas_rangers", "toronto_blue_jays", "washington_nationals"], teamID:[213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242]}, 
-		lgID_006: { lgID:6, teamName:["Atlanta Hawks", "Boston Celtics", "Brooklyn Nets", "Charlotte Hornets", "Chicago Bulls", "Cleveland Cavaliers", "Dallas Mavericks", "Denver Nuggets", "Detroit Pistons", "Golden State Warriors", "Houston Rockets", "Indiana Pacers", "Los Angeles Clippers", "Los Angeles Lakers", "Memphis Grizzlies", "Miami Heat", "Milwaukee Bucks", "Minnesota Timberwolves", "New Orleans Pelicans", "New York Knicks", "Oklahoma City Thunder", "Orlando Magic", "Philadelphia 76ers", "Phoenix Suns", "Portland Trail Blazers", "Sacramento Kings", "San Antonio Spurs", "Toronto Raptors", "Utah Jazz", "Washington Wizards"], dvcfLevel1:["NBA Eastern", "NBA Eastern", "NBA Eastern", "NBA Eastern", "NBA Eastern", "NBA Eastern", "NBA Western", "NBA Western", "NBA Eastern", "NBA Western", "NBA Western", "NBA Eastern", "NBA Western", "NBA Western", "NBA Western", "NBA Eastern", "NBA Eastern", "NBA Western", "NBA Western", "NBA Eastern", "NBA Western", "NBA Eastern", "NBA Eastern", "NBA Western", "NBA Western", "NBA Western", "NBA Western", "NBA Eastern", "NBA Western", "NBA Eastern"], dvcfLevel2:["Southeast", "Atlantic", "Atlantic", "Southeast", "Central", "Central", "Southwest", "Northwest", "Central", "Pacific", "Southwest", "Central", "Pacific", "Pacific", "Southwest", "Southeast", "Central", "Northwest", "Southwest", "Atlantic", "Northwest", "Southeast", "Atlantic", "Pacific", "Northwest", "Pacific", "Southwest", "Atlantic", "Northwest", "Southeast"], dvcfLevel3:["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""], teamNameSlug:["atlanta_hawks", "boston_celtics", "brooklyn_nets", "charlotte_hornets", "chicago_bulls", "cleveland_cavaliers", "dallas_mavericks", "denver_nuggets", "detroit_pistons", "golden_state_warriors", "houston_rockets", "indiana_pacers", "los_angeles_clippers", "los_angeles_lakers", "memphis_grizzlies", "miami_heat", "milwaukee_bucks", "minnesota_timberwolves", "new_orleans_pelicans", "new_york_knicks", "oklahoma_city_thunder", "orlando_magic", "philadelphia_76ers", "phoenix_suns", "portland_trail_blazers", "sacramento_kings", "san_antonio_spurs", "toronto_raptors", "utah_jazz", "washington_wizards"], teamID:[243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272]}, 
+		lgID_006: { lgID:10, teamName:["Atlanta Hawks", "Boston Celtics", "Brooklyn Nets", "Charlotte Hornets", "Chicago Bulls", "Cleveland Cavaliers", "Dallas Mavericks", "Denver Nuggets", "Detroit Pistons", "Golden State Warriors", "Houston Rockets", "Indiana Pacers", "Los Angeles Clippers", "Los Angeles Lakers", "Memphis Grizzlies", "Miami Heat", "Milwaukee Bucks", "Minnesota Timberwolves", "New Orleans Pelicans", "New York Knicks", "Oklahoma City Thunder", "Orlando Magic", "Philadelphia 76ers", "Phoenix Suns", "Portland Trail Blazers", "Sacramento Kings", "San Antonio Spurs", "Toronto Raptors", "Utah Jazz", "Washington Wizards"], dvcfLevel1:["NBA Eastern", "NBA Eastern", "NBA Eastern", "NBA Eastern", "NBA Eastern", "NBA Eastern", "NBA Western", "NBA Western", "NBA Eastern", "NBA Western", "NBA Western", "NBA Eastern", "NBA Western", "NBA Western", "NBA Western", "NBA Eastern", "NBA Eastern", "NBA Western", "NBA Western", "NBA Eastern", "NBA Western", "NBA Eastern", "NBA Eastern", "NBA Western", "NBA Western", "NBA Western", "NBA Western", "NBA Eastern", "NBA Western", "NBA Eastern"], dvcfLevel2:["Southeast", "Atlantic", "Atlantic", "Southeast", "Central", "Central", "Southwest", "Northwest", "Central", "Pacific", "Southwest", "Central", "Pacific", "Pacific", "Southwest", "Southeast", "Central", "Northwest", "Southwest", "Atlantic", "Northwest", "Southeast", "Atlantic", "Pacific", "Northwest", "Pacific", "Southwest", "Atlantic", "Northwest", "Southeast"], dvcfLevel3:["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""], teamNameSlug:["atlanta_hawks", "boston_celtics", "brooklyn_nets", "charlotte_hornets", "chicago_bulls", "cleveland_cavaliers", "dallas_mavericks", "denver_nuggets", "detroit_pistons", "golden_state_warriors", "houston_rockets", "indiana_pacers", "los_angeles_clippers", "los_angeles_lakers", "memphis_grizzlies", "miami_heat", "milwaukee_bucks", "minnesota_timberwolves", "new_orleans_pelicans", "new_york_knicks", "oklahoma_city_thunder", "orlando_magic", "philadelphia_76ers", "phoenix_suns", "portland_trail_blazers", "sacramento_kings", "san_antonio_spurs", "toronto_raptors", "utah_jazz", "washington_wizards"], teamID:[243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272]}, 
 		lgID_007: { lgID:7, teamName:["Adelaide Strikers", "Brisbane Heat", "Hobart Hurricanes", "Melbourne Renegades", "Melbourne Stars", "Perth Scorchers", "Sydney Sixers", "Sydney Thunder"], dvcfLevel1:["BBL", "BBL", "BBL", "BBL", "BBL", "BBL", "BBL", "BBL"], dvcfLevel2:["", "", "", "", "", "", "", ""], dvcfLevel3:["", "", "", "", "", "", "", ""], teamNameSlug:["adelaide_strikers", "brisbane_heat", "hobart_hurricanes", "melbourne_renegades", "melbourne_stars", "perth_scorchers", "sydney_sixers", "sydney_thunder"], teamID:[273, 274, 275, 276, 277, 278, 279, 280]}, 
 	};
 
@@ -538,34 +579,9 @@ var Omnisurvey_Data = new function() {
   }
 
   function mapCompetitiveGroupings() {
-    var groupings = filterGroups(LeagueHierarchy[0], 'competitiveGrouping', true);
+    var groupings = self.filterGroups(LeagueHierarchy[0], 'competitiveGrouping', true);
     return groupings;
   };
-
-  // recursive function to filter League Hierarchy
-  function filterGroups(groups, key, value, results) {
-    // initialize results if needed
-    results = typeof results !== 'undefined' ? results : [];
-
-    if (Array.isArray(groups)) {
-      // groups is an array, iterate and filter
-      groups.forEach(function(childGroup) {
-        results = filterGroups(childGroup, key, value, results);
-      });
-    } else {
-      // groups is an object, see if it's what we're looking for
-      if (groups[key] == value) {
-        results.push(groups); // found a match
-      }
-
-      // filter child groups if there are any
-      if (groups.groups) {
-        results = filterGroups(groups.groups, key, value, results);
-      }
-    }
-
-    return results;
-  }
 
   // recursive filter
   /*function filterGroup(group, key, value) {
@@ -576,7 +592,7 @@ var Omnisurvey_Data = new function() {
       results.push(group);
     } else {
       if (group.groups) {
-        result = filterGroups(group.groups, key, value);
+        result = self.filterGroups(group.groups, key, value);
         if (result.length > 0) {
           [].push.apply(results, result);
         }

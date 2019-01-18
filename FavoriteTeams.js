@@ -1,36 +1,43 @@
 'use strict';
 
-var Omnisurvey_FavoriteTeams = function($, leagueData) {
+var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 
 	// Eventually, these are what will be passed to the Qualtrics embedded data
 	this.FavoriteTeamName = '';
 	this.FavoriteTeamId = -1;
-	this.SelectedLeague = null;
 	
 	var strTeamLogoRootDir = 'https://knowrivalry.com/images/logos/', // This is the folder that holds the logos (PNG files) for each team
+			selectedLeague = null,
 			$filters = $('#filters'),
 			$favTeamLogo = $('#DivFavTeamLogo'),
 			$favTeamList = $('#DivFavTeamList'),
 			$favTeamBtns = null;
 	
 	function createFilters() {
-		for (var i=1; i<=leagueData.divisionLevelTerms.length; i++) {
+		var terms = data.getGroupTerms(leagueId);
+
+		terms.forEach(function(term) {
 			// create container for league level filter
-			$filters.append('<h3>'+leagueData.divisionLevelTerms[i-1]+'</h3>');
-			var $filterLevel = $('<div class="league-level-filter clearfix" id="DivFiltersLevel'+i+'" data-level="'+i+'"></div>').appendTo($filters);
+			$filters.append('<h3>'+term+'</h3>');
+			var $filterLevel = $('<div class="league-level-filter clearfix"></div>').appendTo($filters); //data-level="'+i+'"
+
+			var groups = data.filterGroups(selectedLeague, 'grpTypeTerm', term);
 
 			// create filters
-			$.each(leagueData.divisionLevels[i-1], function(index, value) {
-				$filterLevel.append('<div class="ClassFilter ClassFilterLevel'+i+'">'+value+'</div>');
+			groups.forEach(function(group) {
+				$filterLevel.append('<div class="ClassFilter ClassFilterLevel'+(terms.indexOf(term)+1)+'" data-group-id="'+group.id+'">'+group.name+'</div>');
 			});
-		}
+		});
 
 		// add click handler for all filters
 		$('.ClassFilter').on('click', filterClicked);
 	}
 	
 	function createFavTeamButtons(){
-		$.each(leagueData.teams, function(index, team) {
+		//var teams = data.getTeamsByGroup(leagueId);
+		var teams = data.getTeamsByGroup(leagueId);
+
+		teams.forEach(function(team) {
 			var strTeamImgFilename = strTeamLogoRootDir + team.slug + '-logo-sm.png';
 			$favTeamList.append('<div style="background-image: url('+strTeamImgFilename+')" id="btnTeamID'+('0' + team.id).slice(-4)+'" class="ClassFavTeam" data-id="'+team.id+'">'+team.name+'</div>');
 		});
@@ -43,9 +50,10 @@ var Omnisurvey_FavoriteTeams = function($, leagueData) {
 		var filterValue = this.innerHTML;
 
 		// get the level from the parent container
-		var filterLevel = $(this).closest('.league-level-filter').data('level');
+		//var filterLevel = $(this).closest('.league-level-filter').data('level');
+		var groupId = $(this).data('group-id');
 
-		if (filterLevel === undefined) {
+		if (groupId === undefined) {
 			// show all
 			showAllFavTeamButtons(true);
 		} else {
@@ -53,10 +61,11 @@ var Omnisurvey_FavoriteTeams = function($, leagueData) {
 			showAllFavTeamButtons(false);
 
 			// show filtered teams
-			$.each(leagueData.teams, function(index, team) {
-				if (team.divisionLevels[filterLevel-1] == filterValue) {
+			var teams = data.getTeamsByGroup(groupId);
+			$.each(teams, function(index, team) {
+				//if (team.divisionLevels[filterLevel-1] == filterValue) {
 					$favTeamBtns.filter('[data-id='+team.id+']').show();
-				}
+				//}
 			});
 		}
 	}
@@ -76,16 +85,12 @@ var Omnisurvey_FavoriteTeams = function($, leagueData) {
 		}
 	}
 
-	// Change the team image shown
 	function changeTeamImage(teamId) {
 		// This function will dynamically change the image to show the correct image for the Favorite Team.
-		var teamNameSlug = leagueData.teams.filter(function(team) {
-					return team.id == teamId;
-				})[0].slug, 
-				imgPath = strTeamLogoRootDir + teamNameSlug + '-logo.png';
+		var team = data.getGroupById(teamId),
+				imgPath = strTeamLogoRootDir + team.slug + '-logo.png';
 
-		$favTeamLogo.css('background-image', 'url(' + imgPath + ')')
-								.show();
+		$favTeamLogo.css('background-image', 'url(' + imgPath + ')').show();
 		
 		// Hide everything else except the Reset All Button
 		showAllFilters(false);
@@ -112,7 +117,7 @@ var Omnisurvey_FavoriteTeams = function($, leagueData) {
 	}
 	
 	function showAllFavTeamButtons(blnShowAll){
-		if (blnShowAll==true) {
+		if (blnShowAll == true) {
 			$favTeamLogo.hide();
 			$favTeamBtns.show();
 		} else {
@@ -124,6 +129,15 @@ var Omnisurvey_FavoriteTeams = function($, leagueData) {
 		// TODO: This needs to move outside of this class.
 		if (window.Qualtrics && Qualtrics.SurveyEngine) {
 			Qualtrics.SurveyEngine.Page.pageButtons.disableNextButton();
+		}
+
+		// get the league data
+		selectedLeague = data.getGroupById(leagueId);
+		//console.log(selectedLeague);
+		
+		if (selectedLeague === null) {
+			// TODO: INVALID DATA, NOW WHAT?
+			return;
 		}
 
 		// Create buttons with code (to be the filters)
