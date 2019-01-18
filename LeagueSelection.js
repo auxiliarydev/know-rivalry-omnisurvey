@@ -162,7 +162,8 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 			return submitPageData() && (typeof self.nextButtonHandler === 'function' && self.nextButtonHandler());
 		});
 
-		$surveySelectionQuestion.find('li.Selection input[type="radio"]').on('click', function() {
+		// TODO: NEED TO FIGURE OUT A SOLUTION FOR THIS, FOR NOW JUST UNCOMMENT FOR TESTING
+		/*$surveySelectionQuestion.find('li.Selection input[type="radio"]').on('click', function() {
 			var selectedLeagueId = '';
 
 			if (typeof self.surveySelectionHandler === 'function') {
@@ -176,7 +177,7 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 				selectLeague(selectedLeagueId);
 				toggleLeagueSelect();
 			}
-		});
+		});*/
 	}
 
 	init();	

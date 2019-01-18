@@ -205,36 +205,36 @@
 
 				this.hideNextButton();
 
-				surveySelectionHandler = function() {
-					//Qualtrics.SurveyEngine.getInstance(surveySelectionQuestionId).questionclick = function(event, element) {
-						//if (element.type == 'radio') {  //for a single answer multiple choice question, the element type will be radio
-							var leagueQuestion = Qualtrics.SurveyEngine.getInstance('QID182');
-							var selectedChoice = leagueQuestion.getSelectedChoices()[0];
-							var leagues = leagueQuestion.getQuestionInfo().Choices;
-							var selectedLeagueId = parseInt(leagues[selectedChoice].RecodeValue);
+				//surveySelectionHandler = function() {
+				Qualtrics.SurveyEngine.getInstance(surveySelectionQuestionId).questionclick = function(event, element) {
+					if (element.type == 'radio') {  //for a single answer multiple choice question, the element type will be radio
+						var leagueQuestion = Qualtrics.SurveyEngine.getInstance('QID182');
+						var selectedChoice = leagueQuestion.getSelectedChoices()[0];
+						var leagues = leagueQuestion.getQuestionInfo().Choices;
+						var selectedLeagueId = parseInt(leagues[selectedChoice].RecodeValue);
 
-							return selectedLeagueId;
-					//	}
-					//};
-				}
+						return selectedLeagueId;
+					}
+				};
+				//}
+
+				nextButtonHandler = function() {
+					console.log('embedding data');
+
+					var data = this.dataToEmbed;
+					Object.keys(data).forEach(function(key) {
+						// The Qualtrics setEmbeddedData('name',value) method takes two parameters. The first is the name of the embedded data variable (string), the second is the value we want stored.
+						//console.log(key + ' : ' + data[key]);
+						Qualtrics.SurveyEngine.setEmbeddedData(key, data[key]);
+					});
+
+					Qualtrics.SurveyEngine.Page.pageButtons.clickNextButton();
+
+					return true;
+				};
 
 				init();
 			});
-
-			nextButtonHandler = function() {
-				console.log('embedding data');
-
-				var data = this.dataToEmbed;
-				Object.keys(data).forEach(function(key) {
-					// The Qualtrics setEmbeddedData('name',value) method takes two parameters. The first is the name of the embedded data variable (string), the second is the value we want stored.
-					//console.log(key + ' : ' + data[key]);
-					Qualtrics.SurveyEngine.setEmbeddedData(key, data[key]);
-				});
-
-				Qualtrics.SurveyEngine.Page.pageButtons.clickNextButton();
-
-				return true;
-			};
 
 			Qualtrics.SurveyEngine.addOnReady(function() {
 				//Place your JavaScript here to run when the page is fully displayed
@@ -249,6 +249,7 @@
 		function init() {
 			var omnisurvey_LeagueSelection = new Omnisurvey_LeagueSelection(jQuery, Omnisurvey_Data, leagueId, surveyId); // this is what loads the Omnisurvey
 			omnisurvey_LeagueSelection.nextButtonHandler = nextButtonHandler;
+			omnisurvey_LeagueSelection.surveySelectionHandler = surveySelectionHandler;
 		}
 	})();
 </script>

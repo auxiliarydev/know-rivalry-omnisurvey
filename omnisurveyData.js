@@ -453,7 +453,7 @@ var Omnisurvey_Data = new function() {
   this.testChoices = {
 		1: {RecodeValue: "5", VariableName: "s_m_bas_mlb", Text: "MLB (Major League Baseball)", Exclusive: false},
 		2: {RecodeValue: "4", VariableName: "s_m_soc_mls", Text: "MLS (Major League Soccer)", Exclusive: false},
-		3: {RecodeValue: "6", VariableName: "s_m_bkb_nba", Text: "NBA (National Basketball Association)", Exclusive: false},
+		3: {RecodeValue: "10", VariableName: "s_m_bkb_nba", Text: "NBA (National Basketball Association)", Exclusive: false},
 		4: {RecodeValue: "3", VariableName: "s_m_afb_nfl", Text: "NFL (National Football League)", Exclusive: false},
 		5: {RecodeValue: "2", VariableName: "s_m_hok_nhl", Text: "NHL (National Hockey League)", Exclusive: false},
 		6: {RecodeValue: "8", VariableName: "s_m_t20_ipl", Text: "IPL (Indian Premier League cricket, men)", Exclusive: false},
@@ -461,7 +461,7 @@ var Omnisurvey_Data = new function() {
 		8: {RecodeValue: "1", VariableName: "s_m_afb_ncaad1a", Text: "FBS football (DI-A)", Exclusive: false},
 		9: {RecodeValue: "11", VariableName: "s_m_afb_ncaad1aa", Text: "FCS football (DI-AA)", Exclusive: false},
 		10: {RecodeValue: "9", VariableName: "s_m_bkb_ncaad1", Text: "Men's basketball (DI)", Exclusive: false},
-		11: {RecodeValue: "10", VariableName: "s_w_bkb_ncaad1", Text: "Women's basketball (DI)", Exclusive: false},
+		//11: {RecodeValue: "10", VariableName: "s_w_bkb_ncaad1", Text: "Women's basketball (DI)", Exclusive: false},
 		12: {RecodeValue: "12", VariableName: "s_m_soc_eng", Text: "English (and UK teams in Football League & EPL), men", Exclusive: false},
 		13: {RecodeValue: "14", VariableName: "s_m_soc_deu", Text: "Germany, men", Exclusive: false},
 		14: {RecodeValue: "13", VariableName: "s_m_soc_esp", Text: "Spain, men", Exclusive: false},
