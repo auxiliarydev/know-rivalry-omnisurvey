@@ -113,6 +113,13 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 		$('#SplashWelcomeLeagueLogoDiv').css('background-image', 'url(' + leagueImgFilename + ')');
 	}
 
+	this.leagueSelectionHandler = function(selectedLeagueId) {
+		if (!isNaN(selectedLeagueId)) {
+			selectLeague(selectedLeagueId);
+			toggleLeagueSelect();
+		}
+	};
+
 	function init() {
 		// CREATE MY OWN NEXT BUTTON
 		// There was a problem with the real [Qualtrics] next button. If user clicks Next, it works. But if user clicks PREV on the InfCons page, then clicks Next again here, it doesn't fire.
