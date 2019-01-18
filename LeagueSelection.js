@@ -108,7 +108,7 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 		leagueId = id;
 
 		// change league image
-		var leagueSlug = data.getLeague(leagueId).lgSlug;
+		var leagueSlug = data.getLeague(leagueId).slug;
 		var leagueImgFilename = strLeagueImageRootDir + 'league_' + leagueSlug + '-md.png';
 		$('#SplashWelcomeLeagueLogoDiv').css('background-image', 'url(' + leagueImgFilename + ')');
 	}
