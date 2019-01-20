@@ -3,15 +3,18 @@
 var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 
 	// Eventually, these are what will be passed to the Qualtrics embedded data
-	this.FavoriteTeamName = '';
+	this.favoriteTeamSelectedHandler;
+	//this.FavoriteTeamName = '';
 	this.FavoriteTeamId = -1;
 	
-	var strTeamLogoRootDir = 'https://knowrivalry.com/images/logos/', // This is the folder that holds the logos (PNG files) for each team
+	var sef = this,
+			strTeamLogoRootDir = 'https://knowrivalry.com/images/logos/', // This is the folder that holds the logos (PNG files) for each team
 			selectedLeague = null,
 			$filters = $('#filters'),
 			$favTeamLogo = $('#DivFavTeamLogo'),
 			$favTeamList = $('#DivFavTeamList'),
-			$favTeamBtns = null;
+			$favTeamBtns = null,
+			$nextButton = $('#NextButton');
 	
 	function createFilters() {
 		var terms = data.getGroupTerms(leagueId);
@@ -69,43 +72,46 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 			});
 		}
 	}
+
+	function selectTeam(teamId) {
+		//self.FavoriteTeamName = $this.html(); // This is the value that we'll eventually write to Qualtrics embedded data
+		self.FavoriteTeamId = teamId; // This is the value that we'll eventually write to Qualtrics embedded data
+
+		if (typeof self.favoriteTeamSelectedHandler === 'function') {
+			self.favoriteTeamSelectedHandler();
+		}
+
+		if (teamId > 0) {
+			var team = data.getGroupById(teamId),
+					imgPath = strTeamLogoRootDir + team.slug + '-logo.png';
+
+			// set the logo
+			$favTeamLogo.css('background-image', 'url(' + imgPath + ')').show();
+
+			// enable next button
+			nextButton.removeAttr('disabled');
+
+			// hide other filters
+			showAllFilters(false);
+			showAllFavTeamButtons(false);
+			//Qualtrics.SurveyEngine.Page.pageButtons.enableNextButton();
+		} else {
+			nextButton.attr('disabled', 'disabled');
+			showAllFilters(true);
+			showAllFavTeamButtons(true);
+			$favTeamLogo.hide();
+			//Qualtrics.SurveyEngine.Page.pageButtons.disableNextButton();
+		}
+	}
 	
 	function favTeamClicked() {
 		var $this = $(this);
 
-		this.FavoriteTeamName = $this.html(); // This is the value that we'll eventually write to Qualtrics embedded data
-		this.FavoriteTeamId = $this.data('id'); // This is the value that we'll eventually write to Qualtrics embedded data
-
-		// Show the logo for the team
-		changeTeamImage(this.FavoriteTeamId);
-
-		// TODO: This needs to move outside of this class.
-		if (window.Qualtrics && Qualtrics.SurveyEngine) {
-			Qualtrics.SurveyEngine.Page.pageButtons.enableNextButton();
-		}
-	}
-
-	function changeTeamImage(teamId) {
-		// This function will dynamically change the image to show the correct image for the Favorite Team.
-		var team = data.getGroupById(teamId),
-				imgPath = strTeamLogoRootDir + team.slug + '-logo.png';
-
-		$favTeamLogo.css('background-image', 'url(' + imgPath + ')').show();
-		
-		// Hide everything else except the Reset All Button
-		showAllFilters(false);
-		showAllFavTeamButtons(false);
+		selectTeam($this.data('id'));
 	}
 	
 	function resetAll() {
-		showAllFilters(true);
-		showAllFavTeamButtons(true);
-		$favTeamLogo.hide();
-
-		// TODO: This needs to move outside of this class.
-		if (window.Qualtrics && Qualtrics.SurveyEngine) {
-			Qualtrics.SurveyEngine.Page.pageButtons.disableNextButton();
-		}
+		selectTeam(-1);
 	}
 	
 	function showAllFilters(blnShowAll){
@@ -126,10 +132,7 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 	}
 	
 	function init() {
-		// TODO: This needs to move outside of this class.
-		if (window.Qualtrics && Qualtrics.SurveyEngine) {
-			Qualtrics.SurveyEngine.Page.pageButtons.disableNextButton();
-		}
+		resetAll();
 
 		// get the league data
 		selectedLeague = data.getGroupById(leagueId);

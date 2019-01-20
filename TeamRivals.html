@@ -66,6 +66,7 @@
         
         Qualtrics.SurveyEngine.addOnload(function() {
           leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
+          leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('teamID'));
         });
 
         Qualtrics.SurveyEngine.addOnReady(function() {

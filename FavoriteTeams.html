@@ -39,7 +39,7 @@
     (function () {
       var OMNISURVEY_TEST = false,
           leagueId = -1,
-          leagueLevelTerms = [];
+          favoriteTeamSelectedHandler;
 
       if (OMNISURVEY_TEST || !window.Qualtrics) {
 
@@ -52,6 +52,10 @@
         }
         //leagueLevelTerms = ['Conferences', 'Divisions'];
 
+        favoriteTeamSelectedHandler = function() {
+         Console.log('FAVTEAM: ' + this.FavoriteTeamId);
+        };
+
         jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');
 
         init();
@@ -60,14 +64,10 @@
         
         Qualtrics.SurveyEngine.addOnload(function() {
           leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
-          
-          // If any more levels are added just modify the for length here
-          for (var i=1; i<=3; i++) {
-            var leagueLevelTerm = Qualtrics.SurveyEngine.getEmbeddedData('lgLevel'+i+'Term');
-            if (leagueLevelTerm != null && leagueLevelTerm.trim() !== '') {
-              leagueLevelTerms.push(leagueLevelTerm);
-            }
-          }
+
+          favoriteTeamSelectedHandler = function() {
+            Qualtrics.SurveyEngine.setEmbeddedData('FAVTEAM', this.FavoriteTeamId);
+          };
 
           init();
         });
@@ -87,6 +87,7 @@
         //leagueData.divisionLevelTerms = leagueLevelTerms;
 
         var omnisurvey_FavoriteTeams = new Omnisurvey_FavoriteTeams(jQuery, Omnisurvey_Data, leagueId); // this is what loads the Omnisurvey
+        omnisurvey_FavoriteTeams.favoriteTeamSelectedHandler = favoriteTeamSelectedHandler;
       }
     })();
   </script>
