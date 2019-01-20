@@ -132,8 +132,6 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 	}
 	
 	function init() {
-		resetAll();
-
 		// get the league data
 		selectedLeague = data.getGroupById(leagueId);
 		//console.log(selectedLeague);
@@ -147,6 +145,8 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 		createFilters();
 		// Create FavTeam buttons
 		createFavTeamButtons();
+
+		resetAll();
 		
 		$('#DivFilterReset').on('click', resetAll);
 	}
