@@ -89,14 +89,14 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 			$favTeamLogo.css('background-image', 'url(' + imgPath + ')').show();
 
 			// enable next button
-			nextButton.removeAttr('disabled');
+			$nextButton.removeAttr('disabled');
 
 			// hide other filters
 			showAllFilters(false);
 			showAllFavTeamButtons(false);
 			//Qualtrics.SurveyEngine.Page.pageButtons.enableNextButton();
 		} else {
-			nextButton.attr('disabled', 'disabled');
+			$nextButton.attr('disabled', 'disabled');
 			showAllFilters(true);
 			showAllFavTeamButtons(true);
 			$favTeamLogo.hide();
