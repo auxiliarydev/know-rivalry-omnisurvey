@@ -141,12 +141,12 @@ var Omnisurvey_Data = new function() {
 
   /* These groupings show how teams can compete across leagues */
   var LeagueHierarchy = [
-    { id: 1, name: 'Sports', grpTypeTerm: 'Root', grpShowSurvSelRival: true, groups: [
-        { id: 2, name: 'Men\'s basketball (5 on 5)', grpTypeTerm: 'Sport', grpShowSurvSelRival: true, groups: [
-          { id: 9, name: 'Men\'s pro basketball', grpTypeTerm: '-99', grpShowSurvSelRival: false, competitiveGrouping: true, groups: [
-              { id: 10, name: 'NBA', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
-                { id: 12, name: 'Eastern', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
-                    { id: 14, name: 'Atlantic', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
+    { id: 1, name: 'Sports', grpTypeTerm: 'Root', grpShowSurvSelRival: false, groups: [
+        { id: 2, name: 'Men\'s basketball (5 on 5)', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
+          { id: 9, name: 'Men\'s pro basketball', grpTypeTerm: '-99', grpShowSurvSelRival: true, competitiveGrouping: true, groups: [
+              { id: 10, name: 'NBA', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
+                { id: 12, name: 'Eastern', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
+                    { id: 14, name: 'Atlantic', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
                       { id: 244, name: 'Boston Celtics', slug: 'boston_celtics' },
                       { id: 245, name: 'Brooklyn Nets', slug: 'brooklyn_nets' },
                       { id: 262, name: 'New York Knicks', slug: 'new_york_knicks' },

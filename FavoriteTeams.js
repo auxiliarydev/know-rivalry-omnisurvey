@@ -8,7 +8,7 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 	this.FavoriteTeamId = -1;
 	
 	var sef = this,
-			strTeamLogoRootDir = 'https://knowrivalry.com/images/logos/', // This is the folder that holds the logos (PNG files) for each team
+			strTeamLogoRootDir = 'https://knowrivalry.com/images/teamlogos/', // This is the folder that holds the logos (PNG files) for each team
 			selectedLeague = null,
 			$filters = $('#filters'),
 			$favTeamLogo = $('#DivFavTeamLogo'),
@@ -41,7 +41,7 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 		var teams = data.getTeamsByGroup(leagueId);
 
 		teams.forEach(function(team) {
-			var strTeamImgFilename = strTeamLogoRootDir + team.slug + '-logo-sm.png';
+			var strTeamImgFilename = strTeamLogoRootDir + 'logo_team'+team.id+'.svg';
 			$favTeamList.append('<div style="background-image: url('+strTeamImgFilename+')" id="btnTeamID'+('0' + team.id).slice(-4)+'" class="ClassFavTeam" data-id="'+team.id+'">'+team.name+'</div>');
 		});
 
@@ -83,7 +83,7 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 
 		if (teamId > 0) {
 			var team = data.getGroupById(teamId),
-					imgPath = strTeamLogoRootDir + team.slug + '-logo.png';
+					imgPath = strTeamLogoRootDir + 'logo_team'+team.id+'.svg';;
 
 			// set the logo
 			$favTeamLogo.css('background-image', 'url(' + imgPath + ')').show();
