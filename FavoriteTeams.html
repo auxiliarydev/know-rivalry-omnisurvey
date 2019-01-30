@@ -66,8 +66,8 @@
           leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
 
           favoriteTeamSelectedHandler = function() {
-            Qualtrics.SurveyEngine.setEmbeddedData('FAVTEAM', this.FavoriteTeamId);
-            Qualtrics.SurveyEngine.setEmbeddedData('FAVTEAM_NAME', this.FavoriteTeamName);
+            Qualtrics.SurveyEngine.setEmbeddedData('FAVTEAM', this.FavoriteTeamName);
+            Qualtrics.SurveyEngine.setEmbeddedData('FAVTEAM_ID', this.FavoriteTeamId);
           };
 
           init();
