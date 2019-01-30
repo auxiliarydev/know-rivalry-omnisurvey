@@ -7,7 +7,8 @@ var Omnisurvey_TeamRivals = function($, data, leagueId, teamId) {
       isValid = false,
       $rivalryPointsInputs = $question.find('.ChoiceRow input[type="text"]'),
       $rivalryPointsTotal = $('.CSTotal input'),
-      $rivalryPointsError = $('<div class="rivalry-points-error"></div>').appendTo($question);
+      $rivalryPointsError = $('<div class="rivalry-points-error"></div>').appendTo($question),
+      teamDropdownSelector = 'select:not(.league-select)';
   
   function changeLeague($select) {
     // get the selected group id
@@ -119,8 +120,11 @@ var Omnisurvey_TeamRivals = function($, data, leagueId, teamId) {
     if (group != null) {
       var $select = $('<select class="league-select"></select>').prependTo($question.find('select').parent());
       createGroupOptions(group, $select);
-
-      //$select.change(); // trigger change
+      $select.change(); // trigger change
+    } else {
+      $question.find(teamDropdownSelector).each(function() {
+        populateTeams($(this), leagueId);
+      });
     }
 
     // change the rivalry points inputs to range
@@ -141,7 +145,7 @@ var Omnisurvey_TeamRivals = function($, data, leagueId, teamId) {
       });
 
     // best way to determine team selection dropdown currently
-    $question.on('change', 'select:not(.league-select)', function() {
+    $question.on('change', teamDropdownSelector, function() {
       selectTeam($(this));
     });
 
