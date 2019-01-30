@@ -7,7 +7,7 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 	//this.FavoriteTeamName = '';
 	this.FavoriteTeamId = -1;
 	
-	var sef = this,
+	var self = this,
 			strTeamLogoRootDir = 'https://knowrivalry.com/images/teamlogos/', // This is the folder that holds the logos (PNG files) for each team
 			selectedLeague = null,
 			$filters = $('#filters'),
