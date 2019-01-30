@@ -62,11 +62,14 @@
 
         jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');
 
+        init();
       } else {
         
         Qualtrics.SurveyEngine.addOnload(function() {
           leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
           teamId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('FAVTEAM_ID'));
+
+          init();
         });
 
         Qualtrics.SurveyEngine.addOnReady(function() {
@@ -79,7 +82,9 @@
 
       }
 
-      var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, Omnisurvey_Data, leagueId, teamId); // this is what loads the Omnisurvey
+      function init() {
+        var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, Omnisurvey_Data, leagueId, teamId); // this is what loads the Omnisurvey
+      }
     })();
   </script>
 </body>
