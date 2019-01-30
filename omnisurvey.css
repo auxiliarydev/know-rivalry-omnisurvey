@@ -272,6 +272,7 @@ body#SurveyEngineBody{
   background-repeat: no-repeat;
   background-color: transparent;
   background-position: center;
+  background-size: contain;
   text-align: center;
   margin: 7px 7px;
   font-size: 0px;
