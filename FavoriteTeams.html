@@ -67,6 +67,7 @@
 
           favoriteTeamSelectedHandler = function() {
             Qualtrics.SurveyEngine.setEmbeddedData('FAVTEAM', this.FavoriteTeamId);
+            Qualtrics.SurveyEngine.setEmbeddedData('FAVTEAM_NAME', this.FavoriteTeamName);
           };
 
           init();

@@ -6,6 +6,7 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 	this.favoriteTeamSelectedHandler;
 	//this.FavoriteTeamName = '';
 	this.FavoriteTeamId = -1;
+	this.FavoriteTeamName = "";
 	
 	var self = this,
 			strTeamLogoRootDir = 'https://knowrivalry.com/images/teamlogos/', // This is the folder that holds the logos (PNG files) for each team
@@ -73,13 +74,10 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 		}
 	}
 
-	function selectTeam(teamId) {
+	function selectTeam(teamId, teamName) {
 		//self.FavoriteTeamName = $this.html(); // This is the value that we'll eventually write to Qualtrics embedded data
 		self.FavoriteTeamId = teamId; // This is the value that we'll eventually write to Qualtrics embedded data
-
-		if (typeof self.favoriteTeamSelectedHandler === 'function') {
-			self.favoriteTeamSelectedHandler();
-		}
+		self.FavoriteTeamName = teamName;
 
 		if (teamId > 0) {
 			var team = data.getGroupById(teamId),
@@ -102,16 +100,20 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 			$favTeamLogo.hide();
 			//Qualtrics.SurveyEngine.Page.pageButtons.disableNextButton();
 		}
+
+		if (typeof self.favoriteTeamSelectedHandler === 'function') {
+			self.favoriteTeamSelectedHandler();
+		}
 	}
 	
 	function favTeamClicked() {
 		var $this = $(this);
 
-		selectTeam($this.data('id'));
+		selectTeam($this.data('id'), $this.text());
 	}
 	
 	function resetAll() {
-		selectTeam(-1);
+		selectTeam(-1, "");
 	}
 	
 	function showAllFilters(blnShowAll){
