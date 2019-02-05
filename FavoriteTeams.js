@@ -12,30 +12,35 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 			strTeamLogoRootDir = 'https://knowrivalry.com/images/teamlogos/', // This is the folder that holds the logos (PNG files) for each team
 			selectedLeague = null,
 			$filters = $('#filters'),
-			$favTeamLogo = $('#DivFavTeamLogo'),
-			$favTeamList = $('#DivFavTeamList'),
+			$selectedTeamLogo = $('#selected-team-logo'),
+			$selectedTeamContainer = $('#selected-team'),
+			$teams = $('#teams'),
 			$favTeamBtns = null,
-			$nextButton = $('#NextButton');
+			$nextButton = $('#NextButton'),
+			$teamsContainer = $('#teams-container'),
+			$leagueFilter = $('#league-filter');
 	
-	function createFilters() {
+	/*function createFilters() {
 		var terms = data.getGroupTerms(leagueId);
 
 		terms.forEach(function(term) {
+			var level = terms.indexOf(term) + 1;
+
 			// create container for league level filter
 			$filters.append('<h3>'+term+'</h3>');
-			var $filterLevel = $('<div class="league-level-filter clearfix"></div>').appendTo($filters); //data-level="'+i+'"
+			var $filterLevel = $('<div class="league-level-filter clearfix" data-filter-level="'+level+'"></div>').appendTo($filters); //data-level="'+i+'"
 
 			var groups = data.filterGroups(selectedLeague, 'grpTypeTerm', term);
 
 			// create filters
 			groups.forEach(function(group) {
-				$filterLevel.append('<div class="ClassFilter ClassFilterLevel'+(terms.indexOf(term)+1)+'" data-group-id="'+group.id+'">'+group.name+'</div>');
+				$filterLevel.append('<div class="ClassFilter ClassFilterLevel'+level+'" data-group-id="'+group.id+'">'+group.name+'</div>');
 			});
 		});
 
 		// add click handler for all filters
 		$('.ClassFilter').on('click', filterClicked);
-	}
+	}*/
 	
 	function createFavTeamButtons(){
 		//var teams = data.getTeamsByGroup(leagueId);
@@ -43,21 +48,31 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 
 		teams.forEach(function(team) {
 			var strTeamImgFilename = strTeamLogoRootDir + 'logo_team'+team.id+'.svg';
-			$favTeamList.append('<div style="background-image: url('+strTeamImgFilename+')" id="btnTeamID'+('0' + team.id).slice(-4)+'" class="ClassFavTeam" data-id="'+team.id+'">'+team.name+'</div>');
+			$teams.append('<div style="background-image: url('+strTeamImgFilename+')" id="btnTeamID'+('0' + team.id).slice(-4)+'" class="ClassFavTeam" data-id="'+team.id+'">'+team.name+'</div>');
 		});
 
 		$favTeamBtns = $('.ClassFavTeam');
 		$favTeamBtns.on('click', favTeamClicked);
 	}
 
-	function filterClicked() {
-		var filterValue = this.innerHTML;
+	/*function filterClicked() {
+		//var filterValue = this.innerHTML;
 
 		// get the level from the parent container
 		//var filterLevel = $(this).closest('.league-level-filter').data('level');
 		var groupId = $(this).data('group-id');
 
-		if (groupId === undefined) {
+		filterTeams(groupId);
+	}*/
+
+	function filterChanged() {
+		var groupId = $(this).val();
+
+		filterTeams(groupId);
+	}
+
+	function filterTeams(groupId) {
+		if (groupId === undefined || groupId === '') {
 			// show all
 			showAllFavTeamButtons(true);
 		} else {
@@ -84,21 +99,26 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 					imgPath = strTeamLogoRootDir + 'logo_team'+team.id+'.svg';;
 
 			// set the logo
-			$favTeamLogo.css('background-image', 'url(' + imgPath + ')').show();
+			$selectedTeamLogo.css('background-image', 'url(' + imgPath + ')');
+			$selectedTeamContainer.find('h3').html(self.FavoriteTeamName);
 
 			// enable next button
 			$nextButton.removeAttr('disabled');
 
+			// hide/show containers
+			$selectedTeamContainer.show();
+			$teamsContainer.hide();
 			// hide other filters
-			showAllFilters(false);
-			showAllFavTeamButtons(false);
-			//Qualtrics.SurveyEngine.Page.pageButtons.enableNextButton();
+			//showAllFilters(false);
+			//showAllFavTeamButtons(false);
 		} else {
 			$nextButton.attr('disabled', 'disabled');
-			showAllFilters(true);
-			showAllFavTeamButtons(true);
-			$favTeamLogo.hide();
-			//Qualtrics.SurveyEngine.Page.pageButtons.disableNextButton();
+			//showAllFilters(true);
+			//showAllFavTeamButtons(true);
+
+			// hide/show containers
+			$selectedTeamContainer.hide();
+			$teamsContainer.show();
 		}
 
 		if (typeof self.favoriteTeamSelectedHandler === 'function') {
@@ -118,20 +138,45 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 	
 	function showAllFilters(blnShowAll){
 		if (blnShowAll) {
-			$filters.show();
+			$teamsContainer.show();
 		} else {
-			$filters.hide();
+			$teamsContainer.hide();
 		}
 	}
 	
 	function showAllFavTeamButtons(blnShowAll){
 		if (blnShowAll == true) {
-			$favTeamLogo.hide();
 			$favTeamBtns.show();
 		} else {
 			$favTeamBtns.hide();
 		}
 	}
+
+	function createGroupOptions(groups, $select, level) {
+    // initialize level if needed
+    level = typeof level !== 'undefined' ? level : 0;
+
+    $.each(groups, function(index, childGroup) {
+      // stop at team level, skip groups that shouldn't be displayed
+      if (!childGroup.groups) { // || !childGroup.grpShowSurvSelRival) {
+        return;
+      }
+
+      var disabled = false, //childGroup.groups && childGroup.groups[0] && childGroup.groups[0].groups,
+          selected = childGroup.id == leagueId,
+          space = '';
+
+      for (var i=0; i<level*4; i++) {
+        space += '&nbsp;';
+      }
+
+      var $optGroup = $('<option'+(disabled ? ' disabled="disabled"' : '')+' value="'+childGroup.id+'"'+(selected ? ' selected' : '')+'>'+space+childGroup.name+'</option>').appendTo($select);
+
+      if (childGroup.groups) {
+        createGroupOptions(childGroup.groups, $select, level+1);
+      }
+    });
+  }
 	
 	function init() {
 		// get the league data
@@ -143,14 +188,22 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 			return;
 		}
 
+		createGroupOptions([selectedLeague], $leagueFilter);
+		$leagueFilter.on('change', filterChanged);		
+
 		// Create buttons with code (to be the filters)
-		createFilters();
+		//createFilters();
+
 		// Create FavTeam buttons
 		createFavTeamButtons();
 
 		resetAll();
 		
-		$('#DivFilterReset').on('click', resetAll);
+		$('.reset-filters').on('click', function(e) {
+			e.preventDefault();
+			resetAll();
+		});
+		//$('#DivFilterReset').on('click', resetAll);
 	}
 
 	init();

@@ -14,19 +14,19 @@
   <div class="Skin">
 
     <div class="Questions">
-      <div><h2>Filters</h2></div>
-      <div id="DivFilterReset" class="FilterResetText">Reset all filters</div>
-      <div id="filters"></div>
-      <!--<div id="DivFiltersLevel1Header"></div>
-      <div id="DivFiltersLevel1"></div>
-      <div id="DivFiltersLevel2Header"></div>
-      <div id="DivFiltersLevel2"></div>
-      <div id="DivFiltersLevel3Header"></div>
-      <div id="DivFiltersLevel3"></div>-->
-      <div style="clear:both;"><!--temporary--></div>
-      <div id="DivFavTeamListHeader">Teams</div>
-      <div id="DivFavTeamList" class="clearfix"></div>
-      <div id="DivFavTeamLogo"></div>
+      <div id="teams-container">
+        <div><b>Filter:</b> <select id="league-filter"></select> </div>
+        <!--<div id="DivFilterReset" class="FilterResetText">Reset all filters</div>-->
+        <!--<div id="filters"></div>-->
+        <div style="clear:both;"><!--temporary--></div>
+        <h2>Teams</h2>
+        <div id="teams" class="clearfix"></div>
+      </div>
+      <div id="selected-team">
+        <a href="#" class="reset-filters">< select a different team</a>
+        <h3></h3>
+        <div id="selected-team-logo"></div>
+      </div>
     </div>
 
     <div id="Buttons" role="navigation"><input id="NextButton" class="NextButton Button" title="Next  >>" type="button" name="NextButton" value="Next  >>" data-runtime-disabled="runtime.Disabled" data-runtime-aria-label="runtime.ariaLabel" data-runtime-hide="runtime.Hide" page-id="P_1546466904154" aria-label="Next  >>"></div>
@@ -53,7 +53,7 @@
         //leagueLevelTerms = ['Conferences', 'Divisions'];
 
         favoriteTeamSelectedHandler = function() {
-         Console.log('FAVTEAM: ' + this.FavoriteTeamId);
+         console.log('FAVTEAM: ' + this.FavoriteTeamId);
         };
 
         jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');

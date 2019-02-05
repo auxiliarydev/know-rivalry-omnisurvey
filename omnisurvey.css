@@ -284,13 +284,16 @@ body#SurveyEngineBody{
   cursor: pointer;
 }
 
-#DivFavTeamLogo{
+#selected-team {
+  display: none;
+}
+
+#selected-team-logo{
   width:200px;
   height:200px;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  display: none;
 }
 
 /*-- TEAM RIVALS ------------*/

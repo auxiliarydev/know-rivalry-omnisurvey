@@ -4,7 +4,6 @@ var Omnisurvey_Data = new function() {
   this.Surveys = {};
   this.Leagues = {};
   //this.Teams = {};
-  this.CompetitiveGroupings = {};
 
   this.getLeague = function(leagueId) {
     var leagues = self.Leagues.filter(function(league) {
@@ -59,7 +58,7 @@ var Omnisurvey_Data = new function() {
   };
   
   // technically this takes a groupId and will return the competitive group if any descendants have the id passed in
-  this.getCompetitiveGroupingByTeamId = function(teamId) {
+  /*this.getCompetitiveGroupingByTeamId = function(teamId) {
     var group = self.CompetitiveGroupings.filter(function(group) {
       return (self.filterGroups(group, 'id', teamId).length > 0);
     });
@@ -69,10 +68,21 @@ var Omnisurvey_Data = new function() {
     }
 
     return null;
-  };
+  };*/
+
+  this.getGroupAndSiblings = function(groupId) {
+    var parentGroup = getParentGroup(groupId, LeagueHierarchy);
+
+    if (parentGroup.length > 0) {
+      // remove the group with the id we are looking for so we only return siblings
+      return parentGroup[0].groups;
+    }
+
+    return parentGroup;
+  }
 
   this.getGroupById = function(groupId) {
-    var group = self.filterGroups(self.CompetitiveGroupings, 'id', groupId);
+    var group = self.filterGroups(LeagueHierarchy, 'id', groupId);
 
     if (group.length > 0) {
       return group[0];
@@ -139,287 +149,593 @@ var Omnisurvey_Data = new function() {
     }, acc);
   };
 
+
+  function getParentGroup(groupId, groups, acc) {
+    // initialize acc if needed
+    acc = typeof acc !== 'undefined' ? acc : [];
+
+    return groups.reduce(function(acc, group) {
+      var match = group.groups && group.groups.some(function(g) {
+        return g.id === groupId && g.groups;
+      });
+
+      return match ? acc.concat(group) : (group.groups? getParentGroup(groupId, group.groups, acc) : acc);
+    }, acc);
+  }
+
   /* These groupings show how teams can compete across leagues */
   var LeagueHierarchy = [
     { id: 1, name: 'Sports', grpTypeTerm: 'Root', grpShowSurvSelRival: false, groups: [
-        { id: 2, name: 'Men\'s basketball (5 on 5)', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
-          { id: 9, name: 'Men\'s pro basketball', grpTypeTerm: '-99', grpShowSurvSelRival: true, competitiveGrouping: true, groups: [
-              { id: 10, name: 'NBA', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
-                { id: 12, name: 'Eastern', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    { id: 14, name: 'Atlantic', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
-                      { id: 244, name: 'Boston Celtics', slug: 'boston_celtics' },
-                      { id: 245, name: 'Brooklyn Nets', slug: 'brooklyn_nets' },
-                      { id: 262, name: 'New York Knicks', slug: 'new_york_knicks' },
-                      { id: 265, name: 'Philadelphia 76ers', slug: 'philadelphia_76ers' },
-                      { id: 270, name: 'Toronto Raptors', slug: 'toronto_raptors' },
-                    ]}, // closing grpID=14 (Atlantic)
-                    { id: 15, name: 'Central', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
-                      { id: 247, name: 'Chicago Bulls', slug: 'chicago_bulls' },
-                      { id: 248, name: 'Cleveland Cavaliers', slug: 'cleveland_cavaliers' },
-                      { id: 251, name: 'Detroit Pistons', slug: 'detroit_pistons' },
-                      { id: 254, name: 'Indiana Pacers', slug: 'indiana_pacers' },
-                      { id: 259, name: 'Milwaukee Bucks', slug: 'milwaukee_bucks' },
-                    ]}, // closing grpID=15 (Central)
-                    { id: 16, name: 'Southeast', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
-                      { id: 243, name: 'Atlanta Hawks', slug: 'atlanta_hawks' },
-                      { id: 246, name: 'Charlotte Hornets', slug: 'charlotte_hornets' },
-                      { id: 258, name: 'Miami Heat', slug: 'miami_heat' },
-                      { id: 264, name: 'Orlando Magic', slug: 'orlando_magic' },
-                      { id: 272, name: 'Washington Wizards', slug: 'washington_wizards' },
-                    ]}, // closing grpID=16 (Southeast)
-                ]}, // closing grpID=12 (Eastern)
-                { id: 13, name: 'Western', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
-                    { id: 17, name: 'Northwest', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
-                      { id: 250, name: 'Denver Nuggets', slug: 'denver_nuggets' },
-                      { id: 260, name: 'Minnesota Timberwolves', slug: 'minnesota_timberwolves' },
-                      { id: 263, name: 'Oklahoma City Thunder', slug: 'oklahoma_city_thunder' },
-                      { id: 267, name: 'Portland Trail Blazers', slug: 'portland_trail_blazers' },
-                      { id: 271, name: 'Utah Jazz', slug: 'utah_jazz' },
-                    ]}, // closing grpID=17 (Northwest)
-                    { id: 18, name: 'Pacific', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
-                      { id: 252, name: 'Golden State Warriors', slug: 'golden_state_warriors' },
-                      { id: 255, name: 'Los Angeles Clippers', slug: 'los_angeles_clippers' },
-                      { id: 256, name: 'Los Angeles Lakers', slug: 'los_angeles_lakers' },
-                      { id: 266, name: 'Phoenix Suns', slug: 'phoenix_suns' },
-                      { id: 268, name: 'Sacramento Kings', slug: 'sacramento_kings' },
-                    ]}, // closing grpID=18 (Pacific)
-                    { id: 19, name: 'Southwest', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
-                      { id: 249, name: 'Dallas Mavericks', slug: 'dallas_mavericks' },
-                      { id: 253, name: 'Houston Rockets', slug: 'houston_rockets' },
-                      { id: 257, name: 'Memphis Grizzlies', slug: 'memphis_grizzlies' },
-                      { id: 261, name: 'New Orleans Pelicans', slug: 'new_orleans_pelicans' },
-                      { id: 269, name: 'San Antonio Spurs', slug: 'san_antonio_spurs' },
-                    ]}, // closing grpID=19 (Southwest)
-                ]}, // closing grpID=13 (Western)
-              ]}, // closing grpID=10 (NBA)
-              { id: 11, name: 'Men\'s Spain club basketball', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
-                { id: 20, name: 'Liga ACB', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=20 (Liga ACB)
-                { id: 21, name: 'LEB Oro', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=21 (LEB Oro)
-                { id: 22, name: 'LEB Plata', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=22 (LEB Plata)
-                { id: 23, name: 'Liga EBA', grpTypeTerm: 'League?', grpShowSurvSelRival: false, groups: [
-                    { id: 24, name: 'Group A', grpTypeTerm: 'Group?', grpShowSurvSelRival: false, groups: [
-                      { id: 25, name: 'Group A-A', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: false, groups: [
-                      ]}, // closing grpID=25 (Group A-A)
-                      { id: 26, name: 'Group A-B', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: false, groups: [
-                      ]}, // closing grpID=26 (Group A-B)
-                    ]}, // closing grpID=24 (Group A)
-                    { id: 27, name: 'Group B', grpTypeTerm: 'Group?', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=27 (Group B)
-                    { id: 28, name: 'Group C', grpTypeTerm: 'Group?', grpShowSurvSelRival: false, groups: [
-                      { id: 29, name: 'Group C-A', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: false, groups: [
-                      ]}, // closing grpID=29 (Group C-A)
-                      { id: 30, name: 'Group C-B', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: false, groups: [
-                      ]}, // closing grpID=30 (Group C-B)
-                    ]}, // closing grpID=28 (Group C)
-                    { id: 31, name: 'Group D', grpTypeTerm: 'Group?', grpShowSurvSelRival: false, groups: [
-                      { id: 32, name: 'Group D-A', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: false, groups: [
-                      ]}, // closing grpID=32 (Group D-A)
-                      { id: 33, name: 'Group D-B', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: false, groups: [
-                      ]}, // closing grpID=33 (Group D-B)
-                    ]}, // closing grpID=31 (Group D)
-                    { id: 34, name: 'Group E', grpTypeTerm: 'Group?', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=34 (Group E)
-                ]}, // closing grpID=23 (Liga EBA)
-              ]}, // closing grpID=11 (Men\'s Spain club basketball)
-          ]}, // closing grpID=9 (Men\'s pro basketball)
-          { id: 35, name: 'Men\'s US College basketball', grpTypeTerm: '-99', grpShowSurvSelRival: false, competitiveGrouping: true, groups: [
-              { id: 36, name: 'NCAA', grpTypeTerm: 'Governing body', grpShowSurvSelRival: false, groups: [
-                { id: 38, name: 'Division I', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
-                    { id: 41, name: 'America East', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=41 (America East)
-                    { id: 42, name: 'American Athletic Conference', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=42 (American Athletic Conference)
-                    { id: 43, name: 'Atlantic 10', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=43 (Atlantic 10)
-                    { id: 44, name: 'Atlantic Coast Conference', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=44 (Atlantic Coast Conference)
-                    { id: 45, name: 'Atlantic Sun', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=45 (Atlantic Sun)
-                    { id: 46, name: 'Big 12', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=46 (Big 12)
-                    { id: 47, name: 'Big East', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=47 (Big East)
-                    { id: 48, name: 'Big Sky', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=48 (Big Sky)
-                    { id: 49, name: 'Big South', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=49 (Big South)
-                    { id: 50, name: 'Big Ten', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=50 (Big Ten)
-                    { id: 51, name: 'Big West', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=51 (Big West)
-                    { id: 52, name: 'Colonial Athletic', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=52 (Colonial Athletic)
-                    { id: 53, name: 'Conference USA', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=53 (Conference USA)
-                    { id: 54, name: 'Horizon', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=54 (Horizon)
-                    { id: 55, name: 'Ivy League', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=55 (Ivy League)
-                    { id: 56, name: 'Metro Atlantic Athletic', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=56 (Metro Atlantic Athletic)
-                    { id: 57, name: 'Mid-Eastern', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=57 (Mid-Eastern)
-                    { id: 58, name: 'Missouri Valley', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=58 (Missouri Valley)
-                    { id: 59, name: 'Mountain West', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=59 (Mountain West)
-                    { id: 60, name: 'Northeast', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=60 (Northeast)
-                    { id: 61, name: 'Ohio Valley', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=61 (Ohio Valley)
-                    { id: 62, name: 'Pac-12', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=62 (Pac-12)
-                    { id: 63, name: 'Patriot League', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=63 (Patriot League)
-                    { id: 64, name: 'Southeastern', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=64 (Southeastern)
-                    { id: 65, name: 'Southern', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=65 (Southern)
-                    { id: 66, name: 'Southland', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=66 (Southland)
-                    { id: 67, name: 'Southwestern Athletic', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=67 (Southwestern Athletic)
-                    { id: 68, name: 'Summit League', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=68 (Summit League)
-                    { id: 69, name: 'Sun Belt', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=69 (Sun Belt)
-                    { id: 70, name: 'West Coast', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=70 (West Coast)
-                    { id: 71, name: 'Western Athletic', grpTypeTerm: 'Conference', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=71 (Western Athletic)
-                ]}, // closing grpID=38 (Division I)
-                { id: 39, name: 'Division II', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=39 (Division II)
-                { id: 40, name: 'Division III', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=40 (Division III)
-              ]}, // closing grpID=36 (NCAA)
-              { id: 37, name: 'NAIA', grpTypeTerm: 'Governing body', grpShowSurvSelRival: false, groups: [
-              ]}, // closing grpID=37 (NAIA)
-          ]}, // closing grpID=35 (Men\'s US College basketball)
-          { id: 72, name: 'Men\'s national teams', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
-              { id: 73, name: 'Americas', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
-                { id: 74, name: 'North American', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=74 (North American)
-                { id: 75, name: 'CONCENCABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                    { id: 76, name: 'CBC', grpTypeTerm: 'Sub sub-zone', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=76 (CBC)
-                    { id: 77, name: 'COCABA', grpTypeTerm: 'Sub sub-zone', grpShowSurvSelRival: false, groups: [
-                    ]}, // closing grpID=77 (COCABA)
-                ]}, // closing grpID=75 (CONCENCABA)
-                { id: 78, name: 'CONSUBASQUET', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=78 (CONSUBASQUET)
-              ]}, // closing grpID=73 (Americas)
-              { id: 79, name: 'Africa', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
-                { id: 80, name: 'Zone 1', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=80 (Zone 1)
-                { id: 81, name: 'Zone 2', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=81 (Zone 2)
-                { id: 82, name: 'Zone 3', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=82 (Zone 3)
-                { id: 83, name: 'Zone 4', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=83 (Zone 4)
-                { id: 84, name: 'Zone 5', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=84 (Zone 5)
-                { id: 85, name: 'Zone 6', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=85 (Zone 6)
-                { id: 86, name: 'Zone 7', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=86 (Zone 7)
-              ]}, // closing grpID=79 (Africa)
-              { id: 87, name: 'Asia', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
-                { id: 88, name: 'CABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=88 (CABA)
-                { id: 89, name: 'EABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=89 (EABA)
-                { id: 90, name: 'WABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=90 (WABA)
-                { id: 91, name: 'GBA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=91 (GBA)
-                { id: 92, name: 'SABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=92 (SABA)
-                { id: 93, name: 'SEABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: false, groups: [
-                ]}, // closing grpID=93 (SEABA)
-              ]}, // closing grpID=87 (Asia)
-              { id: 94, name: 'Europe', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
-              ]}, // closing grpID=94 (Europe)
-              { id: 95, name: 'Oceania', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
-              ]}, // closing grpID=95 (Oceania)
-          ]}, // closing grpID=72 (Men\'s national teams)
-        ]}, // closing grpID=2 (Men\'s basketball (5 on 5))
-        { id: 3, name: 'Men\'s soccer', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
-        ]}, // closing grpID=3 (Men\'s soccer)
-        { id: 4, name: 'Men\'s Amer football', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
-        ]}, // closing grpID=4 (Men\'s Amer football)
-        { id: 5, name: 'Men\'s baseball', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
-          { id: 96, name: 'Men\'s pro baseball', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
-              { id: 97, name: 'Americas', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
-                { id: 101, name: 'United States', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
-                    { id: 102, name: 'Major League Baseball', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
-                      { id: 103, name: 'American League', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
-                          { id: 105, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
-                            { id: 216, name: 'Boston Red Sox' },
-                            { id: 231, name: 'New York Yankees' },
-                            { id: 215, name: 'Baltimore Orioles' },
-                            { id: 239, name: 'Tampa Bay Rays' },
-                            { id: 241, name: 'Toronto Blue Jays' },
-                          ]}, // closing grpID=105 (East)
-                          { id: 106, name: 'Central', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
-                            { id: 224, name: 'Kansas City Royals' },
-                            { id: 220, name: 'Cleveland Indians' },
-                            { id: 218, name: 'Chicago White Sox' },
-                            { id: 229, name: 'Minnesota Twins' },
-                            { id: 222, name: 'Detroit Tigers' },
-                          ]}, // closing grpID=106 (Central)
-                          { id: 107, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
-                            { id: 237, name: 'Seattle Mariners' },
-                            { id: 240, name: 'Texas Rangers' },
-                            { id: 225, name: 'Los Angeles Angels' },
-                            { id: 223, name: 'Houston Astros' },
-                            { id: 232, name: 'Oakland Athletics' },
-                          ]}, // closing grpID=107 (West)
-                      ]}, // closing grpID=103 (American League)
-                      { id: 104, name: 'National League', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
-                          { id: 108, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
-                            { id: 214, name: 'Atlanta Braves' },
-                            { id: 227, name: 'Miami Marlins' },
-                            { id: 242, name: 'Washington Nationals' },
-                            { id: 230, name: 'New York Mets' },
-                            { id: 233, name: 'Philadelphia Phillies' },
-                          ]}, // closing grpID=108 (East)
-                          { id: 109, name: 'Central', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
-                            { id: 234, name: 'Pittsburgh Pirates' },
-                            { id: 228, name: 'Milwaukee Brewers' },
-                            { id: 217, name: 'Chicago Cubs' },
-                            { id: 238, name: 'St Louis Cardinals' },
-                            { id: 219, name: 'Cincinnati Reds' },
-                          ]}, // closing grpID=109 (Central)
-                          { id: 110, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
-                            { id: 221, name: 'Colorado Rockies' },
-                            { id: 213, name: 'Arizona Diamondbacks' },
-                            { id: 235, name: 'San Diego Padres' },
-                            { id: 236, name: 'San Francisco Giants' },
-                            { id: 226, name: 'Los Angeles Dodgers' },
-                          ]}, // closing grpID=110 (West)
-                      ]}, // closing grpID=104 (National League)
-                    ]}, // closing grpID=102 (Major League Baseball)
-                ]}, // closing grpID=101 (United States)
-              ]}, // closing grpID=97 (Americas)
-              { id: 98, name: 'Asia', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
-              ]}, // closing grpID=98 (Asia)
-              { id: 99, name: 'Europe', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
-              ]}, // closing grpID=99 (Europe)
-              { id: 100, name: 'Oceania', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
-              ]}, // closing grpID=100 (Oceania)
-          ]}, // closing grpID=96 (Men\'s pro baseball)
-        ]}, // closing grpID=5 (Men\'s baseball)
-        { id: 6, name: 'Men\'s cricket', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
-        ]}, // closing grpID=6 (Men\'s cricket)
-        { id: 7, name: 'Men\'s ice hockey', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
-        ]}, // closing grpID=7 (Men\'s ice hockey)
-        { id: 8, name: 'Men\'s rugby', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
-        ]}, // closing grpID=8 (Men\'s rugby)
+      { id: 111, name: 'Basketball (5 on 5)', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
+          { id: 2, name: 'Men\'s basketball (5 on 5)', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
+              { id: 9, name: 'Men\'s pro basketball', grpTypeTerm: '-99', grpShowSurvSelRival: true, groups: [
+                  { id: 10, name: 'NBA', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
+                      { id: 12, name: 'Eastern', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          { id: 14, name: 'Atlantic', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                              { id: 244, name: 'Boston Celtics' },
+                              { id: 245, name: 'Brooklyn Nets' },
+                              { id: 262, name: 'New York Knicks' },
+                              { id: 265, name: 'Philadelphia 76ers' },
+                              { id: 270, name: 'Toronto Raptors' },
+                          ]}, // closing grpID=14 (Atlantic)
+                          { id: 15, name: 'Central', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                              { id: 247, name: 'Chicago Bulls' },
+                              { id: 248, name: 'Cleveland Cavaliers' },
+                              { id: 251, name: 'Detroit Pistons' },
+                              { id: 254, name: 'Indiana Pacers' },
+                              { id: 259, name: 'Milwaukee Bucks' },
+                          ]}, // closing grpID=15 (Central)
+                          { id: 16, name: 'Southeast', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                              { id: 243, name: 'Atlanta Hawks' },
+                              { id: 246, name: 'Charlotte Hornets' },
+                              { id: 258, name: 'Miami Heat' },
+                              { id: 264, name: 'Orlando Magic' },
+                              { id: 272, name: 'Washington Wizards' },
+                          ]}, // closing grpID=16 (Southeast)
+                      ]}, // closing grpID=12 (Eastern)
+                      { id: 13, name: 'Western', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          { id: 17, name: 'Northwest', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                              { id: 250, name: 'Denver Nuggets' },
+                              { id: 260, name: 'Minnesota Timberwolves' },
+                              { id: 263, name: 'Oklahoma City Thunder' },
+                              { id: 267, name: 'Portland Trail Blazers' },
+                              { id: 271, name: 'Utah Jazz' },
+                          ]}, // closing grpID=17 (Northwest)
+                          { id: 18, name: 'Pacific', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                              { id: 252, name: 'Golden State Warriors' },
+                              { id: 255, name: 'Los Angeles Clippers' },
+                              { id: 256, name: 'Los Angeles Lakers' },
+                              { id: 266, name: 'Phoenix Suns' },
+                              { id: 268, name: 'Sacramento Kings' },
+                          ]}, // closing grpID=18 (Pacific)
+                          { id: 19, name: 'Southwest', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                              { id: 249, name: 'Dallas Mavericks' },
+                              { id: 253, name: 'Houston Rockets' },
+                              { id: 257, name: 'Memphis Grizzlies' },
+                              { id: 261, name: 'New Orleans Pelicans' },
+                              { id: 269, name: 'San Antonio Spurs' },
+                          ]}, // closing grpID=19 (Southwest)
+                      ]}, // closing grpID=13 (Western)
+                  ]}, // closing grpID=10 (NBA)
+                  { id: 11, name: 'Men\'s Spain club basketball', grpTypeTerm: '-99', grpShowSurvSelRival: true, groups: [
+                      { id: 20, name: 'Liga ACB', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=20 (Liga ACB)
+                      { id: 21, name: 'LEB Oro', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=21 (LEB Oro)
+                      { id: 22, name: 'LEB Plata', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=22 (LEB Plata)
+                      { id: 23, name: 'Liga EBA', grpTypeTerm: 'League?', grpShowSurvSelRival: true, groups: [
+                          { id: 24, name: 'Group A', grpTypeTerm: 'Group?', grpShowSurvSelRival: true, groups: [
+                              { id: 25, name: 'Group A-A', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: true, groups: [
+                              ]}, // closing grpID=25 (Group A-A)
+                              { id: 26, name: 'Group A-B', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: true, groups: [
+                              ]}, // closing grpID=26 (Group A-B)
+                          ]}, // closing grpID=24 (Group A)
+                          { id: 27, name: 'Group B', grpTypeTerm: 'Group?', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=27 (Group B)
+                          { id: 28, name: 'Group C', grpTypeTerm: 'Group?', grpShowSurvSelRival: true, groups: [
+                              { id: 29, name: 'Group C-A', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: true, groups: [
+                              ]}, // closing grpID=29 (Group C-A)
+                              { id: 30, name: 'Group C-B', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: true, groups: [
+                              ]}, // closing grpID=30 (Group C-B)
+                          ]}, // closing grpID=28 (Group C)
+                          { id: 31, name: 'Group D', grpTypeTerm: 'Group?', grpShowSurvSelRival: true, groups: [
+                              { id: 32, name: 'Group D-A', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: true, groups: [
+                              ]}, // closing grpID=32 (Group D-A)
+                              { id: 33, name: 'Group D-B', grpTypeTerm: 'Sub-group?', grpShowSurvSelRival: true, groups: [
+                              ]}, // closing grpID=33 (Group D-B)
+                          ]}, // closing grpID=31 (Group D)
+                          { id: 34, name: 'Group E', grpTypeTerm: 'Group?', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=34 (Group E)
+                      ]}, // closing grpID=23 (Liga EBA)
+                  ]}, // closing grpID=11 (Men\'s Spain club basketball)
+              ]}, // closing grpID=9 (Men\'s pro basketball)
+              { id: 35, name: 'Men\'s US College basketball', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+                  { id: 36, name: 'NCAA', grpTypeTerm: 'Governing body', grpShowSurvSelRival: true, groups: [
+                      { id: 38, name: 'Division I', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
+                          { id: 41, name: 'America East', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=41 (America East)
+                          { id: 42, name: 'American Athletic Conference', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=42 (American Athletic Conference)
+                          { id: 43, name: 'Atlantic 10', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=43 (Atlantic 10)
+                          { id: 44, name: 'Atlantic Coast Conference', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=44 (Atlantic Coast Conference)
+                          { id: 45, name: 'Atlantic Sun', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=45 (Atlantic Sun)
+                          { id: 46, name: 'Big 12', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=46 (Big 12)
+                          { id: 47, name: 'Big East', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=47 (Big East)
+                          { id: 48, name: 'Big Sky', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=48 (Big Sky)
+                          { id: 49, name: 'Big South', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=49 (Big South)
+                          { id: 50, name: 'Big Ten', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=50 (Big Ten)
+                          { id: 51, name: 'Big West', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=51 (Big West)
+                          { id: 52, name: 'Colonial Athletic', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=52 (Colonial Athletic)
+                          { id: 53, name: 'Conference USA', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=53 (Conference USA)
+                          { id: 54, name: 'Horizon', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=54 (Horizon)
+                          { id: 55, name: 'Ivy League', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=55 (Ivy League)
+                          { id: 56, name: 'Metro Atlantic Athletic', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=56 (Metro Atlantic Athletic)
+                          { id: 57, name: 'Mid-Eastern', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=57 (Mid-Eastern)
+                          { id: 58, name: 'Missouri Valley', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=58 (Missouri Valley)
+                          { id: 59, name: 'Mountain West', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=59 (Mountain West)
+                          { id: 60, name: 'Northeast', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=60 (Northeast)
+                          { id: 61, name: 'Ohio Valley', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=61 (Ohio Valley)
+                          { id: 62, name: 'Pac-12', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=62 (Pac-12)
+                          { id: 63, name: 'Patriot League', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=63 (Patriot League)
+                          { id: 64, name: 'Southeastern', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=64 (Southeastern)
+                          { id: 65, name: 'Southern', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=65 (Southern)
+                          { id: 66, name: 'Southland', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=66 (Southland)
+                          { id: 67, name: 'Southwestern Athletic', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=67 (Southwestern Athletic)
+                          { id: 68, name: 'Summit League', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=68 (Summit League)
+                          { id: 69, name: 'Sun Belt', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=69 (Sun Belt)
+                          { id: 70, name: 'West Coast', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=70 (West Coast)
+                          { id: 71, name: 'Western Athletic', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=71 (Western Athletic)
+                      ]}, // closing grpID=38 (Division I)
+                      { id: 39, name: 'Division II', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=39 (Division II)
+                      { id: 40, name: 'Division III', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=40 (Division III)
+                  ]}, // closing grpID=36 (NCAA)
+                  { id: 37, name: 'NAIA', grpTypeTerm: 'Governing body', grpShowSurvSelRival: true, groups: [
+                  ]}, // closing grpID=37 (NAIA)
+              ]}, // closing grpID=35 (Men\'s US College basketball)
+              { id: 72, name: 'Men\'s national teams', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+                  { id: 73, name: 'Americas', grpTypeTerm: 'Region', grpShowSurvSelRival: true, groups: [
+                      { id: 74, name: 'North American', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=74 (North American)
+                      { id: 75, name: 'CONCENCABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                          { id: 76, name: 'CBC', grpTypeTerm: 'Sub sub-zone', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=76 (CBC)
+                          { id: 77, name: 'COCABA', grpTypeTerm: 'Sub sub-zone', grpShowSurvSelRival: true, groups: [
+                          ]}, // closing grpID=77 (COCABA)
+                      ]}, // closing grpID=75 (CONCENCABA)
+                      { id: 78, name: 'CONSUBASQUET', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=78 (CONSUBASQUET)
+                  ]}, // closing grpID=73 (Americas)
+                  { id: 79, name: 'Africa', grpTypeTerm: 'Region', grpShowSurvSelRival: true, groups: [
+                      { id: 80, name: 'Zone 1', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=80 (Zone 1)
+                      { id: 81, name: 'Zone 2', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=81 (Zone 2)
+                      { id: 82, name: 'Zone 3', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=82 (Zone 3)
+                      { id: 83, name: 'Zone 4', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=83 (Zone 4)
+                      { id: 84, name: 'Zone 5', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=84 (Zone 5)
+                      { id: 85, name: 'Zone 6', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=85 (Zone 6)
+                      { id: 86, name: 'Zone 7', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=86 (Zone 7)
+                  ]}, // closing grpID=79 (Africa)
+                  { id: 87, name: 'Asia', grpTypeTerm: 'Region', grpShowSurvSelRival: true, groups: [
+                      { id: 88, name: 'CABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=88 (CABA)
+                      { id: 89, name: 'EABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=89 (EABA)
+                      { id: 90, name: 'WABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=90 (WABA)
+                      { id: 91, name: 'GBA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=91 (GBA)
+                      { id: 92, name: 'SABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=92 (SABA)
+                      { id: 93, name: 'SEABA', grpTypeTerm: 'Sub-zone', grpShowSurvSelRival: true, groups: [
+                      ]}, // closing grpID=93 (SEABA)
+                  ]}, // closing grpID=87 (Asia)
+                  { id: 94, name: 'Europe', grpTypeTerm: 'Region', grpShowSurvSelRival: true, groups: [
+                  ]}, // closing grpID=94 (Europe)
+                  { id: 95, name: 'Oceania', grpTypeTerm: 'Region', grpShowSurvSelRival: true, groups: [
+                  ]}, // closing grpID=95 (Oceania)
+              ]}, // closing grpID=72 (Men\'s national teams)
+          ]}, // closing grpID=2 (Men\'s basketball (5 on 5))
+      ]}, // closing grpID=111 (Basketball (5 on 5))
+      { id: 112, name: 'Soccer', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
+          { id: 3, name: 'Men\'s soccer', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
+          ]}, // closing grpID=3 (Men\'s soccer)
+      ]}, // closing grpID=112 (Soccer)
+      { id: 113, name: 'Gridiron football', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+          { id: 4, name: 'Men\'s gridiron football', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
+              { id: 118, name: 'Men\'s Amer football', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+                  { id: 119, name: 'Men\'s pro Amer football', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+                      { id: 120, name: 'North America', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+                          { id: 121, name: 'NFL', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
+                              { id: 122, name: 'NFC', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                  { id: 124, name: 'North', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
+                                      { id: 165, name: 'Chicago Bears' },
+                                      { id: 170, name: 'Detroit Lions' },
+                                      { id: 171, name: 'Green Bay Packers' },
+                                      { id: 177, name: 'Minnesota Vikings' },
+                                  ]}, // closing grpID=124 (North)
+                                  { id: 125, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
+                                      { id: 168, name: 'Dallas Cowboys' },
+                                      { id: 180, name: 'New York Giants' },
+                                      { id: 183, name: 'Philadelphia Eagles' },
+                                      { id: 191, name: 'Washington Redskins' },
+                                  ]}, // closing grpID=125 (East)
+                                  { id: 126, name: 'South', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
+                                      { id: 161, name: 'Atlanta Falcons' },
+                                      { id: 164, name: 'Carolina Panthers' },
+                                      { id: 179, name: 'New Orleans Saints' },
+                                      { id: 189, name: 'Tampa Bay Buccaneers' },
+                                  ]}, // closing grpID=126 (South)
+                                  { id: 127, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
+                                      { id: 160, name: 'Arizona Cardinals' },
+                                      { id: 186, name: 'San Francisco 49ers' },
+                                      { id: 187, name: 'Seattle Seahawks' },
+                                      { id: 188, name: 'Los Angeles Rams' },
+                                  ]}, // closing grpID=127 (West)
+                              ]}, // closing grpID=122 (NFC)
+                              { id: 123, name: 'AFC', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                  { id: 128, name: 'North', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
+                                      { id: 162, name: 'Baltimore Ravens' },
+                                      { id: 166, name: 'Cincinnati Bengals' },
+                                      { id: 167, name: 'Cleveland Browns' },
+                                      { id: 184, name: 'Pittsburgh Steelers' },
+                                  ]}, // closing grpID=128 (North)
+                                  { id: 129, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
+                                      { id: 163, name: 'Buffalo Bills' },
+                                      { id: 176, name: 'Miami Dolphins' },
+                                      { id: 178, name: 'New England Patriots' },
+                                      { id: 181, name: 'New York Jets' },
+                                  ]}, // closing grpID=129 (East)
+                                  { id: 130, name: 'South', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
+                                      { id: 172, name: 'Houston Texans' },
+                                      { id: 173, name: 'Indianapolis Colts' },
+                                      { id: 174, name: 'Jacksonville Jaguars' },
+                                      { id: 190, name: 'Tennessee Titans' },
+                                  ]}, // closing grpID=130 (South)
+                                  { id: 131, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: true, groups: [
+                                      { id: 169, name: 'Denver Broncos' },
+                                      { id: 175, name: 'Kansas City Chiefs' },
+                                      { id: 182, name: 'Oakland Raiders' },
+                                      { id: 185, name: 'Los Angeles Chargers' },
+                                  ]}, // closing grpID=131 (West)
+                              ]}, // closing grpID=123 (AFC)
+                          ]}, // closing grpID=121 (NFL)
+                      ]}, // closing grpID=120 (North America)
+                  ]}, // closing grpID=119 (Men\'s pro Amer football)
+                  { id: 132, name: 'Men\'s collegiate Amer football', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+                      { id: 133, name: 'NCAA', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+                          { id: 134, name: 'Division I', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                              { id: 135, name: 'FBS', grpTypeTerm: 'Subdivision', grpShowSurvSelRival: false, groups: [
+                                  { id: 139, name: 'ACC', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                      { id: 150, name: 'Atlantic', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 14, name: 'Boston College' },
+                                          { id: 21, name: 'Clemson' },
+                                          { id: 30, name: 'Florida St' },
+                                          { id: 93, name: 'Syracuse' },
+                                          { id: 53, name: 'Maryland' },
+                                          { id: 122, name: 'Wake Forest' },
+                                          { id: 64, name: 'NC State' },
+                                          { id: 50, name: 'Louisville' },
+                                      ]}, // closing grpID=150 (Atlantic)
+                                      { id: 151, name: 'Coastal', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 24, name: 'Duke' },
+                                          { id: 35, name: 'Georgia Tech' },
+                                          { id: 55, name: 'Miami-FL' },
+                                          { id: 121, name: 'Virginia Tech' },
+                                          { id: 119, name: 'UVA' },
+                                          { id: 82, name: 'Pitt' },
+                                          { id: 110, name: 'UNC' },
+                                      ]}, // closing grpID=151 (Coastal)
+                                  ]}, // closing grpID=139 (ACC)
+                                  { id: 140, name: 'American', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                      { id: 152, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 25, name: 'East Carolina' },
+                                      ]}, // closing grpID=152 (East)
+                                      { id: 153, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                      ]}, // closing grpID=153 (West)
+                                  ]}, // closing grpID=140 (American)
+                                  { id: 141, name: 'Big 12', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                      { id: 12, name: 'Baylor' },
+                                      { id: 42, name: 'Iowa St' },
+                                      { id: 43, name: 'Kansas' },
+                                      { id: 44, name: 'Kansas St' },
+                                      { id: 76, name: 'Oklahoma' },
+                                      { id: 77, name: 'Oklahoma St' },
+                                      { id: 94, name: 'TCU' },
+                                      { id: 97, name: 'Texas' },
+                                      { id: 125, name: 'West Virginia' },
+                                      { id: 100, name: 'Texas Tech' },
+                                  ]}, // closing grpID=141 (Big 12)
+                                  { id: 142, name: 'Big Ten', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                      { id: 154, name: 'Leaders', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 75, name: 'Ohio St' },
+                                          { id: 128, name: 'Wisconsin' },
+                                          { id: 83, name: 'Purdue' },
+                                          { id: 81, name: 'Penn St' },
+                                          { id: 40, name: 'Indiana' },
+                                          { id: 39, name: 'Illinois' },
+                                      ]}, // closing grpID=154 (Leaders)
+                                      { id: 155, name: 'Legends', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 58, name: 'Michigan St' },
+                                          { id: 41, name: 'Iowa' },
+                                          { id: 57, name: 'Michigan' },
+                                          { id: 65, name: 'Nebraska' },
+                                          { id: 60, name: 'Minnesota' },
+                                          { id: 71, name: 'Northwestern' },
+                                      ]}, // closing grpID=155 (Legends)
+                                      { id: 168, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 85, name: 'Rutgers' },
+                                          { id: 53, name: 'Maryland' },
+                                          { id: 75, name: 'Ohio St' },
+                                          { id: 58, name: 'Michigan St' },
+                                          { id: 57, name: 'Michigan' },
+                                          { id: 81, name: 'Penn St' },
+                                          { id: 40, name: 'Indiana' },
+                                      ]}, // closing grpID=168 (East)
+                                      { id: 169, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 128, name: 'Wisconsin' },
+                                          { id: 60, name: 'Minnesota' },
+                                          { id: 65, name: 'Nebraska' },
+                                          { id: 41, name: 'Iowa' },
+                                          { id: 39, name: 'Illinois' },
+                                          { id: 71, name: 'Northwestern' },
+                                          { id: 83, name: 'Purdue' },
+                                      ]}, // closing grpID=169 (West)
+                                  ]}, // closing grpID=142 (Big Ten)
+                                  { id: 143, name: 'C-USA', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                      { id: 156, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 52, name: 'Marshall' },
+                                          { id: 25, name: 'East Carolina' },
+                                          { id: 59, name: 'Middle Tennessee' },
+                                          { id: 29, name: 'Florida Atlantic' },
+                                          { id: 27, name: 'FIU' },
+                                          { id: 105, name: 'UAB' },
+                                          { id: 91, name: 'Southern Miss' },
+                                          { id: 111, name: 'UNC-Charlotte' },
+                                          { id: 126, name: 'Western Kentucky' },
+                                          { id: 73, name: 'ODU' },
+                                          { id: 105, name: 'UAB' },
+                                      ]}, // closing grpID=156 (East)
+                                      { id: 157, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 84, name: 'Rice' },
+                                          { id: 118, name: 'UTSA' },
+                                          { id: 70, name: 'North Texas' },
+                                          { id: 103, name: 'Tulane' },
+                                          { id: 47, name: 'Louisiana Tech' },
+                                          { id: 104, name: 'Tulsa' },
+                                          { id: 117, name: 'UTEP' },
+                                          { id: 91, name: 'Southern Miss' },
+                                      ]}, // closing grpID=157 (West)
+                                  ]}, // closing grpID=143 (C-USA)
+                                  { id: 144, name: 'Independent', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                      { id: 63, name: 'Navy' },
+                                      { id: 72, name: 'Notre Dame' },
+                                      { id: 38, name: 'Idaho' },
+                                      { id: 17, name: 'BYU' },
+                                      { id: 9, name: 'Army' },
+                                      { id: 68, name: 'New Mexico St' },
+                                  ]}, // closing grpID=144 (Independent)
+                                  { id: 145, name: 'MAC', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                      { id: 158, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 15, name: 'Bowling Green' },
+                                          { id: 16, name: 'Buffalo' },
+                                          { id: 2, name: 'Akron' },
+                                          { id: 45, name: 'Kent St' },
+                                          { id: 56, name: 'Miami-OH' },
+                                          { id: 109, name: 'UMass' },
+                                          { id: 74, name: 'Ohio' },
+                                      ]}, // closing grpID=158 (East)
+                                      { id: 159, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 69, name: 'NIU' },
+                                          { id: 11, name: 'Ball St' },
+                                          { id: 101, name: 'Toledo' },
+                                          { id: 26, name: 'Eastern Michigan' },
+                                          { id: 19, name: 'Central Michigan' },
+                                          { id: 127, name: 'Western Michigan' },
+                                      ]}, // closing grpID=159 (West)
+                                  ]}, // closing grpID=145 (MAC)
+                                  { id: 146, name: 'Mountain West', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                      { id: 160, name: 'Mountain', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 1, name: 'Air Force' },
+                                          { id: 116, name: 'Utah St' },
+                                          { id: 13, name: 'Boise St' },
+                                          { id: 23, name: 'Colorado St' },
+                                          { id: 129, name: 'Wyoming' },
+                                          { id: 67, name: 'New Mexico' },
+                                      ]}, // closing grpID=160 (Mountain)
+                                      { id: 161, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 31, name: 'Fresno St' },
+                                          { id: 86, name: 'San Diego St' },
+                                          { id: 112, name: 'UNLV' },
+                                          { id: 87, name: 'San Jose St' },
+                                          { id: 66, name: 'Nevada' },
+                                          { id: 36, name: 'Hawai\'i' },
+                                      ]}, // closing grpID=161 (West)
+                                  ]}, // closing grpID=146 (Mountain West)
+                                  { id: 147, name: 'Pac-12', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                      { id: 162, name: 'North', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 92, name: 'Stanford' },
+                                          { id: 79, name: 'Oregon' },
+                                          { id: 80, name: 'Oregon St' },
+                                          { id: 123, name: 'Washington' },
+                                          { id: 124, name: 'Washington St' },
+                                          { id: 18, name: 'Cal' },
+                                      ]}, // closing grpID=162 (North)
+                                      { id: 163, name: 'South', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 6, name: 'Arizona St' },
+                                          { id: 5, name: 'Arizona' },
+                                          { id: 107, name: 'UCLA' },
+                                          { id: 113, name: 'USC' },
+                                          { id: 115, name: 'Utah' },
+                                          { id: 22, name: 'Colorado' },
+                                      ]}, // closing grpID=163 (South)
+                                  ]}, // closing grpID=147 (Pac-12)
+                                  { id: 148, name: 'SEC', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                      { id: 164, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 28, name: 'Florida' },
+                                          { id: 32, name: 'Georgia' },
+                                          { id: 46, name: 'Kentucky' },
+                                          { id: 62, name: 'Missouri' },
+                                          { id: 96, name: 'Tennessee' },
+                                          { id: 90, name: 'South Carolina' },
+                                          { id: 120, name: 'Vanderbilt' },
+                                      ]}, // closing grpID=164 (East)
+                                      { id: 165, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 3, name: 'Alabama' },
+                                          { id: 10, name: 'Auburn' },
+                                          { id: 51, name: 'LSU' },
+                                          { id: 61, name: 'Mississippi St' },
+                                          { id: 78, name: 'Ole Miss' },
+                                          { id: 98, name: 'Texas A&M' },
+                                          { id: 7, name: 'Arkansas' },
+                                      ]}, // closing grpID=165 (West)
+                                  ]}, // closing grpID=148 (SEC)
+                                  { id: 149, name: 'Sun Belt', grpTypeTerm: 'Conference', grpShowSurvSelRival: true, groups: [
+                                      { id: 166, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 102, name: 'Troy' },
+                                          { id: 34, name: 'Georgia St' },
+                                          { id: 33, name: 'Georgia Southern' },
+                                          { id: 4, name: 'Appalachian St' },
+                                          { id: 285, name: 'Coastal Carolina' },
+                                      ]}, // closing grpID=166 (East)
+                                      { id: 167, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                          { id: 8, name: 'Arkansas St' },
+                                          { id: 99, name: 'Texas St' },
+                                          { id: 48, name: 'Louisiana-Lafayette' },
+                                          { id: 49, name: 'Louisiana-Monroe' },
+                                          { id: 89, name: 'South Alabama' },
+                                      ]}, // closing grpID=167 (West)
+                                  ]}, // closing grpID=149 (Sun Belt)
+                                  { id: 170, name: 'Other', grpTypeTerm: 'Other', grpShowSurvSelRival: false, groups: [
+                                      { id: 105, name: 'UAB' },
+                                  ]}, // closing grpID=170 (Other)
+                              ]}, // closing grpID=135 (FBS)
+                              { id: 136, name: 'FCS', grpTypeTerm: 'Subdivision', grpShowSurvSelRival: false, groups: [
+                                  { id: 38, name: 'Idaho' },
+                              ]}, // closing grpID=136 (FCS)
+                          ]}, // closing grpID=134 (Division I)
+                          { id: 137, name: 'Division II', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                          ]}, // closing grpID=137 (Division II)
+                          { id: 138, name: 'Division III', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                          ]}, // closing grpID=138 (Division III)
+                      ]}, // closing grpID=133 (NCAA)
+                  ]}, // closing grpID=132 (Men\'s collegiate Amer football)
+              ]}, // closing grpID=118 (Men\'s Amer football)
+          ]}, // closing grpID=4 (Men\'s gridiron football)
+      ]}, // closing grpID=113 (Gridiron football)
+      { id: 114, name: 'Baseball', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+          { id: 5, name: 'Men\'s baseball', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
+              { id: 96, name: 'Men\'s pro baseball', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+                  { id: 97, name: 'Americas', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
+                      { id: 101, name: 'United States', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
+                          { id: 102, name: 'Major League Baseball', grpTypeTerm: 'League', grpShowSurvSelRival: false, groups: [
+                              { id: 103, name: 'American League', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
+                                  { id: 105, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                      { id: 216, name: 'Boston Red Sox' },
+                                      { id: 231, name: 'New York Yankees' },
+                                      { id: 215, name: 'Baltimore Orioles' },
+                                      { id: 239, name: 'Tampa Bay Rays' },
+                                      { id: 241, name: 'Toronto Blue Jays' },
+                                  ]}, // closing grpID=105 (East)
+                                  { id: 106, name: 'Central', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                      { id: 224, name: 'Kansas City Royals' },
+                                      { id: 220, name: 'Cleveland Indians' },
+                                      { id: 218, name: 'Chicago White Sox' },
+                                      { id: 229, name: 'Minnesota Twins' },
+                                      { id: 222, name: 'Detroit Tigers' },
+                                  ]}, // closing grpID=106 (Central)
+                                  { id: 107, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                      { id: 237, name: 'Seattle Mariners' },
+                                      { id: 240, name: 'Texas Rangers' },
+                                      { id: 225, name: 'Los Angeles Angels' },
+                                      { id: 223, name: 'Houston Astros' },
+                                      { id: 232, name: 'Oakland Athletics' },
+                                  ]}, // closing grpID=107 (West)
+                              ]}, // closing grpID=103 (American League)
+                              { id: 104, name: 'National League', grpTypeTerm: 'League', grpShowSurvSelRival: true, groups: [
+                                  { id: 108, name: 'East', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                      { id: 214, name: 'Atlanta Braves' },
+                                      { id: 227, name: 'Miami Marlins' },
+                                      { id: 242, name: 'Washington Nationals' },
+                                      { id: 230, name: 'New York Mets' },
+                                      { id: 233, name: 'Philadelphia Phillies' },
+                                  ]}, // closing grpID=108 (East)
+                                  { id: 109, name: 'Central', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                      { id: 234, name: 'Pittsburgh Pirates' },
+                                      { id: 228, name: 'Milwaukee Brewers' },
+                                      { id: 217, name: 'Chicago Cubs' },
+                                      { id: 238, name: 'St Louis Cardinals' },
+                                      { id: 219, name: 'Cincinnati Reds' },
+                                  ]}, // closing grpID=109 (Central)
+                                  { id: 110, name: 'West', grpTypeTerm: 'Division', grpShowSurvSelRival: false, groups: [
+                                      { id: 221, name: 'Colorado Rockies' },
+                                      { id: 213, name: 'Arizona Diamondbacks' },
+                                      { id: 235, name: 'San Diego Padres' },
+                                      { id: 236, name: 'San Francisco Giants' },
+                                      { id: 226, name: 'Los Angeles Dodgers' },
+                                  ]}, // closing grpID=110 (West)
+                              ]}, // closing grpID=104 (National League)
+                          ]}, // closing grpID=102 (Major League Baseball)
+                      ]}, // closing grpID=101 (United States)
+                  ]}, // closing grpID=97 (Americas)
+                  { id: 98, name: 'Asia', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
+                  ]}, // closing grpID=98 (Asia)
+                  { id: 99, name: 'Europe', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
+                  ]}, // closing grpID=99 (Europe)
+                  { id: 100, name: 'Oceania', grpTypeTerm: 'Region', grpShowSurvSelRival: false, groups: [
+                  ]}, // closing grpID=100 (Oceania)
+              ]}, // closing grpID=96 (Men\'s pro baseball)
+          ]}, // closing grpID=5 (Men\'s baseball)
+      ]}, // closing grpID=114 (Baseball)
+      { id: 115, name: 'Cricket', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+          { id: 6, name: 'Men\'s cricket', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
+          ]}, // closing grpID=6 (Men\'s cricket)
+      ]}, // closing grpID=115 (Cricket)
+      { id: 116, name: 'Ice hockey', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+          { id: 7, name: 'Men\'s ice hockey', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
+          ]}, // closing grpID=7 (Men\'s ice hockey)
+      ]}, // closing grpID=116 (Ice hockey)
+      { id: 117, name: 'Rugby', grpTypeTerm: '-99', grpShowSurvSelRival: false, groups: [
+          { id: 8, name: 'Men\'s rugby', grpTypeTerm: 'Sport', grpShowSurvSelRival: false, groups: [
+          ]}, // closing grpID=8 (Men\'s rugby)
+      ]}, // closing grpID=117 (Rugby)
     ]}, // closing grpID=1 (Sports)
   ];
 
@@ -578,11 +894,6 @@ var Omnisurvey_Data = new function() {
 		});
   }
 
-  function mapCompetitiveGroupings() {
-    var groupings = self.filterGroups(LeagueHierarchy[0], 'competitiveGrouping', true);
-    return groupings;
-  };
-
   // recursive filter
   /*function filterGroup(group, key, value) {
     var result,
@@ -606,7 +917,6 @@ var Omnisurvey_Data = new function() {
     self.Surveys = mapSurveys();
     self.Leagues = mapLeagues();
     //self.Teams = mapTeams();
-    self.CompetitiveGroupings = mapCompetitiveGroupings();
   }
 
   init();

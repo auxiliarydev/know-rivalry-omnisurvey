@@ -77,11 +77,11 @@ var Omnisurvey_TeamRivals = function($, data, leagueId, teamId) {
     }
   }
 
-  function createGroupOptions(group, $select, level) {
+  function createGroupOptions(groups, $select, level) {
     // initialize level if needed
     level = typeof level !== 'undefined' ? level : 0;
 
-    $.each(group.groups, function(index, childGroup) {
+    $.each(groups, function(index, childGroup) {
       // stop at team level, skip groups that shouldn't be displayed
       if (!childGroup.groups) { // || !childGroup.grpShowSurvSelRival) {
         return;
@@ -96,19 +96,23 @@ var Omnisurvey_TeamRivals = function($, data, leagueId, teamId) {
       }
 
       var $optGroup = $('<option'+(disabled ? ' disabled="disabled"' : '')+' value="'+childGroup.id+'"'+(selected ? ' selected' : '')+'>'+space+childGroup.name+'</option>').appendTo($select);
-      createGroupOptions(childGroup, $select, level+1);
+
+      if (childGroup.groups) {
+        createGroupOptions(childGroup.groups, $select, level+1);
+      }
     });
   }
 
 	function init() {
-    var group = null;
+    var groups = null;
 
     if (leagueId > 0) {
       // get the league grouping
-      group = data.getCompetitiveGroupingByTeamId(teamId);
-      console.log(group);
+      groups = data.getGroupAndSiblings(leagueId);//data.getCompetitiveGroupingByTeamId(teamId);
+      console.log(groups);
     } else {
       // TODO: INVALID DATA, DO SOMETHING
+      return;
     }
 
     // populate teams on league change
@@ -117,9 +121,9 @@ var Omnisurvey_TeamRivals = function($, data, leagueId, teamId) {
     });
 
     // determine if there are sibling leagues to choose rivals from
-    if (group != null) {
+    if (groups != null) {
       var $select = $('<select class="league-select"></select>').prependTo($question.find('select').parent());
-      createGroupOptions(group, $select);
+      createGroupOptions(groups, $select);
       $select.change(); // trigger change
     } else {
       $question.find(teamDropdownSelector).each(function() {
