@@ -20,7 +20,7 @@ var Omnisurvey_TeamRivals = function($, data, leagueId, teamId) {
 
   function populateTeams($select, groupId) {
     // get the teams in the league
-    var teams = data.getTeamsByGroup(groupId);
+    var teams = data.getTeamsByGroup(groupId, 'name');
 
     var options = '<option value=""></option>';
     teams.forEach(function(team) {

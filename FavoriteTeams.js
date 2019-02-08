@@ -44,7 +44,7 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 	
 	function createFavTeamButtons(){
 		//var teams = data.getTeamsByGroup(leagueId);
-		var teams = data.getTeamsByGroup(leagueId);
+		var teams = data.getTeamsByGroup(leagueId, 'name');
 
 		teams.forEach(function(team) {
 			var strTeamImgFilename = strTeamLogoRootDir + 'logo_team'+team.id+'.svg';

@@ -91,10 +91,20 @@ var Omnisurvey_Data = new function() {
     return null;
   };
 
-  this.getTeamsByGroup = function(groupId) {
+  this.getTeamsByGroup = function(groupId, sort) {
     var groups = getLowestLevelGroups(self.getGroupById(groupId).groups);
 
-    return groups
+    if (groups === null || groups.length <= 0) {
+      return null;
+    }
+
+    if (typeof sort !== 'undefined' && sort !== '') {
+      if (sort === 'name') {
+        groups.sort(sortName);
+      }
+    }
+
+    return groups;
   };
 
   this.getGroupTerms = function(groupId) {
@@ -127,6 +137,16 @@ var Omnisurvey_Data = new function() {
 
     return results;
   };
+
+  function sortName(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
 
   function getLowestLevelGroups(groups, acc) {
     // initialize acc if needed
