@@ -69,6 +69,35 @@
           leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
           teamId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('FAVTEAM_ID'));
 
+          // Hookup Rivalry Points stuff
+          var $cboRivals = jQuery('select[id^=cboRival]');
+          $cboRivals.each(function() {
+            var $this = jQuery(this),
+                $points = $this.closest('.ChoiceRow').next('.ChoiceRow').find('input.QWatchTimer'),
+                rivalKey = $this.attr('id').replace('cbo', ''), //Rival01
+                selectedTeam = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey+'ID'),
+                selectedName = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey+'Name'),
+                selectedPoints = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey+'Points');
+        
+            $this.val(selectedTeam);
+            $points.val(selectedPoints);
+        
+            $this.on('change', function() {
+              var $this = jQuery(this),
+                $selected = jQuery(this).find('option:selected');
+
+              Qualtrics.SurveyEngine.setEmbeddedData(rivalKey+'ID', $this.val());
+              Qualtrics.SurveyEngine.setEmbeddedData(rivalKey+'Name', $selected.text());
+              console.log(rivalKey+'ID: '+jQuery(this).val());
+              console.log(rivalKey+'Name: '+$selected.text());
+            });
+        
+            $points.on('input change', function() {
+              Qualtrics.SurveyEngine.setEmbeddedData(rivalKey+'Points', jQuery(this).val());
+              console.log(rivalKey+'Points: '+jQuery(this).val());
+            });
+          });
+
           init();
         });
 

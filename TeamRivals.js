@@ -152,9 +152,73 @@ var Omnisurvey_TeamRivals = function($, data, leagueId, teamId) {
     $question.on('change', teamDropdownSelector, function() {
       selectTeam($(this));
     });
-
-    // TODO: Hookup Rivalry Points stuff
 	}
 
 	init();
 };
+
+
+/*
+  HANGING ON TO THIS FOR NOW. NOT SURE IF IT IS NEEDED
+*/
+/*
+Qualtrics.SurveyEngine.addOnload(function()
+{
+  // DECLARE VARIABLES MANUALLY
+	var intTotalNumberOfRivals = 7;
+	var strQuestionIDinQualtrics = 'QID164';
+
+	
+  // DECLARE ARRAYS
+  // Declare array of rival team names and set the size. Do the same with Points.
+  // I'm making it such that Position 0 will always be null, just because it's easier
+	var aryRivalNames = new Array(intTotalNumberOfRivals);
+	var aryRivalPts = new Array(intTotalNumberOfRivals);	
+	var aryRivalPointElements = $$('#' + strQuestionIDinQualtrics + ' .ChoiceStructure input');
+	
+// FUNCTIONS
+
+	// Format rival number as 00
+	function fRivalNum(intRivalNum){
+		return ("0" + intRivalNum).slice(-2);
+	};
+	
+	// Each dropdown for the rival team selection is manually assigned an id
+	// This function returns the name of that element.	
+	function fDropdownID(intRivalNum){
+		return 'select#cboRival' + fRivalNum(intRivalNum) + '.QWatchTimer';
+	};
+	
+// LOAD EMBEDDED DATA
+//	If a user hits "Back" after filling out this form, or Data Validation kicks errors,  the Team Name  selections will be gone.
+//	Thus, when this page loads, it checks the Embedded Data.
+//  If the data are not null, it puts those values into the dropdowns by default.
+
+	 for (var intRivalryCounter = 1; intRivalryCounter <=intTotalNumberOfRivals; intRivalryCounter++){
+		var strEmbeddedRivalName = Qualtrics.SurveyEngine.getEmbeddedData('Rival' + fRivalNum(intRivalryCounter) + 'Name');
+		if (strEmbeddedRivalName !== null) {
+			 jQuery(fDropdownID(intRivalryCounter)).val(strEmbeddedRivalName);
+		 };
+	 };
+	
+	
+// STORE THE  RIVAL DATA IN AN ARRAY AND WRITE IT TO THE EMBEDDED DATA
+// The important thing is that this runs all at once, which allows the numbers to iterate.
+// There is probaby a better way than focusout, but this'll do.
+	
+	jQuery('div#'+strQuestionIDinQualtrics).focusout(function(){
+		for (var intRivalryCounter = 1; intRivalryCounter <=intTotalNumberOfRivals; intRivalryCounter++) {
+			var strRivalName = jQuery(fDropdownID(intRivalryCounter)).val();
+			
+			aryRivalNames[intRivalryCounter] = strRivalName;
+			aryRivalPts[intRivalryCounter]=aryRivalPointElements[intRivalryCounter-1].value;			
+			
+			Qualtrics.SurveyEngine.setEmbeddedData( 'Rival' + fRivalNum(intRivalryCounter) + 'Name', aryRivalNames[intRivalryCounter] );
+			Qualtrics.SurveyEngine.setEmbeddedData( 'Rival' + fRivalNum(intRivalryCounter) + 'Points', aryRivalPts[intRivalryCounter] );
+			
+		};
+	});
+
+	
+});
+*/
