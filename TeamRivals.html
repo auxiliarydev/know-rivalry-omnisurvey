@@ -50,7 +50,8 @@
     (function () {
       var OMNISURVEY_TEST = false,
           leagueId = -1,
-          teamId = -1;
+          teamId = -1,
+          self = this;
 
       if (OMNISURVEY_TEST || !window.Qualtrics) {
 
@@ -112,7 +113,11 @@
       }
 
       function init() {
-        var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, Omnisurvey_Data, leagueId, teamId); // this is what loads the Omnisurvey
+        self.omnisurvey_data = new Omnisurvey_Data(jQuery);
+
+        jQuery(document).on('OmnisurveyReady', function() {
+          var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, self.omnisurvey_data, leagueId, teamId); // this is what loads the Omnisurvey
+        });
       }
     })();
   </script>

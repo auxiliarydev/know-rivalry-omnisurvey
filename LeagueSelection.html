@@ -152,7 +152,7 @@
 
 	</div>
 </div>
-</body>body>
+</body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="omnisurveyData.js"></script>
@@ -163,7 +163,8 @@
 				leagueId = -1,
 				surveyId = -1,
 				nextButtonHandler,
-				surveySelectionHandler;
+				surveySelectionHandler,
+				self = this;
 
 		if (OMNISURVEY_TEST || !window.Qualtrics) {
 
@@ -244,11 +245,15 @@
 		}
 
 		function init() {
-			var omnisurvey_LeagueSelection = new Omnisurvey_LeagueSelection(jQuery, Omnisurvey_Data, leagueId, surveyId); // this is what loads the Omnisurvey
-			omnisurvey_LeagueSelection.nextButtonHandler = nextButtonHandler;
+			self.omnisurvey_data = new Omnisurvey_Data(jQuery);
 
-			return omnisurvey_LeagueSelection;
-			//omnisurvey_LeagueSelection.surveySelectionHandler = surveySelectionHandler;
+			jQuery(document).on('OmnisurveyReady', function() {
+				var omnisurvey_LeagueSelection = new Omnisurvey_LeagueSelection(jQuery, self.omnisurvey_data, leagueId, surveyId); // this is what loads the Omnisurvey
+				omnisurvey_LeagueSelection.nextButtonHandler = nextButtonHandler;
+
+				return omnisurvey_LeagueSelection;
+				//omnisurvey_LeagueSelection.surveySelectionHandler = surveySelectionHandler;
+			});
 		}
 	})();
 </script>
