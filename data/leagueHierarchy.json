@@ -242,7 +242,7 @@
                                     { "id": 186, "name": "San Francisco 49ers" },
                                     { "id": 187, "name": "Seattle Seahawks" },
                                     { "id": 188, "name": "Los Angeles Rams" }
-                                ]}, 
+                                ]}
                             ]}, 
                             { "id": 123, "name": "AFC", "grpTypeTerm": "Conference", "grpShowSurvSelRival": true, "groups": [
                                 { "id": 128, "name": "North", "grpTypeTerm": "Division", "grpShowSurvSelRival": true, "groups": [
@@ -351,7 +351,7 @@
                                         { "id": 39, "name": "Illinois" },
                                         { "id": 71, "name": "Northwestern" },
                                         { "id": 83, "name": "Purdue" }
-                                    ]}, 
+                                    ]}
                                 ]}, 
                                 { "id": 143, "name": "C-USA", "grpTypeTerm": "Conference", "grpShowSurvSelRival": true, "groups": [
                                     { "id": 156, "name": "East", "grpTypeTerm": "Division", "grpShowSurvSelRival": false, "groups": [
