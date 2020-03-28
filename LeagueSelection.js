@@ -1,7 +1,7 @@
 'use strict';
+console.log("BDT's version of Omnisurvey_LeagueSelection is doing something.");
 
 var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
-	console.log("BDT's version of Omnisurvey_LeagueSelection is doing something.");
 
 	this.nextButtonHandler;
 	this.surveySelectionHandler;
