@@ -1,5 +1,7 @@
 'use strict';
-console.log("BDT's version of Omnisurvey_LeagueSelection is doing something.");
+function BDTTest(){
+	console.log("BDT's version of Omnisurvey_LeagueSelection is doing something.");
+}
 
 var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 
