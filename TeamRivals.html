@@ -113,11 +113,19 @@
       }
 
       function init() {
-        self.omnisurvey_data = new Omnisurvey_Data(jQuery);
+        if (window.hasOwnProperty('omnisurvey_data') && omnisurvey_data.dataLoaded) {
+          loadQuestion();
+        } else {
+          jQuery(document).on('OmnisurveyReady', function() {
+            loadQuestion();
+          });
 
-        jQuery(document).on('OmnisurveyReady', function() {
-          var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, self.omnisurvey_data, leagueId, teamId); // this is what loads the Omnisurvey
-        });
+          window.omnisurvey_data = new Omnisurvey_Data(jQuery);
+        }
+      }
+
+      function loadQuestion() {
+        var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, self.omnisurvey_data, leagueId, teamId); // this is what loads the Omnisurvey
       }
     })();
   </script>
