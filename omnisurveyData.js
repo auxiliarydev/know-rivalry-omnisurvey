@@ -10,6 +10,8 @@ var Omnisurvey_Data = function($) {
   this.Leagues = {};
   //this.Teams = {};
 
+  this.dataLoaded = false;
+
   this.getLeague = function(leagueId) {
     var leagues = self.Leagues.filter(function(league) {
       return league.lgID === leagueId;
@@ -348,6 +350,8 @@ var Omnisurvey_Data = function($) {
         })
     )
     .then(function() {
+      self.dataLoaded = dataLoaded;
+
       if (dataLoaded) {
         document.dispatchEvent(loadedEvent);
       } else {

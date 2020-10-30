@@ -87,12 +87,20 @@
       function init() {
         //var leagueData = Omnisurvey_Data.getTeamsByLeague(leagueId);
         //leagueData.divisionLevelTerms = leagueLevelTerms;
-        self.omnisurvey_data = new Omnisurvey_Data(jQuery);
+        if (window.hasOwnProperty('omnisurvey_data') && omnisurvey_data.dataLoaded) {
+          loadQuestion();
+        } else {
+          jQuery(document).on('OmnisurveyReady', function() {
+            loadQuestion();
+          });
 
-        jQuery(document).on('OmnisurveyReady', function() {
-          var omnisurvey_FavoriteTeams = new Omnisurvey_FavoriteTeams(jQuery, self.omnisurvey_data, leagueId); // this is what loads the Omnisurvey
-          omnisurvey_FavoriteTeams.favoriteTeamSelectedHandler = favoriteTeamSelectedHandler;
-        });
+          window.omnisurvey_data = new Omnisurvey_Data(jQuery);
+        }
+      }
+
+      function loadQuestion() {
+        var omnisurvey_FavoriteTeams = new Omnisurvey_FavoriteTeams(jQuery, window.omnisurvey_data, leagueId); // this is what loads the Omnisurvey
+        omnisurvey_FavoriteTeams.favoriteTeamSelectedHandler = favoriteTeamSelectedHandler;
       }
     })();
   </script>
