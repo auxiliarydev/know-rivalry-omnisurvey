@@ -221,7 +221,8 @@
 					return true;
 				};
 
-				var omnisurvey_LeagueSelection = init();
+				window.omnisurvey_LeagueSelection;
+				init();
 
 				Qualtrics.SurveyEngine.getInstance('QID182').questionclick = function(event, element) {
 					if (element.type == 'radio') {  //for a single answer multiple choice question, the element type will be radio
@@ -229,7 +230,7 @@
 						var selectedChoice = leagueQuestion.getSelectedChoices()[0];
 						var leagues = leagueQuestion.getQuestionInfo().Choices;
 						var selectedLeagueId = parseInt(leagues[selectedChoice].RecodeValue);
-						omnisurvey_LeagueSelection.leagueSelectionHandler(selectedLeagueId);
+						window.omnisurvey_LeagueSelection.leagueSelectionHandler(selectedLeagueId);
 					}
 				};
 			});
@@ -251,7 +252,7 @@
 				var omnisurvey_LeagueSelection = new Omnisurvey_LeagueSelection(jQuery, self.omnisurvey_data, leagueId, surveyId); // this is what loads the Omnisurvey
 				omnisurvey_LeagueSelection.nextButtonHandler = nextButtonHandler;
 
-				return omnisurvey_LeagueSelection;
+				window.omnisurvey_LeagueSelection = omnisurvey_LeagueSelection;
 				//omnisurvey_LeagueSelection.surveySelectionHandler = surveySelectionHandler;
 			});
 		}
