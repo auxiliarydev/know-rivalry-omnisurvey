@@ -332,14 +332,16 @@ var Omnisurvey_Data = function($) {
         .done(function( data ) {
           //console.log(data);
           tbljsLeagues = data;
+          self.Leagues = mapLeagues();
         }).fail(function(jqXHR, textStatus, errorThrown) {
           dataLoaded = false;
           console.log( "error loading league data: " + textStatus );
         }),
-      $.getJSON( 'https://auxiliarydev.github.io/know-rivalry-omnisurvey/data/leagues.json')
+      $.getJSON( 'https://auxiliarydev.github.io/know-rivalry-omnisurvey/data/surveys.json')
         .done(function( data ) {
           //console.log(data);
-          tbljsLeagues = data;
+          tbljsSurveys = data;
+          self.Surveys = mapSurveys();
         }).fail(function(jqXHR, textStatus, errorThrown) {
           dataLoaded = false;
           console.log( "error loading league data: " + textStatus );
@@ -352,9 +354,6 @@ var Omnisurvey_Data = function($) {
         console.log('error loading data');
       }
     });
-
-    self.Surveys = mapSurveys();
-    self.Leagues = mapLeagues();
     //self.Teams = mapTeams();
   }
 
