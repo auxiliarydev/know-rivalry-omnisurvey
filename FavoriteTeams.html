@@ -1,13 +1,23 @@
 <!doctype html>
 <html>
 
-<head>
-  <meta id="meta-viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.5">
-  <!-- This is here for testing purposes. The real link will be within the Qualtrics Advanced Look & Feel section -->
-  <link href="https://jfe-cdn.qualtrics.com/themes/skins/qualtrics/v4qualtrics2/version-1540490806023-9bd613/stylesheet.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="omnisurvey.css" />
-  <link rel="stylesheet" type="text/css" href="omnisurvey_testing.css" />
-</head>
+	<head>
+		<title>
+			Favorite Teams
+		</title>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		
+		<link rel="stylesheet" type="text/css" href="KROmnisurvey.css" />
+		<script src="KROmnisurveyData.js"></script>
+		<script src="KRFavoriteTeams.js"></script>
+		
+		<meta id="meta-viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.5" />
+		<!-- This is here for testing purposes. The real link will be within the Qualtrics Advanced Look & Feel section -->
+		<!-- <link href="https://jfe-cdn.qualtrics.com/themes/skins/qualtrics/v4qualtrics2/version-1540490806023-9bd613/stylesheet.css" rel="stylesheet" /> -->
+
+
+	</head>
 
 <body id="SurveyEngineBody">
 
@@ -23,7 +33,8 @@
         <div id="teams" class="clearfix"></div>
       </div>
       <div id="selected-team">
-        <a href="#" class="reset-filters">< select a different team</a>
+<!-- There was no 'reset-filters' in the css. What's this purpose? -->
+        <a href="#" class="reset-filters">&lt; select a different team</a>
         <h3></h3>
         <div id="selected-team-logo"></div>
       </div>
@@ -32,32 +43,30 @@
     <div id="Buttons" role="navigation"><input id="NextButton" class="NextButton Button" title="Next  >>" type="button" name="NextButton" value="Next  >>" data-runtime-disabled="runtime.Disabled" data-runtime-aria-label="runtime.ariaLabel" data-runtime-hide="runtime.Hide" page-id="P_1546466904154" aria-label="Next  >>"></div>
   </div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="omnisurveyData.js"></script>
-  <script src="FavoriteTeams.js"></script>
+
   <script>   
-    (function () {
-      var OMNISURVEY_TEST = false,
-          leagueId = -1,
-          favoriteTeamSelectedHandler,
-          self = this;
+  	(function () {
+      const OMNISURVEY_TEST = false;
+      let leagueId = -1;
+      let favoriteTeamSelectedHandler;
+      const self = this;
+
 
       if (OMNISURVEY_TEST || !window.Qualtrics) {
 
         /*****************************************************
           TESTING
         *****************************************************/
-        var searchParams = new URLSearchParams(window.location.search);
+        const searchParams = new URLSearchParams(window.location.search);
         if (searchParams.has('lgID')) {
           leagueId = parseInt(searchParams.get('lgID'));
         }
-        //leagueLevelTerms = ['Conferences', 'Divisions'];
 
         favoriteTeamSelectedHandler = function() {
-         console.log('FAVTEAM: ' + this.FavoriteTeamId);
+          console.log('FAVTEAM: ' + this.FavoriteTeamId);
         };
 
-        jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');
+        jQuery('body').prepend('<div id="SurveyInTestMode">The survey is in test mode.</div>');
 
         init();
 
@@ -88,6 +97,7 @@
         //var leagueData = Omnisurvey_Data.getTeamsByLeague(leagueId);
         //leagueData.divisionLevelTerms = leagueLevelTerms;
         self.omnisurvey_data = new Omnisurvey_Data(jQuery);
+        
 
         jQuery(document).on('OmnisurveyReady', function() {
           var omnisurvey_FavoriteTeams = new Omnisurvey_FavoriteTeams(jQuery, self.omnisurvey_data, leagueId); // this is what loads the Omnisurvey

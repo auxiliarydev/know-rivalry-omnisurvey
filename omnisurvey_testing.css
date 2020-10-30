@@ -11,7 +11,7 @@
   color: #fff;
 }
 
-/* Some styles to mimick the actual survey */
+/* Some styles to mimic the actual survey */
 @media (min-width: 770px) {
   body {
       width: 770px;

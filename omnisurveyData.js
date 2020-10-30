@@ -189,7 +189,8 @@ var Omnisurvey_Data = function($) {
   }
 
 
-  /*this.tbljsLeagueGroups = { 
+  /*
+  this.tbljsLeagueGroups = { 
 		lgID_001: {lgID:1, leagueGroupId:null, lgSport:"American football", lgName:"NCAA DI-A", lgCurrentSurvID:13, lgSlug:"s_m_afb_ncaad1a", lgFullName:"NCAA Division I FBS football", lgTheFullName:"NCAA Division I FBS football", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:1}, 
 		lgID_002: {lgID:2, leagueGroupId:null, lgSport:"Ice hockey", lgName:"NHL", lgCurrentSurvID:14, lgSlug:"s_m_hok_nhl", lgFullName:"National Hockey League", lgTheFullName:"the National Hockey League", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:0}, 
 		lgID_003: {lgID:3, leagueGroupId:null, lgSport:"American football", lgName:"NFL", lgCurrentSurvID:15, lgSlug:"s_m_afb_nfl", lgFullName:"National Football League", lgTheFullName:"the National Football League", lgHasProRel:false, lgBritishSpelling:false, lgNumOfFavteamSublevels:0}, 

@@ -1,7 +1,4 @@
 'use strict';
-function BDTTest(){
-	console.log("BDT's version of Omnisurvey_LeagueSelection is doing something.");
-}
 
 var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 
@@ -116,6 +113,7 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 		$('#SplashWelcomeLeagueLogoDiv').css('background-image', 'url(' + leagueImgFilename + ')');
 	}
 
+	// This fires when the user clicks on a league
 	this.leagueSelectionHandler = function(selectedLeagueId) {
 		if (!isNaN(selectedLeagueId)) {
 			selectLeague(selectedLeagueId);
