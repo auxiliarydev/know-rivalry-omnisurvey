@@ -16,12 +16,12 @@ var Omnisurvey_Data = function ($) {
 
     // I added this just to define the paths up front and switch between local an GitHub
     const pathJSON = {
-        // "LeagueHierarchy": 'https://auxiliarydev.github.io/know-rivalry-omnisurvey/data/leagueHierarchy.json',
-        // "Leagues": 'https://auxiliarydev.github.io/know-rivalry-omnisurvey/data/leagues.json', // tbljsLeagues
-        // "Surveys": 'https://auxiliarydev.github.io/know-rivalry-omnisurvey/data/surveys.json', // tbljsSurveys
-        "LeagueHierarchy": 'data/leagueHierarchy.json',
-        "Leagues": 'data/leagues.json',
-        "Surveys": 'data/surveys.json'
+        "LeagueHierarchy": 'https://auxiliarydev.github.io/know-rivalry-omnisurvey/data/leagueHierarchy.json',
+        "Leagues": 'https://auxiliarydev.github.io/know-rivalry-omnisurvey/data/leagues.json', // tbljsLeagues
+        "Surveys": 'https://auxiliarydev.github.io/know-rivalry-omnisurvey/data/surveys.json', // tbljsSurveys
+        // "LeagueHierarchy": 'data/leagueHierarchy.json',
+        // "Leagues": 'data/leagues.json',
+        // "Surveys": 'data/surveys.json'
     };
 
     // This is called from the end of init()
