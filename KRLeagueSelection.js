@@ -25,7 +25,7 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 	const $SplashWelcomeLeagueLogoDiv = $('#SplashWelcomeLeagueLogoDiv'); // Div with the league logo
 	const $storageLeagueId = $("#storageLeagueId"); // Storage for the selected league
 	
-	// The toggleLeagueSelect function would only be called -- I think -- if the user clicks on 
+	// The toggleLeagueSelect function would only be called -- I think -- if the user clicks on SplashChangeLeagueBtn
 	function toggleLeagueSelect() {
 		$surveySelectionQuestion.slideToggle();
 
@@ -35,7 +35,6 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 		} else {
 			$splashChangeLeagueBtn.css('visibility', 'hidden');
 		}
-		// $splashChangeLeagueBtn.toggle();
 	}
 
 	// Return user to the Select lgID question
@@ -118,10 +117,9 @@ var Omnisurvey_LeagueSelection = function($, data, leagueId, surveyId) {
 		}
 	};
 	
+	// This fires when the user clicks to change the league
 	function changeLeagueButtonHandler() {
-		$SplashWelcomeLeagueLogoDiv.toggle();
 		toggleLeagueSelect();
-		$storageLeagueId.text(''); // Empty out the leagueId from the hidden div on the page
 	}
 
 	function init() {

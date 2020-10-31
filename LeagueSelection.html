@@ -262,6 +262,8 @@
 			if (window.hasOwnProperty('omnisurvey_data') && omnisurvey_data.dataLoaded) {
 				loadQuestion();
 			} else {
+				// The 'OmnisurveyReady' is an event created in KROmnisurveyData.js.
+				// When it happens (i.e., we get to that line of the code), this event listener fires
 				jQuery(document).on('OmnisurveyReady', function() {
 					loadQuestion();
 				});
@@ -270,10 +272,7 @@
 			}
 
 
-			// The 'OmnisurveyReady' is an event created in KROmnisurveyData.js.
-			// When it happens (i.e., we get to that line of the code), this event listener fires
-			jQuery(document).on('OmnisurveyReady', function() {
-
+			function loadQuestion() {
 				// Omnisurvey_LeagueSelection envelopes the entire file of KRLeagueSelection.js
 				// By passing omnisurvey_data, it lets us expose all of KROmnisurveyData.js to KRLeagueSelection.js
 				var omnisurvey_LeagueSelection = new Omnisurvey_LeagueSelection(jQuery, self.omnisurvey_data, leagueId, surveyId); // this is what loads the Omnisurvey
@@ -281,8 +280,9 @@
 
 				window.omnisurvey_LeagueSelection = omnisurvey_LeagueSelection;
 				//omnisurvey_LeagueSelection.surveySelectionHandler = surveySelectionHandler;
-			});
+			};
 		}
 	})();
+	
 </script>
 </html>

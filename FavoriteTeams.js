@@ -18,7 +18,7 @@ var Omnisurvey_FavoriteTeams = function($, data, leagueId) {
 			$favTeamBtns = null,
 			$nextButton = $('#NextButton'),
 			$teamsContainer = $('#teams-container'),
-			$leagueFilter = $('#league-filter');
+			$leagueFilter = $('#leagueFilter');
 	
 	/*function createFilters() {
 		var terms = data.getGroupTerms(leagueId);

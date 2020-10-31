@@ -49,13 +49,61 @@ body p {
 
 /*
 ######################
+SELECT RIVALS PAGE
+######################
+*/
+    #QID164 .c4 {
+        padding: 10px;
+    }
+
+    #QID164 input[type="range"] {
+        width: 100%;
+    }
+    
+    #QID164 input[type="range"]::-webkit-slider-runnable-track {
+    background: -moz-linear-gradient(left, #fffa00 0%, #ff0000 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, #fffa00 0%,#ff0000 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, #fffa00 0%,#ff0000 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fffa00', endColorstr='#ff0000',GradientType=1 ); /* IE6-9 */
+    }
+
+    #QID164 input[type="range"]::-moz-range-track {
+
+    }
+    #QID164 input[type="range"]::-ms-track {
+
+    }
+
+    #QID164 .CSTotalInput {
+    color: red;
+    }
+
+    #QID164 .CSTotalInput.valid-point-total {
+    color: green;
+    }
+
+    #QID164 .rivalry-points-error {
+    color: red;
+    text-align: center;
+    }
+
+    #QID164 .ChoiceRow .LabelWrapper label > span {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    }
+
+
+/*
+######################
 FAVORITE TEAM PAGE
 ######################
 */
 
 .ClassFavTeam:hover{
     background-image: none !important;
-    font-size: 13px;
+    font-size: 14px;
+
 }
   
     .ClassFavTeam {
