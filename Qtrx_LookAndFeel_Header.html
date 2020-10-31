@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+
+<!--
+    This is the code that gets loaded onto every page in the Qualtrics survey.
+    It's in Look & Feel > General > Header.
+-->
+
+    <script type="text/javascript">
+        // Hide the "Powered by Qualtrics button"
+        Qualtrics.SurveyEngine.addOnReady(function() {
+            // Code from TomG's secret repo: https://gist.github.com/marketinview/e9a7fa51c0caf3c7ae9d528aee05bb71
+            // Linked from this help thread: https://www.qualtrics.com/community/discussion/402/hiding-powered-by-qualtrics
+            jQuery('#Plug').attr('style', 'display:none !important');
+        });
+    </script>
+
+    <link href="https://auxiliarydev.github.io/know-rivalry-omnisurvey/omnisurvey.css" rel="stylesheet" type="text/css" />
+
+        <script src="https://unpkg.com/@ungap/url-search-params@0.2.2/min.js"></script> <!-- This was 0.1.2, but it looks like they're on a later version now. I'm not sure.-->        
+
+        <script src="https://auxiliarydev.github.io/know-rivalry-omnisurvey/omnisurveyData.js"></script>
+        <script src="https://auxiliarydev.github.io/know-rivalry-omnisurvey/LeagueSelection.js"></script>
+        <script src="https://auxiliarydev.github.io/know-rivalry-omnisurvey/FavoriteTeams.js"></script>
+        <script src="https://auxiliarydev.github.io/know-rivalry-omnisurvey/TeamRivals.js"></script>
+
+</html>

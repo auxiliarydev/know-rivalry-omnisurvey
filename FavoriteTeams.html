@@ -2,108 +2,128 @@
 <html>
 
 <head>
-  <meta id="meta-viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.5">
-  <!-- This is here for testing purposes. The real link will be within the Qualtrics Advanced Look & Feel section -->
-  <link href="https://jfe-cdn.qualtrics.com/themes/skins/qualtrics/v4qualtrics2/version-1540490806023-9bd613/stylesheet.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="omnisurvey.css" />
-  <link rel="stylesheet" type="text/css" href="omnisurvey_testing.css" />
+    <title>
+        Favorite Teams
+    </title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="omnisurvey.css" />
+    <script src="omnisurveyData.js"></script>
+    <script src="FavoriteTeams.js"></script>
+
+    <meta id="meta-viewport" name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.5" />
+    <!-- This is here for testing purposes. The real link will be within the Qualtrics Advanced Look & Feel section -->
+    <!-- <link href="https://jfe-cdn.qualtrics.com/themes/skins/qualtrics/v4qualtrics2/version-1540490806023-9bd613/stylesheet.css" rel="stylesheet" /> -->
 </head>
 
 <body id="SurveyEngineBody">
 
-  <div class="Skin">
+    <div class="Skin">
 
-    <div class="Questions">
-      <div id="teams-container">
-        <div><b>Filter:</b> <select id="league-filter"></select> </div>
-        <!--<div id="DivFilterReset" class="FilterResetText">Reset all filters</div>-->
-        <!--<div id="filters"></div>-->
-        <div style="clear:both;"><!--temporary--></div>
-        <h2>Teams</h2>
-        <div id="teams" class="clearfix"></div>
-      </div>
-      <div id="selected-team">
-        <a href="#" class="reset-filters">< select a different team</a>
-        <h3></h3>
-        <div id="selected-team-logo"></div>
-      </div>
+        <div class="Questions">
+            <div id="teams-container">
+                <div>
+                    <b>Filter:</b>
+                    <select id="leagueFilter"></select>
+                </div>
+                <!--<div id="DivFilterReset" class="FilterResetText">Reset all filters</div>-->
+                <!--<div id="filters"></div>-->
+                <div style="clear:both;">
+                    <!--temporary-->
+                </div>
+                <h2>Teams</h2>
+                <div id="teams" class="clearfix"></div>
+            </div>
+            <div id="selected-team">
+                <!-- There was no 'reset-filters' in the css. What's this purpose? -->
+                <a href="#" class="reset-filters">&lt; select a different team</a>
+                <h3></h3>
+                <div id="selected-team-logo"></div>
+            </div>
+        </div>
+
+        <div id="Buttons" role="navigation">
+            <input id="NextButton" class="NextButton Button" title="Next  >>" type="button" name="NextButton"
+                value="Next  &gt;&gt;" data-runtime-disabled="runtime.Disabled"
+                data-runtime-aria-label="runtime.ariaLabel" data-runtime-hide="runtime.Hide" page-id="P_1546466904154"
+                aria-label="Next  &gt;&gt;" />
+        </div>
     </div>
 
-    <div id="Buttons" role="navigation"><input id="NextButton" class="NextButton Button" title="Next  >>" type="button" name="NextButton" value="Next  >>" data-runtime-disabled="runtime.Disabled" data-runtime-aria-label="runtime.ariaLabel" data-runtime-hide="runtime.Hide" page-id="P_1546466904154" aria-label="Next  >>"></div>
-  </div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="omnisurveyData.js"></script>
-  <script src="FavoriteTeams.js"></script>
-  <script>   
-    (function () {
-      var OMNISURVEY_TEST = false,
-          leagueId = -1,
-          favoriteTeamSelectedHandler,
-          self = this;
+    <script>
+        (function () {
+            const OMNISURVEY_TEST = false;
+            let leagueId = -1;
+            let favoriteTeamSelectedHandler;
+            const self = this;
 
-      if (OMNISURVEY_TEST || !window.Qualtrics) {
 
-        /*****************************************************
-          TESTING
-        *****************************************************/
-        var searchParams = new URLSearchParams(window.location.search);
-        if (searchParams.has('lgID')) {
-          leagueId = parseInt(searchParams.get('lgID'));
-        }
-        //leagueLevelTerms = ['Conferences', 'Divisions'];
+            if (OMNISURVEY_TEST || !window.Qualtrics) {
 
-        favoriteTeamSelectedHandler = function() {
-         console.log('FAVTEAM: ' + this.FavoriteTeamId);
-        };
+                /*****************************************************
+                  TESTING MODE
+                *****************************************************/
+                const searchParams = new URLSearchParams(window.location.search);
+                if (searchParams.has('lgID')) {
+                    leagueId = parseInt(searchParams.get('lgID'));
+                }
 
-        jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');
+                favoriteTeamSelectedHandler = function () {
+                    console.log('FAVTEAM:', this.FavoriteTeamName, this.FavoriteTeamId);
+                };
 
-        init();
+                jQuery('body').prepend('<div id="SurveyInTestMode">The survey is in test mode.</div>');
 
-      } else {
+                init();
+
+            } else {
+
+                Qualtrics.SurveyEngine.addOnload(function () {
+                    leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
+
+                    favoriteTeamSelectedHandler = function () {
+                        Qualtrics.SurveyEngine.setEmbeddedData('FAVTEAM', this.FavoriteTeamName);
+                        Qualtrics.SurveyEngine.setEmbeddedData('FAVTEAM_ID', this.FavoriteTeamId);
+                    };
+
+                    init();
+                });
+
+                Qualtrics.SurveyEngine.addOnReady(function () {
+                    //Place your JavaScript here to run when the page is fully displayed
+                });
+
+                Qualtrics.SurveyEngine.addOnUnload(function () {
+                    //Place your JavaScript here to run when the page is unloaded
+                });
+
+            }
+
+            function init() {
+                //var leagueData = Omnisurvey_Data.getTeamsByLeague(leagueId);
+                //leagueData.divisionLevelTerms = leagueLevelTerms;
+                if (window.hasOwnProperty('omnisurvey_data') && omnisurvey_data.dataLoaded) {
+                    loadQuestion();
+                } else {
+                    jQuery(document).on('OmnisurveyReady', function () {
+                        loadQuestion();
+                    });
+
+                    window.omnisurvey_data = new Omnisurvey_Data(jQuery);
+                }
+            }
+
+
+            function loadQuestion() {
+                var omnisurvey_FavoriteTeams = new Omnisurvey_FavoriteTeams(jQuery, window.omnisurvey_data, leagueId); // this is what loads the Omnisurvey
+                omnisurvey_FavoriteTeams.favoriteTeamSelectedHandler = favoriteTeamSelectedHandler;
+            }
+        })();
         
-        Qualtrics.SurveyEngine.addOnload(function() {
-          leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
-
-          favoriteTeamSelectedHandler = function() {
-            Qualtrics.SurveyEngine.setEmbeddedData('FAVTEAM', this.FavoriteTeamName);
-            Qualtrics.SurveyEngine.setEmbeddedData('FAVTEAM_ID', this.FavoriteTeamId);
-          };
-
-          init();
-        });
-
-        Qualtrics.SurveyEngine.addOnReady(function() {
-          //Place your JavaScript here to run when the page is fully displayed
-        });
-
-        Qualtrics.SurveyEngine.addOnUnload(function() {
-          //Place your JavaScript here to run when the page is unloaded
-        });
-
-      }
-
-      function init() {
-        //var leagueData = Omnisurvey_Data.getTeamsByLeague(leagueId);
-        //leagueData.divisionLevelTerms = leagueLevelTerms;
-        if (window.hasOwnProperty('omnisurvey_data') && omnisurvey_data.dataLoaded) {
-          loadQuestion();
-        } else {
-          jQuery(document).on('OmnisurveyReady', function() {
-            loadQuestion();
-          });
-
-          window.omnisurvey_data = new Omnisurvey_Data(jQuery);
-        }
-      }
-
-      function loadQuestion() {
-        var omnisurvey_FavoriteTeams = new Omnisurvey_FavoriteTeams(jQuery, window.omnisurvey_data, leagueId); // this is what loads the Omnisurvey
-        omnisurvey_FavoriteTeams.favoriteTeamSelectedHandler = favoriteTeamSelectedHandler;
-      }
-    })();
-  </script>
+    </script>
 </body>
 
 </html>
