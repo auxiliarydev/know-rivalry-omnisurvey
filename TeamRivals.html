@@ -2,133 +2,395 @@
 <html>
 
 <head>
-  <meta id="meta-viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.5">
-  <!-- This is here for testing purposes. The real link will be within the Qualtrics Advanced Look & Feel section -->
-  <link href="https://jfe-cdn.qualtrics.com/themes/skins/qualtrics/v4qualtrics2/version-1540490806023-9bd613/stylesheet.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="omnisurvey.css" />
-  <link rel="stylesheet" type="text/css" href="omnisurvey_testing.css" />
+    <title>
+        Rival selection
+    </title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="omnisurvey.css" />
+    <script src="omnisurveyData.js"></script>
+    <script src="TeamRivals.js"></script>
+
+    <meta id="meta-viewport" name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.5" />
+    <!-- This is here for testing purposes. The real link will be within the Qualtrics Advanced Look & Feel section -->
+    <!-- <link href="https://jfe-cdn.qualtrics.com/themes/skins/qualtrics/v4qualtrics2/version-1540490806023-9bd613/stylesheet.css" rel="stylesheet" /> -->
+
 </head>
 
 <body id="SurveyEngineBody">
 
-  <div class="Skin">
-    <div id="Overlay"></div>
-    <div id="Wrapper">
-      <div id="ProgressBar"><div role="widget"><table class="ProgressBarContainer" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="24">  <tbody><tr> <td> 0% </td> <td> <div class="ProgressBarFillContainer" id="ProgressBarFillContainer">     <span class="offScreen">Current Progress 24%</span>  <div class="ProgressBarFill" style="width: 24%"> </div> </div> </td> <td> 100% </td> </tr></tbody></table></div></div>
-      <div class="SkinInner">
-        <div id="LogoContainer">
-          <div id="Logo"></div>
-        </div>
-        <div id="HeaderContainer">
-            <div id="Header" role="banner"><!-- Facebook Pixel Code -->
-  
-  <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=195412977760411&ev=PageView&noscript=1"
-  /></noscript>
-  <!-- End Facebook Pixel Code -->
-  
-  </div>
-          </div>
-        <div id="SkinContent">
-          <div id="Questions" role="main" style=""><!-- rivets: if runtime.SeparatorDisplayed --><div id="QID8Separator" class="Separator"></div><div class="QuestionOuter BorderColor DB  QID8" id="QID8" questionid="QID8" posttag="QID8" data-runtime-remove-class-hidden="runtime.Displayed"> <div id="QR~QID8~VALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.ErrorMsg" data-runtime-html="runtime.ErrorMsg" style="display: none;"></div> <div id="QR~QID8~SDPVALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.PDPErrorMsg" data-runtime-html="runtime.PDPErrorMsg" style="display: none;"></div> <div class="Inner BorderColor TB"> <div class="InnerInner BorderColor"> <fieldset> <legend> <div class="QuestionText BorderColor" tabindex="-1" style="outline: rgb(0, 0, 0) solid 0px;">If you were given 100 "rivalry points" to allocate to opponents of the  team, how would you allocate those points? You can choose to allocate the 100 total points to just one opponent, or up to seven opposing teams. Your total must equal 100.<br><br>
-  For instance, you may choose to allocate 60 points to the opposing team you consider to be the  team's strongest rival, 30 points to another opposing team that you consider a rival of the  team, and 10 points to a third opponent. Another option might be to allocate all 100 points to the one team you consider to be a rival.</div></legend><div class="QuestionBody"></div> </fieldset> </div> </div>  </div><!-- rivets: if runtime.SeparatorDisplayed --><div id="QID164Separator" class="Separator"></div><div class="QuestionOuter BorderColor Matrix mf QID164" id="QID164" questionid="QID164" posttag="QID164" data-runtime-remove-class-hidden="runtime.Displayed"> <div id="QR~QID164~VALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.ErrorMsg" data-runtime-html="runtime.ErrorMsg" style="display: none;"></div> <div id="QR~QID164~SDPVALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.PDPErrorMsg" data-runtime-html="runtime.PDPErrorMsg" style="display: none;"></div> <div class="Inner BorderColor CS"> <div class="InnerInner BorderColor WVTB"> <fieldset>   <legend> <label class="QuestionText BorderColor">Rivalry points allocation:<br>
-  <small>If listing more than one rival, please list highest point rival first (i.e., the "biggest rival" should be at the top), then the next biggest, then the next, etc.</small></label></legend><div class="QuestionBody  q-matrix desktop"> <table cellpadding="0" cellspacing="0" class="ChoiceStructure"> <caption class="QuestionText BorderColor">Rivalry points allocation:<br>
-  <small>If listing more than one rival, please list highest point rival first (i.e., the "biggest rival" should be at the top), then the next biggest, then the next, etc.</small></caption>  <thead>  <tr class="Answers" aria-hidden="true">   <th scope="col" width="75%" class="Selection BorderColor c4 last" id="header~QID164~1~4" tabindex="-1" role="columnheader">  <span class="LabelWrapper">  <span>Rivalry Points</span>  </span> </th>  </tr> </thead>  <tbody>         <tr class="ChoiceRow   "> <th colspan="2" class="c1 Group" scope="row">Rival 1 (most rivalry points)</th> </tr>        <tr class="ChoiceRow ReadableAlt  "> <th scope="row" colspan="1" class="c1" id="header~QID164~2">  <span class="LabelWrapper table">  <div class="table-cell">  <label>  <span><select id="cboRival01" class="QWatchTimer"><option value="blank"></option><option value="Chennai Super Kings">Chennai Super Kings</option><option value="Delhi Daredevils">Delhi Daredevils</option><option value="Kings XI Punjab">Kings XI Punjab</option><option value="Kolkata Knight Riders">Kolkata Knight Riders</option><option value="Mumbai Indians">Mumbai Indians</option><option value="Rajasthan Royals">Rajasthan Royals</option><option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option><option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option> </select></span> </label>   </div> <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>  </span>  <div class="answered-indicator mobile" aria-hidden="true"> <span data-runtime-html="runtime.Choices.1.SelectedDisplay"></span> </div>  </th> </tr> <tr class="ChoiceRow ReadableAlt  ">    <td class="c4 last  ">    <input class="QR-QID164-1-1 QWatchTimer" type="text" id="QR~QID164~1~1" name="QR~QID164~1" data-runtime-value="runtime.Choices.1.Answers.1.Value" value="" aria-labelledby="header~QID164~1 header~QID164~1~4">  </td>  </tr>         <tr class="ChoiceRow   "> <th colspan="2" class="c1 Group" scope="row">Rival 2</th> </tr>        <tr class="ChoiceRow ReadableAlt  "> <th scope="row" colspan="1" class="c1" id="header~QID164~4">  <span class="LabelWrapper table">  <div class="table-cell">  <label>  <span><select id="cboRival02" class="QWatchTimer"><option value="blank"></option><option value="Chennai Super Kings">Chennai Super Kings</option><option value="Delhi Daredevils">Delhi Daredevils</option><option value="Kings XI Punjab">Kings XI Punjab</option><option value="Kolkata Knight Riders">Kolkata Knight Riders</option><option value="Mumbai Indians">Mumbai Indians</option><option value="Rajasthan Royals">Rajasthan Royals</option><option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option><option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option> </select></span> </label>   </div> <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>  </span>  <div class="answered-indicator mobile" aria-hidden="true"> <span data-runtime-html="runtime.Choices.2.SelectedDisplay"></span> </div>  </th> </tr> <tr class="ChoiceRow ReadableAlt  ">    <td class="c4 last  ">    <input class="QR-QID164-2-1 QWatchTimer" type="text" id="QR~QID164~2~1" name="QR~QID164~2" data-runtime-value="runtime.Choices.2.Answers.1.Value" value="" aria-labelledby="header~QID164~2 header~QID164~1~4">  </td>  </tr>         <tr class="ChoiceRow   "> <th colspan="2" class="c1 Group" scope="row">Rival 3</th> </tr>        <tr class="ChoiceRow ReadableAlt  "> <th scope="row" colspan="1" class="c1" id="header~QID164~6">  <span class="LabelWrapper table">  <div class="table-cell">  <label>  <span><select id="cboRival03" class="QWatchTimer"><option value="blank"></option><option value="Chennai Super Kings">Chennai Super Kings</option><option value="Delhi Daredevils">Delhi Daredevils</option><option value="Kings XI Punjab">Kings XI Punjab</option><option value="Kolkata Knight Riders">Kolkata Knight Riders</option><option value="Mumbai Indians">Mumbai Indians</option><option value="Rajasthan Royals">Rajasthan Royals</option><option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option><option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option> </select></span> </label>   </div> <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>  </span>  <div class="answered-indicator mobile" aria-hidden="true"> <span data-runtime-html="runtime.Choices.3.SelectedDisplay"></span> </div>  </th> </tr> <tr class="ChoiceRow ReadableAlt  ">    <td class="c4 last  ">    <input class="QR-QID164-3-1 QWatchTimer" type="text" id="QR~QID164~3~1" name="QR~QID164~3" data-runtime-value="runtime.Choices.3.Answers.1.Value" value="" aria-labelledby="header~QID164~3 header~QID164~1~4">  </td>  </tr>         <tr class="ChoiceRow   "> <th colspan="2" class="c1 Group" scope="row">Rival 4</th> </tr>        <tr class="ChoiceRow ReadableAlt  "> <th scope="row" colspan="1" class="c1" id="header~QID164~8">  <span class="LabelWrapper table">  <div class="table-cell">  <label>  <span><select id="cboRival04" class="QWatchTimer"><option value="blank"></option><option value="Chennai Super Kings">Chennai Super Kings</option><option value="Delhi Daredevils">Delhi Daredevils</option><option value="Kings XI Punjab">Kings XI Punjab</option><option value="Kolkata Knight Riders">Kolkata Knight Riders</option><option value="Mumbai Indians">Mumbai Indians</option><option value="Rajasthan Royals">Rajasthan Royals</option><option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option><option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option> </select></span> </label>   </div> <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>  </span>  <div class="answered-indicator mobile" aria-hidden="true"> <span data-runtime-html="runtime.Choices.4.SelectedDisplay"></span> </div>  </th> </tr> <tr class="ChoiceRow ReadableAlt  ">    <td class="c4 last  ">    <input class="QR-QID164-4-1 QWatchTimer" type="text" id="QR~QID164~4~1" name="QR~QID164~4" data-runtime-value="runtime.Choices.4.Answers.1.Value" value="" aria-labelledby="header~QID164~4 header~QID164~1~4">  </td>  </tr>         <tr class="ChoiceRow   "> <th colspan="2" class="c1 Group" scope="row">Rival 5</th> </tr>        <tr class="ChoiceRow ReadableAlt  "> <th scope="row" colspan="1" class="c1" id="header~QID164~10">  <span class="LabelWrapper table">  <div class="table-cell">  <label>  <span><select id="cboRival05" class="QWatchTimer"><option value="blank"></option><option value="Chennai Super Kings">Chennai Super Kings</option><option value="Delhi Daredevils">Delhi Daredevils</option><option value="Kings XI Punjab">Kings XI Punjab</option><option value="Kolkata Knight Riders">Kolkata Knight Riders</option><option value="Mumbai Indians">Mumbai Indians</option><option value="Rajasthan Royals">Rajasthan Royals</option><option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option><option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option> </select></span> </label>   </div> <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>  </span>  <div class="answered-indicator mobile" aria-hidden="true"> <span data-runtime-html="runtime.Choices.5.SelectedDisplay"></span> </div>  </th> </tr> <tr class="ChoiceRow ReadableAlt  ">    <td class="c4 last  ">    <input class="QR-QID164-5-1 QWatchTimer" type="text" id="QR~QID164~5~1" name="QR~QID164~5" data-runtime-value="runtime.Choices.5.Answers.1.Value" value="" aria-labelledby="header~QID164~5 header~QID164~1~4">  </td>  </tr>         <tr class="ChoiceRow   "> <th colspan="2" class="c1 Group" scope="row">Rival 6</th> </tr>        <tr class="ChoiceRow ReadableAlt  "> <th scope="row" colspan="1" class="c1" id="header~QID164~12">  <span class="LabelWrapper table">  <div class="table-cell">  <label>  <span><select id="cboRival06" class="QWatchTimer"><option value="blank"></option><option value="Chennai Super Kings">Chennai Super Kings</option><option value="Delhi Daredevils">Delhi Daredevils</option><option value="Kings XI Punjab">Kings XI Punjab</option><option value="Kolkata Knight Riders">Kolkata Knight Riders</option><option value="Mumbai Indians">Mumbai Indians</option><option value="Rajasthan Royals">Rajasthan Royals</option><option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option><option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option> </select></span> </label>   </div> <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>  </span>  <div class="answered-indicator mobile" aria-hidden="true"> <span data-runtime-html="runtime.Choices.6.SelectedDisplay"></span> </div>  </th> </tr> <tr class="ChoiceRow ReadableAlt  ">    <td class="c4 last  ">    <input class="QR-QID164-6-1 QWatchTimer" type="text" id="QR~QID164~6~1" name="QR~QID164~6" data-runtime-value="runtime.Choices.6.Answers.1.Value" value="" aria-labelledby="header~QID164~6 header~QID164~1~4">  </td>  </tr>         <tr class="ChoiceRow   bottom  "> <th colspan="2" class="c1 Group" scope="row">Rival 7</th> </tr>        <tr class="ChoiceRow ReadableAlt  bottom  "> <th scope="row" colspan="1" class="c1" id="header~QID164~14">  <span class="LabelWrapper table">  <div class="table-cell">  <label>  <span><select id="cboRival07" class="QWatchTimer"><option value="blank"></option><option value="Chennai Super Kings">Chennai Super Kings</option><option value="Delhi Daredevils">Delhi Daredevils</option><option value="Kings XI Punjab">Kings XI Punjab</option><option value="Kolkata Knight Riders">Kolkata Knight Riders</option><option value="Mumbai Indians">Mumbai Indians</option><option value="Rajasthan Royals">Rajasthan Royals</option><option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option><option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option> </select></span> </label>   </div> <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>  </span>  <div class="answered-indicator mobile" aria-hidden="true"> <span data-runtime-html="runtime.Choices.7.SelectedDisplay"></span> </div>  </th> </tr> <tr class="ChoiceRow ReadableAlt  bottom  ">    <td class="c4 last  ">    <input class="QR-QID164-7-1 QWatchTimer" type="text" id="QR~QID164~7~1" name="QR~QID164~7" data-runtime-value="runtime.Choices.7.Answers.1.Value" value="" aria-labelledby="header~QID164~7 header~QID164~1~4">  </td>  </tr>        <tr class="CSTotal DarkBG "> <th class="c1 BorderColor" id="header~QID164~total">Total</th>   <td class="BorderColor c4 last"> <div class="SumTotal">  <input class="CSTotalInput InputText QID164-1_Total QWatchTimer" type="text" value="" id="QID164~1_Total" name="QID164~1_Total" readonly="" data-runtime-value="runtime.Answers.1.Total" data-runtime-color="runtime.Answers.1.HighlightTotal" aria-labelledby="header~QID164~total header~QID164~1~4">  </div> </td>  </tr>   </tbody> </table></div> </fieldset> </div> </div>  </div><!-- rivets: if runtime.SeparatorDisplayed --><div id="QID39Separator" class="Separator"></div><div class="QuestionOuter BorderColor TE  QID39" id="QID39" questionid="QID39" posttag="QID39" data-runtime-remove-class-hidden="runtime.Displayed"> <div id="QR~QID39~VALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.ErrorMsg" data-runtime-html="runtime.ErrorMsg" style="display: none;"></div> <div id="QR~QID39~SDPVALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.PDPErrorMsg" data-runtime-html="runtime.PDPErrorMsg" style="display: none;"></div> <div class="Inner BorderColor ML"> <div class="InnerInner BorderColor"> <fieldset> <legend><label for="QR~QID39" class="QuestionText BorderColor">If you would like to offer some additional comments about why you awarded your rivalry points the way you did, please do so here. (optional)</label></legend><div class="QuestionBody"> <div class="ChoiceStructure">  <textarea class="InputText QR-QID39 QWatchTimer" id="QR~QID39" name="QR~QID39~TEXT" data-runtime-textvalue="runtime.Value"></textarea>  </div></div> </fieldset> </div> </div>  </div><!-- rivets: if runtime.SeparatorDisplayed --><div class="QuestionOuter BorderColor Timing  QID127" id="QID127" questionid="QID127" posttag="QID127" data-runtime-remove-class-hidden="runtime.Displayed"> <div id="QR~QID127~VALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.ErrorMsg" data-runtime-html="runtime.ErrorMsg" style="display: none;"></div> <div id="QR~QID127~SDPVALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.PDPErrorMsg" data-runtime-html="runtime.PDPErrorMsg" style="display: none;"></div> <div class="Inner BorderColor PageTimer"> <div class="InnerInner BorderColor"> <fieldset> <div data-runtime-hide="runtime.NotRendered" style="display: none;"><div class="QuestionText">Timing</div><div class="QuestionBody UnhiddenQuestion"><em data-runtime-text="runtime.WontBeDisplayedText">These page timer metrics will not be displayed to the recipient.</em><ul class="ChoiceStructure"> <table> <tbody>  <tr> <th data-runtime-html="runtime.Choices.1.Display">First Click</th> <td> <span id="QR~QID127~1~Display" data-runtime-text="runtime.FirstClick">9.383</span>  seconds </td> </tr>  <tr> <th data-runtime-html="runtime.Choices.2.Display">Last Click</th> <td> <span id="QR~QID127~2~Display" data-runtime-text="runtime.LastClick">30.225</span>  seconds </td> </tr>  <tr> <th data-runtime-html="runtime.Choices.3.Display">Page Submit</th> <td> <span id="QR~QID127~3~Display" data-runtime-text="runtime.TotalTime">0</span>  seconds </td> </tr>  <tr> <th data-runtime-html="runtime.Choices.4.Display">Click Count</th> <td> <span id="QR~QID127~4~Display" data-runtime-text="runtime.NumClicks">8</span>  clicks </td> </tr>  </tbody> </table></ul></div></div> </fieldset> </div> </div>  </div></div>
-          <div id="Buttons" role="navigation"><input id="NextButton" class="NextButton Button" title="Next  >>" type="button" name="NextButton" value="Next  >>" data-runtime-disabled="runtime.Disabled" data-runtime-aria-label="runtime.ariaLabel" data-runtime-hide="runtime.Hide" page-id="P_1546033278685" aria-label="Next  >>"></div>
-        </div>
-      </div>
-      <div id="Footer" role="contentinfo"></div>
-      <div id="PushStickyFooter"></div>
+    <!-- QID8 is TextExplainingRivalryPoints -->
+    <div>
+        <p>
+            If you were given 100 "rivalry points" to allocate to opponents of the team, how would you allocate
+            those points? You can choose to allocate the 100 total points to just one opponent, or up to
+            seven opposing teams. Your total must equal 100.
+        </p>
+        <p>
+            For instance, you may choose to allocate 60 points to the opposing team you consider to be the
+            team's strongest rival, 30 points to another opposing team that you consider a rival of the
+            team, and 10 points to a third opponent. Another option might be to allocate all 100 points to
+            the one team you consider to be a rival.
+        </p>
     </div>
-    <div id="Plug" style="display:none !important"><a style="display:block !important;" href="http://www.qualtrics.com/" target="_blank">Powered by Qualtrics</a></div>
-  </div>
+    <div style="margin: 30px;"></div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="omnisurveyData.js"></script>
-  <script src="TeamRivals.js"></script>
-  <script>
-    (function () {
-      var OMNISURVEY_TEST = false,
-          leagueId = -1,
-          teamId = -1,
-          self = this;
+    <!-- QID164 is RivalryPointsAllocation -->
+    <div id="QID164Separator" class="Separator"></div>
+    <div class="QuestionOuter BorderColor Matrix mf QID164" id="QID164" questionid="QID164" posttag="QID164"
+        data-runtime-remove-class-hidden="runtime.Displayed">
 
-      if (OMNISURVEY_TEST || !window.Qualtrics) {
+        <fieldset>
+            <div class="QuestionBody  q-matrix desktop">
+                <table cellpadding="0" cellspacing="0" class="ChoiceStructure">
+                    <caption class="QuestionText BorderColor">Rivalry points allocation:<br>
+                        <small>If listing more than one rival, please list highest point rival first (i.e., the
+                            "biggest rival" should be at the top), then the next biggest, then the next, etc.</small>
+                    </caption>
+                    <thead>
+                        <tr class="Answers" aria-hidden="true">
+                            <th scope="col" width="75%" class="Selection BorderColor c4 last" id="header~QID164~1~4"
+                                tabindex="-1" role="columnheader"> <span class="LabelWrapper"> <span>Rivalry
+                                        Points</span>
+                                </span> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="ChoiceRow   ">
+                            <th colspan="2" class="c1 Group" scope="row">Rival 1 (most rivalry points)</th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <th scope="row" colspan="1" class="c1" id="header~QID164~2"> <span
+                                    class="LabelWrapper table">
+                                    <div class="table-cell"> <label> <span><select id="cboRival01" class="QWatchTimer">
+                                                    <option value="blank"></option>
+                                                    <option value="Chennai Super Kings">Chennai Super Kings</option>
+                                                    <option value="Delhi Daredevils">Delhi Daredevils</option>
+                                                    <option value="Kings XI Punjab">Kings XI Punjab</option>
+                                                    <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                                                    <option value="Mumbai Indians">Mumbai Indians</option>
+                                                    <option value="Rajasthan Royals">Rajasthan Royals</option>
+                                                    <option value="Royal Challengers Bangalore">Royal Challengers
+                                                        Bangalore</option>
+                                                    <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                                                </select></span> </label> </div>
+                                    <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>
+                                </span>
+                                <div class="answered-indicator mobile" aria-hidden="true"> <span
+                                        data-runtime-html="runtime.Choices.1.SelectedDisplay"></span> </div>
+                            </th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <td class="c4 last  "> <input class="QR-QID164-1-1 QWatchTimer" type="text"
+                                    id="QR~QID164~1~1" name="QR~QID164~1"
+                                    data-runtime-value="runtime.Choices.1.Answers.1.Value" value=""
+                                    aria-labelledby="header~QID164~1 header~QID164~1~4"> </td>
+                        </tr>
+                        <tr class="ChoiceRow   ">
+                            <th colspan="2" class="c1 Group" scope="row">Rival 2</th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <th scope="row" colspan="1" class="c1" id="header~QID164~4"> <span
+                                    class="LabelWrapper table">
+                                    <div class="table-cell"> <label> <span><select id="cboRival02" class="QWatchTimer">
+                                                    <option value="blank"></option>
+                                                    <option value="Chennai Super Kings">Chennai Super Kings</option>
+                                                    <option value="Delhi Daredevils">Delhi Daredevils</option>
+                                                    <option value="Kings XI Punjab">Kings XI Punjab</option>
+                                                    <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                                                    <option value="Mumbai Indians">Mumbai Indians</option>
+                                                    <option value="Rajasthan Royals">Rajasthan Royals</option>
+                                                    <option value="Royal Challengers Bangalore">Royal Challengers
+                                                        Bangalore</option>
+                                                    <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                                                </select></span> </label> </div>
+                                    <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>
+                                </span>
+                                <div class="answered-indicator mobile" aria-hidden="true"> <span
+                                        data-runtime-html="runtime.Choices.2.SelectedDisplay"></span> </div>
+                            </th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <td class="c4 last  "> <input class="QR-QID164-2-1 QWatchTimer" type="text"
+                                    id="QR~QID164~2~1" name="QR~QID164~2"
+                                    data-runtime-value="runtime.Choices.2.Answers.1.Value" value=""
+                                    aria-labelledby="header~QID164~2 header~QID164~1~4"> </td>
+                        </tr>
+                        <tr class="ChoiceRow   ">
+                            <th colspan="2" class="c1 Group" scope="row">Rival 3</th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <th scope="row" colspan="1" class="c1" id="header~QID164~6"> <span
+                                    class="LabelWrapper table">
+                                    <div class="table-cell"> <label> <span><select id="cboRival03" class="QWatchTimer">
+                                                    <option value="blank"></option>
+                                                    <option value="Chennai Super Kings">Chennai Super Kings</option>
+                                                    <option value="Delhi Daredevils">Delhi Daredevils</option>
+                                                    <option value="Kings XI Punjab">Kings XI Punjab</option>
+                                                    <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                                                    <option value="Mumbai Indians">Mumbai Indians</option>
+                                                    <option value="Rajasthan Royals">Rajasthan Royals</option>
+                                                    <option value="Royal Challengers Bangalore">Royal Challengers
+                                                        Bangalore</option>
+                                                    <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                                                </select></span> </label> </div>
+                                    <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>
+                                </span>
+                                <div class="answered-indicator mobile" aria-hidden="true"> <span
+                                        data-runtime-html="runtime.Choices.3.SelectedDisplay"></span> </div>
+                            </th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <td class="c4 last  "> <input class="QR-QID164-3-1 QWatchTimer" type="text"
+                                    id="QR~QID164~3~1" name="QR~QID164~3"
+                                    data-runtime-value="runtime.Choices.3.Answers.1.Value" value=""
+                                    aria-labelledby="header~QID164~3 header~QID164~1~4"> </td>
+                        </tr>
+                        <tr class="ChoiceRow   ">
+                            <th colspan="2" class="c1 Group" scope="row">Rival 4</th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <th scope="row" colspan="1" class="c1" id="header~QID164~8"> <span
+                                    class="LabelWrapper table">
+                                    <div class="table-cell"> <label> <span><select id="cboRival04" class="QWatchTimer">
+                                                    <option value="blank"></option>
+                                                    <option value="Chennai Super Kings">Chennai Super Kings</option>
+                                                    <option value="Delhi Daredevils">Delhi Daredevils</option>
+                                                    <option value="Kings XI Punjab">Kings XI Punjab</option>
+                                                    <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                                                    <option value="Mumbai Indians">Mumbai Indians</option>
+                                                    <option value="Rajasthan Royals">Rajasthan Royals</option>
+                                                    <option value="Royal Challengers Bangalore">Royal Challengers
+                                                        Bangalore</option>
+                                                    <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                                                </select></span> </label> </div>
+                                    <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>
+                                </span>
+                                <div class="answered-indicator mobile" aria-hidden="true"> <span
+                                        data-runtime-html="runtime.Choices.4.SelectedDisplay"></span> </div>
+                            </th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <td class="c4 last  "> <input class="QR-QID164-4-1 QWatchTimer" type="text"
+                                    id="QR~QID164~4~1" name="QR~QID164~4"
+                                    data-runtime-value="runtime.Choices.4.Answers.1.Value" value=""
+                                    aria-labelledby="header~QID164~4 header~QID164~1~4"> </td>
+                        </tr>
+                        <tr class="ChoiceRow   ">
+                            <th colspan="2" class="c1 Group" scope="row">Rival 5</th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <th scope="row" colspan="1" class="c1" id="header~QID164~10"> <span
+                                    class="LabelWrapper table">
+                                    <div class="table-cell"> <label> <span><select id="cboRival05" class="QWatchTimer">
+                                                    <option value="blank"></option>
+                                                    <option value="Chennai Super Kings">Chennai Super Kings</option>
+                                                    <option value="Delhi Daredevils">Delhi Daredevils</option>
+                                                    <option value="Kings XI Punjab">Kings XI Punjab</option>
+                                                    <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                                                    <option value="Mumbai Indians">Mumbai Indians</option>
+                                                    <option value="Rajasthan Royals">Rajasthan Royals</option>
+                                                    <option value="Royal Challengers Bangalore">Royal Challengers
+                                                        Bangalore</option>
+                                                    <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                                                </select></span> </label> </div>
+                                    <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>
+                                </span>
+                                <div class="answered-indicator mobile" aria-hidden="true"> <span
+                                        data-runtime-html="runtime.Choices.5.SelectedDisplay"></span> </div>
+                            </th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <td class="c4 last  "> <input class="QR-QID164-5-1 QWatchTimer" type="text"
+                                    id="QR~QID164~5~1" name="QR~QID164~5"
+                                    data-runtime-value="runtime.Choices.5.Answers.1.Value" value=""
+                                    aria-labelledby="header~QID164~5 header~QID164~1~4"> </td>
+                        </tr>
+                        <tr class="ChoiceRow   ">
+                            <th colspan="2" class="c1 Group" scope="row">Rival 6</th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <th scope="row" colspan="1" class="c1" id="header~QID164~12"> <span
+                                    class="LabelWrapper table">
+                                    <div class="table-cell"> <label> <span><select id="cboRival06" class="QWatchTimer">
+                                                    <option value="blank"></option>
+                                                    <option value="Chennai Super Kings">Chennai Super Kings</option>
+                                                    <option value="Delhi Daredevils">Delhi Daredevils</option>
+                                                    <option value="Kings XI Punjab">Kings XI Punjab</option>
+                                                    <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                                                    <option value="Mumbai Indians">Mumbai Indians</option>
+                                                    <option value="Rajasthan Royals">Rajasthan Royals</option>
+                                                    <option value="Royal Challengers Bangalore">Royal Challengers
+                                                        Bangalore</option>
+                                                    <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                                                </select></span> </label> </div>
+                                    <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>
+                                </span>
+                                <div class="answered-indicator mobile" aria-hidden="true"> <span
+                                        data-runtime-html="runtime.Choices.6.SelectedDisplay"></span> </div>
+                            </th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  ">
+                            <td class="c4 last  "> <input class="QR-QID164-6-1 QWatchTimer" type="text"
+                                    id="QR~QID164~6~1" name="QR~QID164~6"
+                                    data-runtime-value="runtime.Choices.6.Answers.1.Value" value=""
+                                    aria-labelledby="header~QID164~6 header~QID164~1~4"> </td>
+                        </tr>
+                        <tr class="ChoiceRow   bottom  ">
+                            <th colspan="2" class="c1 Group" scope="row">Rival 7</th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  bottom  ">
+                            <th scope="row" colspan="1" class="c1" id="header~QID164~14"> <span
+                                    class="LabelWrapper table">
+                                    <div class="table-cell"> <label> <span><select id="cboRival07" class="QWatchTimer">
+                                                    <option value="blank"></option>
+                                                    <option value="Chennai Super Kings">Chennai Super Kings</option>
+                                                    <option value="Delhi Daredevils">Delhi Daredevils</option>
+                                                    <option value="Kings XI Punjab">Kings XI Punjab</option>
+                                                    <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                                                    <option value="Mumbai Indians">Mumbai Indians</option>
+                                                    <option value="Rajasthan Royals">Rajasthan Royals</option>
+                                                    <option value="Royal Challengers Bangalore">Royal Challengers
+                                                        Bangalore</option>
+                                                    <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                                                </select></span> </label> </div>
+                                    <div class="dropdown-arrow mobile"> <span class="dropdown-down">&nbsp;</span> </div>
+                                </span>
+                                <div class="answered-indicator mobile" aria-hidden="true"> <span
+                                        data-runtime-html="runtime.Choices.7.SelectedDisplay"></span> </div>
+                            </th>
+                        </tr>
+                        <tr class="ChoiceRow ReadableAlt  bottom  ">
+                            <td class="c4 last  "> <input class="QR-QID164-7-1 QWatchTimer" type="text"
+                                    id="QR~QID164~7~1" name="QR~QID164~7"
+                                    data-runtime-value="runtime.Choices.7.Answers.1.Value" value=""
+                                    aria-labelledby="header~QID164~7 header~QID164~1~4"> </td>
+                        </tr>
+                        <tr class="CSTotal DarkBG ">
+                            <th class="c1 BorderColor" id="header~QID164~total">Total</th>
+                            <td class="BorderColor c4 last">
+                                <div class="SumTotal"> <input class="CSTotalInput InputText QID164-1_Total QWatchTimer"
+                                        type="text" value="" id="QID164~1_Total" name="QID164~1_Total" readonly=""
+                                        data-runtime-value="runtime.Answers.1.Total"
+                                        data-runtime-color="runtime.Answers.1.HighlightTotal"
+                                        aria-labelledby="header~QID164~total header~QID164~1~4"> </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
 
-        /*****************************************************
-          TESTING
-        *****************************************************/
-        leagueId = 10;
-        teamId = 244;
 
-        jQuery('body').prepend('<div id="testing">The survey is in test mode.</div>');
+    <script>
+        (function () {
+            const OMNISURVEY_TEST = false;
+            let leagueId = -1;
+            teamId = -1;
+            const self = this;
 
-        init();
-      } else {
+
+            if (OMNISURVEY_TEST || !window.Qualtrics) {
+
+                /*****************************************************
+                  TESTING MODE
+                *****************************************************/
+                leagueId = 10;
+                teamId = 244;
+
+                jQuery('body').prepend('<div id="SurveyInTestMode">The survey is in test mode.</div>');
+
+                nextButtonHandler = function (isValidData) {
+                    console.log("nextButtonHandler says isValidRivalSelection=", isValidData);
+                    return true;
+                }
+
+                init();
+            } else {
+
+                Qualtrics.SurveyEngine.addOnload(function () {
+                    leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
+                    teamId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('FAVTEAM_ID'));
+
+                    // Hookup Rivalry Points stuff
+
+                    // Select all dropdown with cboRival in their name (cboRival01, cboRival02, etc.)
+                    const $cboRivals = jQuery('select[id^=cboRival]');
+                    $cboRivals.each(function () {
+                        const $this = jQuery(this);
+                        let $points = $this.closest('.ChoiceRow').next('.ChoiceRow').find('input.QWatchTimer');
+                        const rivalKey = $this.attr('id').replace('cbo', ''); // returns Rival01, Rival02, etc.
+
+                        // If someone clicks the back button on the previous page,
+                        // this will re-populate the dropdown menus with the user's choices
+                        let selectedTeam = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey + 'ID');
+                        let selectedName = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey + 'Name');
+                        let selectedPoints = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey + 'Points');
+                        $this.val(selectedTeam);
+                        $points.val(selectedPoints);
+
+
+                        $this.on('change', function () {
+                            const $this = jQuery(this);
+                            $selected = jQuery(this).find('option:selected');
+
+                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'ID', $this.val());
+                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Name', $selected.text());
+                            console.log(rivalKey + 'ID: ' + jQuery(this).val());
+                            console.log(rivalKey + 'Name: ' + $selected.text());
+                        });
+
+                        $points.on('input change', function () {
+                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Points', jQuery(this).val());
+                            console.log(rivalKey + 'Points: ' + jQuery(this).val());
+                        });
+                    });
+
+                    nextButtonHandler = function (isValidData) {
+                        if (window.Qualtrics && Qualtrics.SurveyEngine) {
+                            if (isValidData){
+                                Qualtrics.SurveyEngine.Page.pageButtons.enableNextButton();
+                            } else {
+                                Qualtrics.SurveyEngine.Page.pageButtons.disableNextButton();
+                            }
+                        }
+                        return true;
+                    }
+
+                    init();
+                });
+
+                Qualtrics.SurveyEngine.addOnReady(function () {
+                    //Place your JavaScript here to run when the page is fully displayed
+                });
+
+                Qualtrics.SurveyEngine.addOnUnload(function () {
+                    //Place your JavaScript here to run when the page is unloaded
+                });
+
+            }
+
+            function init() {
+                if (window.hasOwnProperty('omnisurvey_data') && omnisurvey_data.dataLoaded) {
+                    loadQuestion();
+                } else {
+                    jQuery(document).on('OmnisurveyReady', function () {
+                        loadQuestion();
+                    });
+
+                    window.omnisurvey_data = new Omnisurvey_Data(jQuery);
+                }
+            }
+
+            function loadQuestion() {
+                var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, self.omnisurvey_data, leagueId, teamId); // this is what loads the Omnisurvey
+            }
+        })();
         
-        Qualtrics.SurveyEngine.addOnload(function() {
-          leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
-          teamId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('FAVTEAM_ID'));
-
-          // Hookup Rivalry Points stuff
-          var $cboRivals = jQuery('select[id^=cboRival]');
-          $cboRivals.each(function() {
-            var $this = jQuery(this),
-                $points = $this.closest('.ChoiceRow').next('.ChoiceRow').find('input.QWatchTimer'),
-                rivalKey = $this.attr('id').replace('cbo', ''), //Rival01
-                selectedTeam = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey+'ID'),
-                selectedName = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey+'Name'),
-                selectedPoints = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey+'Points');
-        
-            $this.val(selectedTeam);
-            $points.val(selectedPoints);
-        
-            $this.on('change', function() {
-              var $this = jQuery(this),
-                $selected = jQuery(this).find('option:selected');
-
-              Qualtrics.SurveyEngine.setEmbeddedData(rivalKey+'ID', $this.val());
-              Qualtrics.SurveyEngine.setEmbeddedData(rivalKey+'Name', $selected.text());
-              console.log(rivalKey+'ID: '+jQuery(this).val());
-              console.log(rivalKey+'Name: '+$selected.text());
-            });
-        
-            $points.on('input change', function() {
-              Qualtrics.SurveyEngine.setEmbeddedData(rivalKey+'Points', jQuery(this).val());
-              console.log(rivalKey+'Points: '+jQuery(this).val());
-            });
-          });
-
-          init();
-        });
-
-        Qualtrics.SurveyEngine.addOnReady(function() {
-          //Place your JavaScript here to run when the page is fully displayed
-        });
-
-        Qualtrics.SurveyEngine.addOnUnload(function() {
-          //Place your JavaScript here to run when the page is unloaded
-        });
-
-      }
-
-      function init() {
-        if (window.hasOwnProperty('omnisurvey_data') && omnisurvey_data.dataLoaded) {
-          loadQuestion();
-        } else {
-          jQuery(document).on('OmnisurveyReady', function() {
-            loadQuestion();
-          });
-
-          window.omnisurvey_data = new Omnisurvey_Data(jQuery);
-        }
-      }
-
-      function loadQuestion() {
-        var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, self.omnisurvey_data, leagueId, teamId); // this is what loads the Omnisurvey
-      }
-    })();
-  </script>
+    </script>
 </body>
 
 </html>
