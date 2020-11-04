@@ -8,9 +8,9 @@
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		
-		<link rel="stylesheet" type="text/css" href="KROmnisurvey.css" />
-		<script src="KROmnisurveyData.js"></script>
-		<script src="KRLeagueSelection.js"></script>
+		<link rel="stylesheet" type="text/css" href="omnisurvey.css" />
+		<script src="omnisurveyData.js"></script>
+		<script src="LeagueSelection.js"></script>
 		
 		<meta id="meta-viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.5" />
 		<!-- This is here for testing purposes. The real link will be within the Qualtrics Advanced Look & Feel section -->
@@ -238,7 +238,7 @@
 						// We manually set the RecodeValues to match our lgID values
 						const selectedLeagueId = parseInt(leagues[selectedChoice].RecodeValue);
 
-						// This calls the leagueSelectionHandler function (from KRLeagueSelection.js), passing it the selected league's RecodeValue
+						// This calls the leagueSelectionHandler function (from LeagueSelection.js), passing it the selected league's RecodeValue
 						window.omnisurvey_LeagueSelection.leagueSelectionHandler(selectedLeagueId);
 					}
 				};
@@ -262,7 +262,7 @@
 			if (window.hasOwnProperty('omnisurvey_data') && omnisurvey_data.dataLoaded) {
 				loadQuestion();
 			} else {
-				// The 'OmnisurveyReady' is an event created in KROmnisurveyData.js.
+				// The 'OmnisurveyReady' is an event created in omnisurveyData.js.
 				// When it happens (i.e., we get to that line of the code), this event listener fires
 				jQuery(document).on('OmnisurveyReady', function() {
 					loadQuestion();
@@ -273,8 +273,8 @@
 
 
 			function loadQuestion() {
-				// Omnisurvey_LeagueSelection envelopes the entire file of KRLeagueSelection.js
-				// By passing omnisurvey_data, it lets us expose all of KROmnisurveyData.js to KRLeagueSelection.js
+				// Omnisurvey_LeagueSelection envelopes the entire file of LeagueSelection.js
+				// By passing omnisurvey_data, it lets us expose all of omnisurveyData.js to LeagueSelection.js
 				var omnisurvey_LeagueSelection = new Omnisurvey_LeagueSelection(jQuery, self.omnisurvey_data, leagueId, surveyId); // this is what loads the Omnisurvey
 				omnisurvey_LeagueSelection.nextButtonHandler = nextButtonHandler;
 
