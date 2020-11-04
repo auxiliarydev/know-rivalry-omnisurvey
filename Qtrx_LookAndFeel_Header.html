@@ -6,22 +6,18 @@
     It's in Look & Feel > General > Header.
 -->
 
-    <script type="text/javascript">
-        // Hide the "Powered by Qualtrics button"
-        Qualtrics.SurveyEngine.addOnReady(function() {
-            // Code from TomG's secret repo: https://gist.github.com/marketinview/e9a7fa51c0caf3c7ae9d528aee05bb71
-            // Linked from this help thread: https://www.qualtrics.com/community/discussion/402/hiding-powered-by-qualtrics
-            jQuery('#Plug').attr('style', 'display:none !important');
-        });
-    </script>
-
-    <link href="https://auxiliarydev.github.io/know-rivalry-omnisurvey/omnisurvey.css" rel="stylesheet" type="text/css" />
-
-        <script src="https://unpkg.com/@ungap/url-search-params@0.2.2/min.js"></script> <!-- This was 0.1.2, but it looks like they're on a later version now. I'm not sure.-->        
-
-        <script src="https://auxiliarydev.github.io/know-rivalry-omnisurvey/omnisurveyData.js"></script>
-        <script src="https://auxiliarydev.github.io/know-rivalry-omnisurvey/LeagueSelection.js"></script>
-        <script src="https://auxiliarydev.github.io/know-rivalry-omnisurvey/FavoriteTeams.js"></script>
-        <script src="https://auxiliarydev.github.io/know-rivalry-omnisurvey/TeamRivals.js"></script>
+<script type="text/javascript">
+// Hide the "Powered by Qualtrics button"
+Qualtrics.SurveyEngine.addOnReady(function() {
+jQuery('#Plug').attr('style', 'display:none !important');
+});
+</script>
+<script src="https://unpkg.com/@ungap/url-search-params@0.2.2/min.js"></script>
+<!--Danny had url-search-params as 0.1.2. LINKS: Production:auxiliarydev.github.io; Testing:b-d-t.github.io.-->    
+<link  href="https://b-d-t.github.io/know-rivalry-omnisurvey/omnisurvey.css" rel="stylesheet" type="text/css" />
+<script src="https://b-d-t.github.io/know-rivalry-omnisurvey/omnisurveyData.js"></script>
+<script src="https://b-d-t.github.io/know-rivalry-omnisurvey/LeagueSelection.js"></script>
+<script src="https://b-d-t.github.io/know-rivalry-omnisurvey/FavoriteTeams.js"></script>
+<script src="https://b-d-t.github.io/know-rivalry-omnisurvey/TeamRivals.js"></script>
 
 </html>
