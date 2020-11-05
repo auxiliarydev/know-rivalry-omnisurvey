@@ -69,7 +69,7 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
             return enableBtn;
         }
 
-        function setErrorMsg(errorText, textAction = 'show'){
+        function setErrorMsg(errorText, textAction = 'show', otherParams={}){
             // Fetch any current text in the error box
             let strErrorMsg = $rivalryPointsError.html() || '',
                 prefix='<br>';
@@ -77,8 +77,10 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
             // Append the error message to any others already in the error box
             if (textAction == 'show'){ 
                 prefix = (strErrorMsg.length == 0) ? '' : prefix
-                strErrorMsg += prefix + errorText;
-                $rivalryPointsError.html(strErrorMsg);
+                if ( otherParams.rivalPointSum != 0 && !strErrorMsg.includes(errorText) ){
+                    strErrorMsg += prefix + errorText;
+                    $rivalryPointsError.html(strErrorMsg);
+                }
             }
 
             // Remove the error message if it exists within the error box
@@ -112,7 +114,7 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
                 return true;
             } else {
                 $rivalryPointsTotal.removeClass('valid-point-total');
-                setErrorMsg(strErrorMsg, 'show'); // show error message
+                setErrorMsg(strErrorMsg, 'show',{rivalPointSum}); // show error message
                 return false;
             }
         }
