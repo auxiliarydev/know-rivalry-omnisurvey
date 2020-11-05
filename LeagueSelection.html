@@ -152,7 +152,7 @@
 			// window.location.search returns everything after the ? in the URL
 			// searchParams is a object with key:value pairs for all the entries in the query string
 			// E.g., LeagueSelection.html?cat=88&dog=98 would result in {"cat":88, "dog":98}
-			const searchParams = new URLSearchParams(window.location.search); // TODO: POLYFILL THIS FOR IE
+			let searchParams = new URLSearchParams(window.location.search); // TODO: POLYFILL THIS FOR IE
 
 			// Check if lgID is one of the keys passed in the query string.
 			// This is to mimic the embedded data of Qualtrics,
@@ -231,12 +231,12 @@
 
 				Qualtrics.SurveyEngine.getInstance('QID182').questionclick = function(event, element) {
 					if (element.type == 'radio') {  //for a single answer multiple choice question, the element type will be radio
-						const leagueQuestion = Qualtrics.SurveyEngine.getInstance('QID182');
-						const leagues = leagueQuestion.getQuestionInfo().Choices;
-						const selectedChoice = leagueQuestion.getSelectedChoices()[0];
+						let leagueQuestion = Qualtrics.SurveyEngine.getInstance('QID182');
+						let leagues = leagueQuestion.getQuestionInfo().Choices;
+						let selectedChoice = leagueQuestion.getSelectedChoices()[0];
 
 						// We manually set the RecodeValues to match our lgID values
-						const selectedLeagueId = parseInt(leagues[selectedChoice].RecodeValue);
+						let selectedLeagueId = parseInt(leagues[selectedChoice].RecodeValue);
 
 						// This calls the leagueSelectionHandler function (from LeagueSelection.js), passing it the selected league's RecodeValue
 						window.omnisurvey_LeagueSelection.leagueSelectionHandler(selectedLeagueId);

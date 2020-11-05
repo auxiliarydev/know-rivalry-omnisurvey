@@ -1,33 +1,23 @@
 'use strict';
 
 var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
-    this.nextButtonHandler;
-    this.Rival01TeamId = -1; this.Rival01TeamName = "";
-    this.Rival02TeamId = -1; this.Rival02TeamName = "";
-    this.Rival03TeamId = -1; this.Rival03TeamName = "";
-    this.Rival04TeamId = -1; this.Rival04TeamName = "";
-    this.Rival05TeamId = -1; this.Rival05TeamName = "";
-    this.Rival06TeamId = -1; this.Rival06TeamName = "";
-    this.Rival07TeamId = -1; this.Rival07TeamName = "";
-    this.Rival08TeamId = -1; this.Rival08TeamName = "";
-    this.Rival09TeamId = -1; this.Rival09TeamName = "";
-    this.Rival10TeamId = -1; this.Rival10TeamName = "";
 
 
+// WAS: Other than isValidRivalsSelection, all of these were const instead of let
     const questionId = 'QID164';
-    const $question = $('#' + questionId);
-    const teamDropdownSelector = 'select:not(.league-select)';
-    const $rivalryPointsInputs = $question.find('.ChoiceRow input[type="text"]');
-    const $rivalryPointsTotal = $('.CSTotalInput'); // Danny had this as '.CSTotal input', but I think that was a typo
-    const $rivalryPointsError = $('<div class="rivalry-points-error"></div>').appendTo($question);
-    let isValidRivalsSelection = false;
+    let $question = $('#' + questionId);
+    let $rivalryPointsInputs = $question.find('.ChoiceRow input[type="text"]');
+    let $rivalryPointsTotal = $('.CSTotal input');
+    let $rivalryPointsError = $('<div class="rivalry-points-error"></div>').appendTo($question);
+    let teamDropdownSelector = 'select:not(.league-select)';
 
 
     // Populate teams in second dropdown when user changes the league
     function changeLeague($select) {
         // get the selected group id
-        const groupId = parseInt($select.val());
-        const teamDropdown = $select.next('select');
+// WAS: These were const instead of let
+        let groupId = parseInt($select.val());
+        let teamDropdown = $select.next('select');
         populateTeams(teamDropdown, groupId);
     }
 
@@ -45,6 +35,89 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
 
         $select.html(options) // set options
             .change(); // trigger change
+    }
+
+    //WAS: I didn't have this function. I think I'd tried to move it into the .html file
+    function selectTeam($select) {
+        const $rivalryPointsInput = $select.closest('.ChoiceRow').next().find('input');
+    
+        if ($select.val() === '') {
+          $rivalryPointsInput.attr({disabled: 'disabled', min: '0'}).val(0);
+        } else {
+          $rivalryPointsInput.removeAttr('disabled').attr({min: '1'}).val(1);
+        }
+    
+        // trigger change
+        $rivalryPointsInput.change();
+    }
+
+    function validate() {
+        let isValidRivalsSelection = false;
+        
+        isValidRivalsSelection = check100Points();
+        nextBtn(isValidRivalsSelection);
+
+        function nextBtn(enableBtn){
+            if (window.Qualtrics && Qualtrics.SurveyEngine) {
+                const PageBtns = Qualtrics.SurveyEngine.Page.pageButtons;
+                if (enableBtn){
+                    PageBtns.enableNextButton(); 
+                } else {
+                    PageBtns.disableNextButton();
+                }
+            }
+            return enableBtn;
+        }
+
+        function setErrorMsg(errorText, textAction = 'show', otherParams={}){
+            // Fetch any current text in the error box
+            let strErrorMsg = $rivalryPointsError.html() || '',
+                prefix='<br>';
+
+            // Append the error message to any others already in the error box
+            if (textAction == 'show'){ 
+                prefix = (strErrorMsg.length == 0) ? '' : prefix
+                if ( otherParams.rivalPointSum != 0 && !strErrorMsg.includes(errorText) ){
+                    strErrorMsg += prefix + errorText;
+                    $rivalryPointsError.html(strErrorMsg);
+                }
+            }
+
+            // Remove the error message if it exists within the error box
+            if (textAction == 'hide'){
+                // If there's more than just this message in the box, remove the line return AND the message
+                prefix = (errorText.length == strErrorMsg.length) ? '' : prefix
+                // If this error isn't first, there will be a prefix. But it could be anywhere, so use regex
+                strErrorMsg = strErrorMsg.replace( new RegExp( "("+prefix+")?"+errorText, "g" ), "" );
+                strErrorMsg = strErrorMsg.replace( new RegExp(prefix), ""); // Removes the <br> that might be left at the front
+                // Set the text within the DIV
+                $rivalryPointsError.html(strErrorMsg);
+            }
+        }
+
+        // RIVALRY POINT TOTAL
+        function check100Points(){
+            const strErrorMsg = "Rivalry points must total 100";
+            let rivalPointSum = 0;
+
+            // Add all the points in rivalry points inputs fields
+            $rivalryPointsInputs.each(function () {
+                rivalPointSum += Number($(this).val());
+            });
+
+            // Update the total cell at the bottom
+            $rivalryPointsTotal.val(rivalPointSum);
+
+            if (rivalPointSum == 100) {
+                $rivalryPointsTotal.addClass('valid-point-total');
+                setErrorMsg(strErrorMsg, 'hide'); // hide error message
+                return true;
+            } else {
+                $rivalryPointsTotal.removeClass('valid-point-total');
+                setErrorMsg(strErrorMsg, 'show',{rivalPointSum}); // show error message
+                return false;
+            }
+        }
     }
 
 
@@ -70,14 +143,15 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
                 spacer += '&nbsp;';
             }
 
-            const strOptionGroup = [
+// WAS: I switched both of these to let
+            let strOptionGroup = [
                 '<option',
                 (disabled ? ' disabled="disabled"' : ''),
                 ' value="' + childGroup.id + '"',
                 (selected ? ' selected' : ''),
                 '>' + spacer + childGroup.name,
                 '</option>'].join('');
-            const $optGroup = $(strOptionGroup).appendTo($select);
+            let $optGroup = $(strOptionGroup).appendTo($select);
 
             // Iterate on itself. Use the level argument to avoid infinite looping
             if (childGroup.groups) {
@@ -86,61 +160,6 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
         });
     }
 
-    function validate() {
-        let sum = 0;
-        $rivalryPointsInputs.each(function () {
-            sum += Number($(this).val());
-        });
-        $rivalryPointsTotal.val(sum);
-        if (sum == 100) {
-            $rivalryPointsTotal.addClass('valid-point-total');
-            isValidRivalsSelection = true;
-
-            // hide message
-            $rivalryPointsError.html('');
-
-        } else {
-            $rivalryPointsTotal.removeClass('valid-point-total');
-            isValidRivalsSelection = false;
-
-            // display message
-            $rivalryPointsError.html('Rivalry points should total 100');
-
-        }
-        self.nextButtonHandler(isValidRivalsSelection);
-    }
-
-	function selectRivalTeam(teamId, teamName) {
-		// self.FavoriteTeamId = teamId; // This is the value that we'll eventually write to Qualtrics embedded data
-		// self.FavoriteTeamName = teamName;
-
-		// if (teamId > 0) {
-		// 	const team = data.getGroupById(teamId);
-		// 	const imgPath = strTeamLogoRootDir + 'logo_team'+team.id+'.svg';
-
-		// 	// set the logo
-		// 	$selectedTeamLogo.css('background-image', 'url(' + imgPath + ')');
-		// 	$selectedTeamContainer.find('h3').html(self.FavoriteTeamName);
-
-		// 	// enable next button
-		// 	$nextButton.removeAttr('disabled');
-
-		// 	$selectedTeamContainer.show();
-		// 	$teamsContainer.hide();
-
-		// } else {
-		// 	$nextButton.attr('disabled', 'disabled');
-
-
-		// 	// hide/show containers
-		// 	$selectedTeamContainer.hide();
-		// 	$teamsContainer.show();
-		// }
-
-		// if (typeof self.favoriteTeamSelectedHandler === 'function') {
-		// 	self.favoriteTeamSelectedHandler();
-		// }
-	}
 
 
     function init() {
@@ -162,7 +181,8 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
 
         // determine if there are sibling leagues to choose rivals from
         if (groups != null) {
-            const $select = $('<select class="league-select"></select>').prependTo($question.find('select').parent());
+// WAS: Changed const to let (here it might have mattered)
+            let $select = $('<select class="league-select"></select>').prependTo($question.find('select').parent());
             createGroupOptions(groups, $select);
             $select.change(); // trigger change
         } else {
@@ -183,13 +203,18 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
             .attr({ type: 'number', min: 0, max: 100, disabled: 'disabled' })
             .before($range)
             .on('input change', function () {
-                const $this = $(this);
+//WAS const $this
+                let $this = $(this);
                 $this.prev('input').val($this.val());
                 validate();
             });
 
-    }
+        // best way to determine team selection dropdown currently
+        $question.on('change', teamDropdownSelector, function() {
+            selectTeam($(this));
+        });
 
+    }
 
     init();
 };
