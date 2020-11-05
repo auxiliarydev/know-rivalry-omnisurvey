@@ -1,25 +1,12 @@
 'use strict';
 
 var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
-    // this.nextButtonHandler;
-    // this.Rival01TeamId = -1; this.Rival01TeamName = "";
-    // this.Rival02TeamId = -1; this.Rival02TeamName = "";
-    // this.Rival03TeamId = -1; this.Rival03TeamName = "";
-    // this.Rival04TeamId = -1; this.Rival04TeamName = "";
-    // this.Rival05TeamId = -1; this.Rival05TeamName = "";
-    // this.Rival06TeamId = -1; this.Rival06TeamName = "";
-    // this.Rival07TeamId = -1; this.Rival07TeamName = "";
-    // this.Rival08TeamId = -1; this.Rival08TeamName = "";
-    // this.Rival09TeamId = -1; this.Rival09TeamName = "";
-    // this.Rival10TeamId = -1; this.Rival10TeamName = "";
 
 
 // WAS: Other than isValidRivalsSelection, all of these were const instead of let
     const questionId = 'QID164';
     let $question = $('#' + questionId);
-    let isValidRivalsSelection = false;
     let $rivalryPointsInputs = $question.find('.ChoiceRow input[type="text"]');
-//WAS: let $rivalryPointsTotal = $('.CSTotalInput'); // Danny had this as '.CSTotal input', but I think that was a typo
     let $rivalryPointsTotal = $('.CSTotal input');
     let $rivalryPointsError = $('<div class="rivalry-points-error"></div>').appendTo($question);
     let teamDropdownSelector = 'select:not(.league-select)';
@@ -50,7 +37,7 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
             .change(); // trigger change
     }
 
-//WAS: I didn't have this function. I think I'd tried to move it into the .html file
+    //WAS: I didn't have this function. I think I'd tried to move it into the .html file
     function selectTeam($select) {
         const $rivalryPointsInput = $select.closest('.ChoiceRow').next().find('input');
     
@@ -62,39 +49,71 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
     
         // trigger change
         $rivalryPointsInput.change();
-      }
+    }
 
-      function validate() {
-        let sum = 0;
-        $rivalryPointsInputs.each(function () {
-            sum += Number($(this).val());
-        });
-        $rivalryPointsTotal.val(sum);
-        if (sum == 100) {
-            $rivalryPointsTotal.addClass('valid-point-total');
-            isValidRivalsSelection = true;
+    function validate() {
+        let isValidRivalsSelection = false;
+        
+        isValidRivalsSelection = check100Points();
+        nextBtn(isValidRivalsSelection);
 
-            // hide message
-            $rivalryPointsError.html('');
-
-            // TODO: This needs to move outside of this class.
+        function nextBtn(enableBtn){
             if (window.Qualtrics && Qualtrics.SurveyEngine) {
-                Qualtrics.SurveyEngine.Page.pageButtons.enableNextButton();
+                const PageBtns = Qualtrics.SurveyEngine.Page.pageButtons;
+                if (enableBtn){
+                    PageBtns.enableNextButton(); 
+                } else {
+                    PageBtns.disableNextButton();
+                }
+            }
+            return enableBtn;
+        }
+
+        function setErrorMsg(errorText, textAction = 'show'){
+            // Fetch any current text in the error box
+            let strErrorMsg = $rivalryPointsError.html() || '';
+
+            // Append the error message to any others already in the error box
+            if (textAction == 'show'){ 
+                const prefix = (strErrorMsg.length == 0) ? '' : '\n '
+                $rivalryPointsError.html(strErrorMsg += prefix + errorText);
             }
 
-        } else {
-            $rivalryPointsTotal.removeClass('valid-point-total');
-            isValidRivalsSelection = false;
-
-            // display message
-            $rivalryPointsError.html('Rivalry points should total 100');
-
-            // TODO: This needs to move outside of this class.
-            if (window.Qualtrics && Qualtrics.SurveyEngine) {
-                Qualtrics.SurveyEngine.Page.pageButtons.disableNextButton();
+            // Remove the error message if it exists within the error box
+            if (textAction == 'hide'){
+                // If there's more than just this message in the box, remove the line return AND the message
+                const prefix = (errorText.length == strErrorMsg.length) ? '' : '\n '
+                // If this error isn't first, there will be a prefix. But it could be anywhere, so just do two replaces.
+                strErrorMsg.replace(prefix + errorText,'');
+                strErrorMsg.replace(errorText,'');
+                // Set the text within the DIV
+                $rivalryPointsError.html(strErrorMsg);
             }
         }
-//WAS:         self.nextButtonHandler(isValidRivalsSelection);
+
+        // RIVALRY POINT TOTAL
+        function check100Points(){
+            const strErrorMsg = "Rivalry points must total 100";
+            let rivalPointSum = 0;
+
+            // Add all the points in rivalry points inputs fields
+            $rivalryPointsInputs.each(function () {
+                rivalPointSum += Number($(this).val());
+            });
+
+            // Update the total cell at the bottom
+            $rivalryPointsTotal.val(rivalPointSum);
+
+            if (rivalPointSum == 100) {
+                $rivalryPointsTotal.addClass('valid-point-total');
+                setErrorMsg(strErrorMsg, 'hide'); // hide error message
+                return true;
+            } else {
+                $rivalryPointsTotal.removeClass('valid-point-total');
+                setErrorMsg(strErrorMsg, 'show'); // show error message
+                return false;
+            }
+        }
     }
 
 

@@ -312,7 +312,7 @@
 
                 Qualtrics.SurveyEngine.addOnload(function () {
                     leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
-                    teamId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('FAVTEAM_ID'));
+                    teamId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('FavObjEntID'));
 
                     // Hookup Rivalry Points stuff
 
@@ -327,7 +327,7 @@
 
                         // If someone clicks the back button on the previous page,
                         // this will re-populate the dropdown menus with the user's choices
-                        let selectedTeam = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey + 'ID');
+                        let selectedTeam = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey + 'EntID');
                         let selectedName = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey + 'Name');
                         let selectedPoints = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey + 'Points');
                         $this.val(selectedTeam);
@@ -339,28 +339,29 @@
                             let $this = jQuery(this);
                             $selected = jQuery(this).find('option:selected');
 
-                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'ID', $this.val());
-                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Name', $selected.text());
-                            console.log(rivalKey + 'ID: ' + jQuery(this).val());
-                            console.log(rivalKey + 'Name: ' + $selected.text());
+                            // Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'EntID', $this.val());
+                            // Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Name', $selected.text());
+                            console.log(rivalKey + 'Name: ' + $selected.text() + ' (' + + jQuery(this).val() + ')' );
                         });
 
                         $points.on('input change', function () {
-                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Points', jQuery(this).val());
+                            // Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Points', jQuery(this).val());
                             console.log(rivalKey + 'Points: ' + jQuery(this).val());
                         });
                     });
 
-                    // nextButtonHandler = function (isValidData) {
-                    //     if (window.Qualtrics && Qualtrics.SurveyEngine) {
-                    //         if (isValidData){
-                    //             Qualtrics.SurveyEngine.Page.pageButtons.enableNextButton();
-                    //         } else {
-                    //             Qualtrics.SurveyEngine.Page.pageButtons.disableNextButton();
-                    //         }
-                    //     }
-                    //     return true;
-                    // }
+                    jQuery("#NextButton").click(function(){
+                        $cboRivals.each(function () {
+                            console.log("$this from .click() statement: ",$this);
+                            let $this = jQuery(this);
+                            let $points = $this.closest('.ChoiceRow').next('.ChoiceRow').find('input.QWatchTimer');
+                            let rivalKey = $this.attr('id').replace('cbo', ''); // returns Rival01, Rival02, etc.
+
+                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'EntID', $this.val());
+                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Name', $this.text());
+                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Points', $points.val());
+                        });
+                    });
 
                     init();
                 });
