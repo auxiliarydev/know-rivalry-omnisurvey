@@ -71,21 +71,23 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
 
         function setErrorMsg(errorText, textAction = 'show'){
             // Fetch any current text in the error box
-            let strErrorMsg = $rivalryPointsError.html() || '';
+            let strErrorMsg = $rivalryPointsError.html() || '',
+                prefix='<br>';
 
             // Append the error message to any others already in the error box
             if (textAction == 'show'){ 
-                const prefix = (strErrorMsg.length == 0) ? '' : '<br />'
+                prefix = (strErrorMsg.length == 0) ? '' : prefix
                 $rivalryPointsError.html(strErrorMsg += prefix + errorText);
             }
 
             // Remove the error message if it exists within the error box
             if (textAction == 'hide'){
                 // If there's more than just this message in the box, remove the line return AND the message
-                const prefix = (errorText.length == strErrorMsg.length) ? '' : '<br />'
-                // If this error isn't first, there will be a prefix. But it could be anywhere, so just do two replaces.
-                strErrorMsg.replace(prefix + errorText,'');
-                strErrorMsg.replace(errorText,'');
+                prefix = (errorText.length == strErrorMsg.length) ? '' : prefix
+                // If this error isn't first, there will be a prefix. But it could be anywhere, so just do multiple replaces.
+                strErrorMsg = strErrorMsg.replace(prefix + errorText + prefix,'');
+                strErrorMsg = strErrorMsg.replace(prefix + errorText,'');
+                strErrorMsg = strErrorMsg.replace(errorText,'');
                 // Set the text within the DIV
                 $rivalryPointsError.html(strErrorMsg);
             }
