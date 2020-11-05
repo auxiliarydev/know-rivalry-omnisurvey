@@ -75,14 +75,14 @@ var Omnisurvey_TeamRivals = function ($, data, leagueId, teamId) {
 
             // Append the error message to any others already in the error box
             if (textAction == 'show'){ 
-                const prefix = (strErrorMsg.length == 0) ? '' : '\n '
+                const prefix = (strErrorMsg.length == 0) ? '' : '<br />'
                 $rivalryPointsError.html(strErrorMsg += prefix + errorText);
             }
 
             // Remove the error message if it exists within the error box
             if (textAction == 'hide'){
                 // If there's more than just this message in the box, remove the line return AND the message
-                const prefix = (errorText.length == strErrorMsg.length) ? '' : '\n '
+                const prefix = (errorText.length == strErrorMsg.length) ? '' : '<br />'
                 // If this error isn't first, there will be a prefix. But it could be anywhere, so just do two replaces.
                 strErrorMsg.replace(prefix + errorText,'');
                 strErrorMsg.replace(errorText,'');
