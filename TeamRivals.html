@@ -286,11 +286,10 @@
 
 
     <script>
-        
+
         (function () {
             const OMNISURVEY_TEST = false;
-            let leagueId = -1;
-            teamId = -1;
+            let leagueId = -1, teamId = -1;
             const self = this;
 
 
@@ -311,56 +310,78 @@
             } else {
 
                 Qualtrics.SurveyEngine.addOnload(function () {
-                    leagueId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('lgID'));
-                    teamId = parseInt(Qualtrics.SurveyEngine.getEmbeddedData('FavObjEntID'));
+                    const qse = Qualtrics.SurveyEngine;
+
+                    leagueId = parseInt(qse.getEmbeddedData('lgID'));
+                    teamId = parseInt(qse.getEmbeddedData('FavObjEntID'));
 
                     // Hookup Rivalry Points stuff
 
                     // Select all dropdown with cboRival in their name (cboRival01, cboRival02, etc.)
-// was const $cboRivals = jQuery('select[id^=cboRival]');
-                    let $cboRivals = jQuery('select[id^=cboRival]');
+                    const $cboRivals = jQuery('select[id^=cboRival]');
+                    const fnRivalKey = (that) => that.attr('id').replace('cbo', ''); // returns Rival01, Rival02, etc.
+
                     $cboRivals.each(function () {
-// was: I had const $this and const rivalKey
-                        let $this = jQuery(this);
-                        let $points = $this.closest('.ChoiceRow').next('.ChoiceRow').find('input.QWatchTimer');
-                        let rivalKey = $this.attr('id').replace('cbo', ''); // returns Rival01, Rival02, etc.
+                        const $this = jQuery(this);
+                        const $points = $this.closest('.ChoiceRow').next('.ChoiceRow').find('input.QWatchTimer');
 
-                        // If someone clicks the back button on the previous page,
+                        const rivalKey = fnRivalKey($this);
+
+                        // If someone clicks the back button on the subsequent page,
                         // this will re-populate the dropdown menus with the user's choices
-                        let selectedTeam = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey + 'EntID');
-                        let selectedName = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey + 'Name');
-                        let selectedPoints = Qualtrics.SurveyEngine.getEmbeddedData(rivalKey + 'Points');
-                        $this.val(selectedTeam);
-                        $points.val(selectedPoints);
-
-
-                        $this.on('change', function () {
-// was const $this
-                            let $this = jQuery(this);
-                            $selected = jQuery(this).find('option:selected');
-
-                            // Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'EntID', $this.val());
-                            // Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Name', $selected.text());
-                            console.log(rivalKey + 'Name: ' + $selected.text() + ' (' + + jQuery(this).val() + ')' );
+                        let selectedEntID = 0, selectedPoints = 0, selectedName = "";
+                        jQuery.when(qse.getEmbeddedData(rivalKey + 'EntID')).then(function (data) {
+                            selectedEntID = data;
+                            $this.val(selectedEntID);
+                        });
+                        jQuery.when(qse.getEmbeddedData(rivalKey + 'Points')).then(function (data) {
+                            selectedPoints = data;
+                            $this.val(selectedPoints);
+                        });
+                        jQuery.when(qse.getEmbeddedData(rivalKey + 'Name')).then(function (data) { // not needed. Just here for testing
+                            selectedName = data;
+                            console.log(`ED data for ID ${selectedEntID}: ${selectedName} (${selectedPoints} points)`);
                         });
 
+                        // User changes a team name
+                        $this.on('change', function () {
+                            $selected = jQuery(this).find('option:selected');
+                            console.log(rivalKey + 'Name: ' + $selected.text() + ' (' + + jQuery(this).val() + ')');
+                        });
+                        // User changes the rivalry point assignment
                         $points.on('input change', function () {
-                            // Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Points', jQuery(this).val());
                             console.log(rivalKey + 'Points: ' + jQuery(this).val());
                         });
                     });
 
-                    jQuery("#NextButton").click(function(){
-                        $cboRivals.each(function () {
-                            console.log("$this from .click() statement: ",$this);
-                            let $this = jQuery(this);
-                            let $points = $this.closest('.ChoiceRow').next('.ChoiceRow').find('input.QWatchTimer');
-                            let rivalKey = $this.attr('id').replace('cbo', ''); // returns Rival01, Rival02, etc.
+                    jQuery("#NextButton").click(function () {
+                        let intNumOfRivalsListed = 0;
+                        jQuery.when(
+                            $cboRivals.each(function () {
+                                const $this = jQuery(this);
+                                const $points = $this.closest('.ChoiceRow').next('.ChoiceRow').find('input.QWatchTimer');
 
-                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'EntID', $this.val());
-                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Name', $this.text());
-                            Qualtrics.SurveyEngine.setEmbeddedData(rivalKey + 'Points', $points.val());
-                        });
+                                const rivalKey = fnRivalKey($this);
+                                const cboSelection = $this.find('option:selected');
+                                let entID = cboSelection.val(),
+                                    name = cboSelection.text(),
+                                    rivpoints = $points.val();
+
+
+                                return jQuery.when(qse.setEmbeddedData(rivalKey + 'EntID', entID))
+                                    .then(function () {
+                                        if (entID) {
+                                            intNumOfRivalsListed++;
+                                            qse.setEmbeddedData(rivalKey + 'Name', name);
+                                        }
+                                    })
+                                    .then(qse.setEmbeddedData(rivalKey + 'Points', rivpoints))
+                                    .done(console.log("ID " + entID + "stored to embedded data: " + name + " (" + rivpoints + " points)"));
+                            }))
+                            .done(
+                                function (data) {
+                                    return qse.setEmbeddedData("intNumOfRivalsListed", intNumOfRivalsListed);
+                                });
                     });
 
                     init();
@@ -392,7 +413,7 @@
                 var omnisurvey_TeamRivals = new Omnisurvey_TeamRivals(jQuery, self.omnisurvey_data, leagueId, teamId); // this is what loads the Omnisurvey
             }
         })();
-        
+
     </script>
 </body>
 
