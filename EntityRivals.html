@@ -1,0 +1,330 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>
+        Rival selection
+    </title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="omnisurvey.css" />
+    <script src="omnisurveyData.js"></script>
+    <script src="EntityRivals.js"></script>
+
+    <meta id="meta-viewport" name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.5" />
+    <!-- This is here for testing purposes. The real link will be within the Qualtrics Advanced Look & Feel section -->
+    <!-- <link href="https://jfe-cdn.qualtrics.com/themes/skins/qualtrics/v4qualtrics2/version-1540490806023-9bd613/stylesheet.css" rel="stylesheet" /> -->
+
+</head>
+
+<body id="SurveyEngineBody">
+
+    <!-- QID246 is RivalryPointsAllocation -->
+    <div class="QuestionOuter BorderColor DB  QID246" id="QID246" questionid="QID246" posttag="QID246"
+        data-runtime-remove-class-hidden="runtime.Displayed">
+        <div id="QR~QID246~VALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.ErrorMsg"
+            data-runtime-html="runtime.ErrorMsg" style="display: none;">
+        </div>
+        <div id="QR~QID246~SDPVALIDATION" class="ValidationError" role="alert" data-runtime-show="runtime.PDPErrorMsg"
+            data-runtime-html="runtime.PDPErrorMsg" style="display: none;">
+        </div>
+        <div class="Inner BorderColor TB">
+            <div class="InnerInner BorderColor">
+                <div class="QuestionText BorderColor">
+                <!-- START EDITABLE PART OF QUALTRICS QUESTION
+                The part in here is what you copy into Qualtrics -->
+
+                    <div class="riv-point-explanation">
+                        <p>
+                            You have
+                            <span style="font-weight: bold; font-style: italic;">100 rivalry points</span>
+                            to allocate to the rival(s) of ${e://Field/FavObjThe}.<br/>
+                            How do you assign these points? Do you...
+                        </p>
+                        <!-- These are presented in a random order -->
+                        <ul id="rivPointSampleDistributions">
+                            <li id="sampleSplitBwEntities">Split points between teams?</li>
+                            <li id="sample60_30_10">60 points to the strongest rival, 30 points to another team, and 10 points to a third opponent?</li>
+                            <li id="sampleAllToOneEntity">All 100 points to one team?</li>
+                            <li id="sampleEvenDistToSeveral">Evenly distribute points to several teams? (up to 10)</li>
+                        </ul>
+                        <p>
+                            Choose the distribution based on <i>your</i> view of the rival(s).
+                        </p>
+                    </div>
+
+                    <div id="rivalryPointsInstructions" class="riv-point-instructions">
+                       <p> 
+                           If listing more than one rival, please list highest point rival
+                           first (i.e., the "biggest rival" should be at the top, then the next biggest, then the next,
+                           etc.
+                        </p>
+                    </div>
+
+                    <div id="rivSelTblWrapper">
+                        <div id="rivalPointsErrorBox" class="rivalry-points-error"></div>
+                        <div id="rivSelTblHeader" class="riv-sel-headers">
+                            <div id="rivSelHeaderRank" class="riv-sel-left">
+                                <div>#</div>
+                            </div>
+                            <div id="rivSelHeaderMiddle" class="riv-sel-middle">
+                                <div id="rivSelHeaderSelectors">League and team</div>
+                            </div>
+                            <div id="rivSelHeaderRight" class="riv-sel-right">
+                                <div id="rivSelHeaderPoints">Points</div>
+                                <div id="pointsDisplayTotals" class="pts-display-totals">
+                                    <div id="rivSelHeaderPointsAllocated" class="pts-allocated">
+                                        Assigned: 0
+                                    </div>
+                                    <div id="rivSelHeaderPointsRemaining" class="pts-remaining">
+                                        Available: 100
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="Rival01Container" class="rival-container">
+                            <div id="Rival01Left" class="riv-sel-left">
+                                <div id="Rival01RankNum" class="riv-sel-rank-text">#1</div>
+                            </div>
+
+                            <div id="Rival01Middle" class="riv-sel-middle">
+                                <div id="Rival01Selectors" class="riv-selectors">
+                                    <select id="cboGroupingRival01" class="grouping-select" disabled="disabled"></select>
+                                    <select id="cboRival01" class="ent-select" disabled="disabled"></select>                                </div>
+                                <input id="Rival01PointsSlider" class="riv-points-slider"
+                                    type="range" min="0" max="100" value="0"
+                                    disabled="disabled"
+                                />
+                            </div>
+
+                            <div id="Rival01Right" class="riv-sel-right">
+                                <input id="Rival01Points" class="riv-points-box" 
+                                    type="number" min="0" max="100"
+                                    disabled="disabled">
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                <!-- END EDITABLE PART OF QUALTRICS QUESTION -->
+                </div>
+                <div class="QuestionBody"></div>
+            </div>
+        </div>
+    </div>
+    <button id="NextButton" style="margin-top: 20px;">
+        I'm the fake next button
+    </button>
+
+    <script>
+
+        (function () {
+            const OMNISURVEY_TEST = false;
+            let groupingId = -1, entId = -1;
+            const self = this;
+
+            function createRivalContainers(){
+                // The HTML in Qualtrics only has a container for Rival01. This code uses that HTML as a template to create the rest of the containers.
+                // The number of container depends on number of teams that could potentially be a rival, below a certain maximum.
+                // E.g., the typical maximum number someone can choose might be 10 rivals, but a fan of smaller leagues (e.g., IPL) can only choose 7 rivals (8 IPL teams - 1 for the FavEnt).
+
+                // Number of entities in rival grouping who could potentially be rivals
+                const numOfEntsInGrouping = 32;
+
+                const maxNumOfRivals = 10;
+                const totalNumOfRivContainers = numOfEntsInGrouping<10 ? numOfEntsInGrouping-1 : maxNumOfRivals
+
+                const templateRivalKey = "Rival01";
+                let $curContainer = jQuery('#' + templateRivalKey + 'Container');
+                const strTemplateHTML =  jQuery('#' + templateRivalKey + 'Container')[0].outerHTML;
+                for (let rivNum=2; rivNum <= totalNumOfRivContainers; rivNum++) {
+                    const numTwoDigit = (rivNum) =>("0" + rivNum).slice(-2); // change 2 to 02, 3 to 03, etc.
+                    const strNewRivalKey = "Rival"+numTwoDigit(rivNum);
+                    const strCurRivalKey = "Rival"+numTwoDigit(rivNum-1);
+                    let newHTML = strTemplateHTML.replace(new RegExp( templateRivalKey, "g"),strNewRivalKey);
+                    newHTML = newHTML.replace(/\#1/,'#'+rivNum);
+                    $curContainer = jQuery('#' + strCurRivalKey + 'Container');
+                    jQuery(newHTML).insertAfter($curContainer);
+                };
+
+                // Enable the dropdown boxes for Rival01
+                jQuery('#Rival01Container').find('.riv-selectors').find('select').removeAttr('disabled');
+                jQuery('#Rival01Container').find('.ent-select').addClass('is-enabled');
+
+                return totalNumOfRivContainers;
+            }
+
+            if (OMNISURVEY_TEST || !window.Qualtrics) {
+
+                /*****************************************************
+                  TESTING MODE
+                *****************************************************/
+
+                jQuery('body').prepend('<div id="SurveyInTestMode">The survey is in test mode.</div>');
+
+                groupingId = 1364;
+                entId = 244;
+
+                // Create the HTML code for the rest of the rivalry rows
+                createRivalContainers();
+
+                // Hookup Rivalry Points stuff
+
+                // Select all dropdown with cboRival in their name (cboRival01, cboRival02, etc.)
+                const $cboRivals = jQuery('select[id^=cboRival]');
+                const fnRivalKey = (that) => that.attr('id').replace('cbo', ''); // returns Rival01, Rival02, etc.
+
+                $cboRivals.each(function () {
+                    const $this = jQuery(this);
+                    const $points = $this.closest('.rival-container').find('input.riv-points-box');
+
+                    const rivalKey = fnRivalKey($this);
+
+                    // User changes a ent name
+                    $this.on('change', function () {
+                        $selected = jQuery(this).find('option:selected');
+                        console.log(rivalKey + 'Name: ' + $selected.text() + ' (' + + jQuery(this).val() + ')');
+                    });
+                    // User changes the rivalry point assignment
+                    $points.on('input change', function () {
+                        console.log(rivalKey + 'Points: ' + jQuery(this).val());
+                    });
+                });
+
+
+                jQuery("#NextButton").click(function () {
+                    let intNumOfRivalsListed = 0;
+                    jQuery.when(
+                        $cboRivals.each(function () {
+                            let $this = jQuery(this);
+                            let strRivalKey = fnRivalKey($this);
+                            let $points = jQuery('#'+strRivalKey+'Points');
+
+                            
+                            let cboSelection = $this.find('option:selected');
+                            let entID = cboSelection.val(),
+                                name = cboSelection.text(),
+                                rivpoints = $points.val();
+
+
+                            return jQuery.when()
+                                .then(function () {
+                                    if (entID) {
+                                        intNumOfRivalsListed++;
+                                    }
+                                })
+                                .then()
+                                .done(console.log("entID #" + entID + " stored to embedded data: " + name + " (" + rivpoints + " points)"));
+                        }))
+                        .done(
+                            function (data) {
+                                return intNumOfRivalsListed;
+                            });
+                });
+
+                init();
+            } else {
+
+                Qualtrics.SurveyEngine.addOnload(function () {
+                    const qse = Qualtrics.SurveyEngine;
+
+                    groupingId = parseInt(qse.getEmbeddedData('grpID'));
+                    entId = parseInt(qse.getEmbeddedData('FavObjEntID'));
+
+
+                    // Create the HTML code for the rest of the rivalry rows
+                    createRivalContainers();
+
+                    // Hookup Rivalry Points stuff
+
+                    // Select all dropdown with cboRival in their name (cboRival01, cboRival02, etc.)
+                    const $cboRivals = jQuery('select[id^=cboRival]');
+                    const fnRivalKey = (that) => that.attr('id').replace('cbo', ''); // returns Rival01, Rival02, etc.
+
+                    $cboRivals.each(function () {
+                        const $this = jQuery(this);
+                        const $points = $this.closest('.rival-container').find('input.riv-points-box');
+
+                        const rivalKey = fnRivalKey($this);
+
+                        // If someone clicks the back button on the subsequent page,
+                        // this will re-populate the dropdown menus with the user's choices
+                        let selectedEntID = 0, selectedPoints = 0, selectedName = "";
+                        jQuery.when(qse.getEmbeddedData(rivalKey + 'EntID')).then(function (data) {
+                            selectedEntID = data;
+                            $this.val(selectedEntID);
+                        });
+                        jQuery.when(qse.getEmbeddedData(rivalKey + 'Points')).then(function (data) {
+                            selectedPoints = data;
+                            $this.val(selectedPoints);
+                        });
+                    });
+
+                    jQuery("#NextButton").click(function () {
+                        let intNumOfRivalsListed = 0;
+                        jQuery.when(
+                            $cboRivals.each(function () {
+                                const $this = jQuery(this);
+                                let strRivalKey = fnRivalKey($this);
+                                let $points = jQuery('#'+strRivalKey+'Points');
+
+                                const cboSelection = $this.find('option:selected');
+                                let entID = cboSelection.val(),
+                                    name = cboSelection.text(),
+                                    rivpoints = $points.val();
+
+
+                                return jQuery.when(qse.setEmbeddedData(strRivalKey + 'EntID', entID))
+                                    .then(function () {
+                                        if (entID) {
+                                            intNumOfRivalsListed++;
+                                            qse.setEmbeddedData(strRivalKey + 'Name', name);
+                                        }
+                                    })
+                                    .then(qse.setEmbeddedData(strRivalKey + 'Points', rivpoints))
+                                    .done(console.log("entID #" + entID + " stored to embedded data: " + name + " (" + rivpoints + " points)"));
+                            }))
+                            .done(
+                                function (data) {
+                                    return qse.setEmbeddedData("intNumOfRivalsListed", intNumOfRivalsListed);
+                                });
+                    });
+
+                    init();
+                });
+
+                Qualtrics.SurveyEngine.addOnReady(function () {
+                    //Place your JavaScript here to run when the page is fully displayed
+                });
+
+                Qualtrics.SurveyEngine.addOnUnload(function () {
+                    //Place your JavaScript here to run when the page is unloaded
+                });
+
+            }
+
+            function init() {
+                if (window.hasOwnProperty('omnisurvey_data') && omnisurvey_data.dataLoaded) {
+                    loadQuestion();
+                } else {
+                    jQuery(document).on('OmnisurveyReady', function () {
+                        loadQuestion();
+                    });
+
+                    window.omnisurvey_data = new Omnisurvey_Data(jQuery);
+                }
+            }
+
+            function loadQuestion() {
+                var omnisurvey_EntRivals = new Omnisurvey_EntRivals(jQuery, self.omnisurvey_data, groupingId, entId); // this is what loads the Omnisurvey
+            }
+        })();
+
+    </script>
+</body>
+
+</html>
