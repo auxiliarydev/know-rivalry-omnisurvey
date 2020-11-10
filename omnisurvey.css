@@ -145,7 +145,7 @@ QID246 is the question with grouping & ent dropdowns and points sliders and text
     #rivSelTblWrapper .riv-sel-left{
         flex-flow: row wrap;
         flex: 1 1 60px;
-        max-width:70px;
+        max-width: 54px;
         align-items:flex-start;
     }
     .riv-sel-rank-text{
@@ -159,7 +159,7 @@ QID246 is the question with grouping & ent dropdowns and points sliders and text
     #rivSelTblWrapper .riv-sel-middle{
         align-content: stretch;
         flex:1 1 auto;
-        max-width: 400px;
+        /*max-width: 400px;*/
         row-gap: 3px;
     }
 
@@ -172,6 +172,7 @@ QID246 is the question with grouping & ent dropdowns and points sliders and text
             align-content: flex-start;
             row-gap: 3px;
         }
+
             #rivSelTblWrapper .riv-selectors select{
                 font-size: 13px;
                 width: 100%;
@@ -183,17 +184,25 @@ QID246 is the question with grouping & ent dropdowns and points sliders and text
                 /* hide text that can't wrap with an ellipsis */
                 overflow: hidden;
                 text-overflow: ellipsis;
+
+                padding: 6px 0 6px 10px;
+                min-height: 0;
             }
 
             /* Dropdown box for choosing the grouping */
             #rivSelTblWrapper select.grouping-select{
-                margin: auto 5px 0px 5px;
-                max-width: 20%; /* So it doesn't overflow from its parent */
+                /*margin: auto 5px 0px 5px;*/
+                width: auto;
+                
+                /*flex-grow: 1;*/
+                /*max-width: 30%;*/ /* So it doesn't overflow from its parent */
             }
             /* Dropdown box for choosing the entity/team */
             #rivSelTblWrapper select.ent-select{
-                margin-left:5px;
-                max-width: 55%; /* So it doesn't overflow from its parent */
+                /*margin-left:5px;*/
+                /*max-width: 55%;*/ /* So it doesn't overflow from its parent */
+                flex-grow: 1;
+                width: auto;
             }
 
             #rivSelTblWrapper select.is-enabled{
@@ -256,7 +265,25 @@ QID246 is the question with grouping & ent dropdowns and points sliders and text
         text-align: center;
     }
     
+    @media (max-width: 700px) {
+        #rivSelTblWrapper .riv-selectors select
+        {
+            width: 100% !Important;
+        }
+        #rivSelTblWrapper .riv-selectors{
+            row-gap: 0;
+        }
+        #rivSelTblWrapper select.grouping-select{
+            margin-bottom: 4px;
+        }
+    }
 
+    @media (min-width: 700px) {
+        #rivSelTblWrapper select.grouping-select{
+            margin-right: 10px;
+            flex-basis: 25%;
+        }
+    }
 /*
 ######################
 FAVORITE TEAM PAGE
