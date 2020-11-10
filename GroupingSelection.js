@@ -131,7 +131,7 @@ var Omnisurvey_GroupingSelection = function($, data, groupingId, surveyId) {
 		// Fetches an object with that grouping's information.
 		if (groupingId > 0) {
 			// This means a groupingId was passed in the query string (i.e., it's in the embedded data)
-			// e.g., {"grpID":7,"grpSport":"Cricket","termKRQualtrics":"BBL","grpCurrentSurvID":19,"grpSlug":"s_m_t20_bbl","grpFullName":"Big Bash Grouping","grpTheFullName":"the Big Bash Grouping","grpHasProRel":false,"grpBritishSpelling":true,"grpNumOfFaventSublevels":0}
+			// e.g., {"grpID":7,"grpSport":"Cricket","termKRQualtrics":"BBL", etc.
 			grouping = data.getGrouping(groupingId);
 		}
 		console.log("grouping ==>",grouping);

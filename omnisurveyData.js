@@ -38,7 +38,7 @@ var Omnisurvey_Data = function ($) {
     }
 
     // Returns an object with the data for just one grouping
-    // e.g., (as of 20201028) if passed groupingId=7, it returns {"grpID":7,"grpSport":"Cricket","termKRQualtrics":"BBL","grpCurrentSurvID":19,"grpSlug":"s_m_t20_bbl","grpFullName":"Big Bash Grouping","grpTheFullName":"the Big Bash Grouping","grpHasProRel":false,"grpBritishSpelling":true,"grpNumOfFaventSublevels":0}
+    // e.g., (as of 20201028) if passed groupingId=7, it returns {"grpID":7,"grpSport":"Cricket","termKRQualtrics":"BBL",etc. 
     this.getGrouping = function (groupingId) {
         const groupings = self.Groupings.filter(function (grouping) {
             return grouping.grpID === groupingId;

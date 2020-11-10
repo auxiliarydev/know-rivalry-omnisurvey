@@ -19,7 +19,7 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 	const $entsContainer = $('#ents-container');
 	const $nextButton = $("#NextButton");
 
-	const strEntLogoRootDir = 'https://knowrivalry.com/images/teamlogos/'; // This is the folder that holds the logos (SVGs) for each ent
+	const strEntLogoRootDir = 'https://knowrivalry.com/images/entlogos/'; // This is the folder that holds the logos (SVGs) for each entity
 
 	// groups = the grouping object that has conf/div hierarchy
 	function createGroupOptions(groups, $select, level) {
@@ -64,7 +64,7 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 
 		if (entId > 0) {
 			const ent = data.getGroupById(entId);
-			const imgPath = strEntLogoRootDir + 'logo_team'+ent.entID+'.svg';
+			const imgPath = strEntLogoRootDir + 'logo_ent'+ent.entID+'.svg';
 
 			// set the logo and the ent name
 			$selectedEntLogo.css('background-image', 'url(' + imgPath + ')');
@@ -103,7 +103,7 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 
 		// Populate the ent selection logos and ent names
 		ents.forEach(function (ent) {
-			const strEntImgFilename = strEntLogoRootDir + 'logo_team' + ent.entID + '.svg';
+			const strEntImgFilename = strEntLogoRootDir + 'logo_ent' + ent.entID + '.svg';
 			$ents.append('<div style="background-image: url(' + strEntImgFilename + ')" id="btnEntID' + ent.entID + '" class="ClassFavEnt" data-entid="' + ent.entID + '">' + ent.termKRQualtrics + '</div>');
 		});
 

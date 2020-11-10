@@ -168,12 +168,12 @@
 				// If grpID is a parameter key in the query string,
 				// get that value and set that as the `groupingId`
 				// E.g., for the BBL the URL would have ?grpID=7
-				groupingId = parseInt(searchParams.get('grpID')); //7
+				groupingId = parseInt(searchParams.get('grpID')); //1364
 				jQuery("#storageGroupingId").text(groupingId); // Store the groupingId in a hidden div on the page
 			}
 
 			if (searchParams.has('survID')) {
-				surveyId = parseInt(searchParams.get('survID')); //2
+				surveyId = parseInt(searchParams.get('survID')); //30
 			}
 
 			jQuery('body').prepend('<div id="SurveyInTestMode">The survey is in test mode.</div>');
