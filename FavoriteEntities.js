@@ -71,20 +71,37 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 			$selectedEntContainer.find('#selected-ent-name').html(self.FavoriteEntName);
 
 			// enable next button
-			$nextButton.removeAttr('disabled');
+			nextBtn(true);
 
 			$selectedEntContainer.show();
 			$entsContainer.hide();
 
 		} else {
-			$nextButton.attr('disabled', 'disabled');
-
+			nextBtn(false);
 
 			// hide/show containers
 			$selectedEntContainer.hide();
 			$entsContainer.show();
 		}
 
+        function nextBtn(enableBtn){
+            if (window.Qualtrics && Qualtrics.SurveyEngine) {
+                const PageBtns = Qualtrics.SurveyEngine.Page.pageButtons;
+                if (enableBtn){
+                    PageBtns.enableNextButton(); 
+                } else {
+                    PageBtns.disableNextButton();
+                }
+            } else {
+				if (enableBtn) {
+					$nextButton.removeAttr('disabled');
+				} else {
+					$nextButton.attr('disabled', 'disabled');
+				}
+			}
+            return enableBtn;
+		}
+		
 		if (typeof self.favoriteEntSelectedHandler === 'function') {
 			self.favoriteEntSelectedHandler();
 		}
