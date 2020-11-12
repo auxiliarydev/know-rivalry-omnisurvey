@@ -93,7 +93,8 @@
                             <div id="Rival01Middle" class="riv-sel-middle">
                                 <div id="Rival01Selectors" class="riv-selectors">
                                     <select id="cboGroupingRival01" class="grouping-select" disabled="disabled"></select>
-                                    <select id="cboRival01" class="ent-select" disabled="disabled"></select>                                </div>
+                                    <select id="cboRival01" class="ent-select" disabled="disabled"></select>
+                                </div>
                                 <input id="Rival01PointsSlider" class="riv-points-slider"
                                     type="range" min="0" max="100" value="0"
                                     disabled="disabled"
@@ -155,10 +156,6 @@
 
                     jQuery.when(() => groupingId = parseInt(qse.getEmbeddedData('grpID')) )
                     .then(function(){
-
-                        // If someone clicks the back button on the subsequent page, this will re-populate the dropdown menus with the user's choices
-                        omnisurvey_EntRivals.repopulateDropdowns();
-
                         init();
                     });
 
@@ -188,6 +185,7 @@
             }
 
             function loadQuestion() {
+                console.log('loadQuestion running.')
                 var omnisurvey_EntRivals = new Omnisurvey_EntRivals(jQuery, self.omnisurvey_data, groupingId, entId); // this is what loads the Omnisurvey
 
                 entRivalsNextButtonHandler = omnisurvey_EntRivals.entRivalsNextButtonHandler;

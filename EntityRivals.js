@@ -368,25 +368,6 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
         return totalNumOfRivContainers;
     }
 
-    this.repopulateDropdowns = function(){
-        const qse = Qualtrics.SurveyEngine;
-        $cboRivals.each(function () {
-            const $this = $(this);
-            const $points = $this.closest('.rival-container').find('input.riv-points-box');
-    
-            const rivalKey = fnRivalKey($this);
-    
-            let selectedEntID = 0, selectedPoints = 0, selectedName = "";
-            $.when(qse.getEmbeddedData(rivalKey + 'EntID')).then(function (returnedData) {
-                $this.val(returnedData);
-            });
-            $.when(qse.getEmbeddedData(rivalKey + 'Points')).then(function (returnedData) {
-                selectedPoints = data;
-                $this.val(returnedData);
-            });
-
-        });    
-    }
 
     // // TESTING code for when the user changes an ent name
     // $this.on('change', function () {
@@ -472,3 +453,19 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
     // After that, I can run the init() like normal.
     init();
 };
+
+/*
+    // The survey is built with so many separate Blocks that the user isn't able to go backwards.
+    // But, in case that changes in the future, this code might be helpful.
+    // Just be careful because it was causing a double-loading of the rivalry containers before getting cut altogether
+    this.repopulateDropdowns = function(){
+        const qse = Qualtrics.SurveyEngine;
+        $cboRivals.each(function () {
+            const $this = $(this);
+            const $points = $this.closest('.rival-container').find('input.riv-points-box');    
+            const rivalKey = fnRivalKey($this);
+            $.when(qse.getEmbeddedData(rivalKey + 'EntID')).then( returnedData => $this.val(returnedData) );
+            $.when(qse.getEmbeddedData(rivalKey + 'Points')).then( returnedData => $this.val(returnedData) );
+        });    
+    }
+*/
