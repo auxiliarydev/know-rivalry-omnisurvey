@@ -240,7 +240,6 @@
 					const data = this.dataToEmbed;
 					Object.keys(data).forEach(function(key) {
 						// The Qualtrics setEmbeddedData('name',value) method takes two parameters. The first is the name of the embedded data variable (string), the second is the value we want stored.
-						console.log(key + ' : ' + data[key]);
 						Qualtrics.SurveyEngine.setEmbeddedData(key, data[key]);
 					});
 

@@ -146,7 +146,7 @@
                     groupingId = 1364;
                 }
 
-                init();
+                init(groupingId);
 
             } else {
 
@@ -154,10 +154,7 @@
 
                     const qse = Qualtrics.SurveyEngine;
 
-                    jQuery.when(() => groupingId = parseInt(qse.getEmbeddedData('grpID')) )
-                    .then(function(){
-                        init();
-                    });
+                    init( parseInt(qse.getEmbeddedData('grpID')) );
 
                 });
 
@@ -171,12 +168,12 @@
 
             }
 
-            function init() {
+            function init(groupingId) {
                 if (window.hasOwnProperty('omnisurvey_data') && omnisurvey_data.dataLoaded) {
-                    loadQuestion();
+                    loadQuestion(groupingId);
                 } else {
                     jQuery(document).on('OmnisurveyReady', function () {
-                        loadQuestion(); // builds the page
+                        loadQuestion(groupingId); // builds the page
                     });
                     
                     window.omnisurvey_data = new Omnisurvey_Data(jQuery);
@@ -184,8 +181,8 @@
 
             }
 
-            function loadQuestion() {
-                console.log('loadQuestion running.')
+            function loadQuestion(groupingId) {
+                console.log('loadQuestion running for groupingId='+groupingId);
                 var omnisurvey_EntRivals = new Omnisurvey_EntRivals(jQuery, self.omnisurvey_data, groupingId, entId); // this is what loads the Omnisurvey
 
                 entRivalsNextButtonHandler = omnisurvey_EntRivals.entRivalsNextButtonHandler;
