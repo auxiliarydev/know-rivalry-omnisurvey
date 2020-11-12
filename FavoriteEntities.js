@@ -9,7 +9,7 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 	this.FavoriteEntId = -1;
 	this.FavoriteEntName = "";
 	this.FavoriteEntNameThe = "";
-	this.qtrxed_termKRQtrxManipIdenLevelQual="";
+	this.termKRQtrxManipIdenLevelQual="";
 
 	let selectedGrouping = null;
 	let $groupingFilter = $('#groupingFilter');
@@ -66,7 +66,7 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 		self.FavoriteEntId = entId;
 		self.FavoriteEntName = !objEntData ? "" : objEntData["entityName"]; // Boston Celtics
 		self.FavoriteEntNameThe = !objEntData ? "" : objEntData["entityNameThe"]; // the Boston Celtics
-		self.qtrxed_termKRQtrxManipIdenLevelQual = !objEntData ? "" : objEntData["TopGroupingNameThe"];  // the NBA
+		self.termKRQtrxManipIdenLevelQual = !objEntData ? "" : objEntData["TopGroupingNameThe"];  // the NBA
 
 		if (entId > 0) {
 			const ent = data.getGroupById(entId);
