@@ -40,6 +40,7 @@ Should these be part of production? Perhaps on specific pages (e.g., Favorite En
 .QuestionBody {
     backface-visibility: hidden; /* Fixes hidden content bug with jQuery toggle */
 }
+/* 
 fieldset {
     border: none;
 }
@@ -49,10 +50,8 @@ fieldset {
 }
 .Skin .SkinInner {
     padding-top:30px;
-}
-body *{
-    /* border: red 1px solid !important; */
-}
+} */
+
 
 
 
@@ -70,9 +69,9 @@ body p {
     margin-bottom: 8px;
 }
 
-.Skin .SkinInner {
+/* .Skin .SkinInner {
     padding-top:30px;
-}
+} */
 
 /*
 ######################
@@ -87,8 +86,8 @@ QID246 is the question with grouping & ent dropdowns and points sliders and text
 }
 .riv-point-explanation ul, .riv-point-instructions ul{
     margin: 0px auto 4px 20px;
-    margin-top: 2px;
-    line-height: 1.4em;
+    line-height: 1.2em;
+    padding-left: 10px;
 }
 .riv-point-instructions p{
     font-size:0.7em;
@@ -108,6 +107,26 @@ QID246 is the question with grouping & ent dropdowns and points sliders and text
     width: 100%;
 }
 
+#rivSelTblWrapper #rivPointsDisplayTotals{
+    width: 50%;
+    border: 1px solid black;
+    border-radius: 25px;
+
+    margin: 3px auto;
+    padding: 3px;
+
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+}
+
+/* Points Assigned and Points available */
+#rivSelTblWrapper .pts-display-totals{
+    min-height:9pt;
+    font-size:9pt;
+    font-weight:normal;
+    color:black;
+}
 
 /* Headers for the selection table*/
 #rivSelTblWrapper .riv-sel-headers{
@@ -118,14 +137,7 @@ QID246 is the question with grouping & ent dropdowns and points sliders and text
     margin-bottom: 2px;
     column-gap: 3px;
 }
-/* Points Assigned and Points available */
-#rivSelTblWrapper .pts-display-totals{
-    min-height:8pt;
-    font-size:8pt;
-    font-weight:normal;
-    line-height:8pt;
-    color:black;
-}
+
 
 /* Container row for everything needed for each rival listing (e.g., Rank, selectors & slider, Points) */
 #rivSelTblWrapper .rival-container{
@@ -275,6 +287,9 @@ QID246 is the question with grouping & ent dropdowns and points sliders and text
         }
         #rivSelTblWrapper select.grouping-select{
             margin-bottom: 4px;
+        }
+        #rivSelTblWrapper #rivSelHeaderSelectors, #rivSelTblWrapper #rivSelRankHead{
+            visibility: hidden;
         }
     }
 
@@ -480,6 +495,11 @@ Put `KR_InformedConsent` in the outer div for anything Informed Consent related
     .KR_InformedConsent .TLDRQues {
         font-weight:bold;
     }
+    .KR_InformedConsent .jump-to-bottom{
+        font-size:0.7em;
+        font-style:italic;
+        text-align:right;
+    }
 
     /* This formats the full text DIV, but also serves as a base for the formatting below (H1, H2, etc.) */
     .KR_InformedConsent .FullText {
@@ -509,9 +529,9 @@ Put `KR_InformedConsent` in the outer div for anything Informed Consent related
         background-color: #FFFF00;
         }
         
-    .KR_InformedConsent .ResearchersSignOff {
-        padding-left:15px;
-        text-indent:-15px; /* create a hanging indent for the researchers' affiliations */
+        .KR_InformedConsent .ResearchersSignOff {
+            padding-left:15px;
+            text-indent:-15px; /* create a hanging indent for the researchers' affiliations */
         }
         .KR_InformedConsent .ResearchersSignOff p {
         margin-top:2px;
