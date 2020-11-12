@@ -35,6 +35,8 @@ var Omnisurvey_GroupingSelection = function($, data, groupingId, surveyId) {
 		} else {
 			$splashChangeGroupingBtn.css('visibility', 'hidden');
 		}
+
+		fScrollToSelectGrpID();
 	}
 
 	// Return user to the Select grpID question

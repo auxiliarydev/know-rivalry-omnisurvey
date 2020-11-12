@@ -93,7 +93,8 @@
                     favoriteEntSelectedHandler = function () {
                         jQuery.when( qse.setEmbeddedData('FavObj', this.FavoriteEntName) )
                         .then( qse.setEmbeddedData('FavObjThe', this.FavoriteEntNameThe) )
-                        .then( qse.setEmbeddedData('FavObjEntID', this.FavoriteEntId) );
+                        .then( qse.setEmbeddedData('FavObjEntID', this.FavoriteEntId) )
+                        .then( qse.setEmbeddedData('qtrxed_termKRQtrxManipIdenLevelQual', this.qtrxed_termKRQtrxManipIdenLevelQual) );
                         return true;
                     };
 
