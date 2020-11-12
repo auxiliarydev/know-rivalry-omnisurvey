@@ -1,24 +1,29 @@
 'use strict';
 
 var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
+    const self=this; 
 
+    this.entRivalsNextButtonHandler;
 
     // const questionId = 'QID246';
     const strEntDropdownSelector = 'select.ent-select';
     const strRivalPointsBoxSelector = 'input.riv-points-box';
 
     let $question = $('#rivSelTblWrapper');
-    let $rivalPointsInputs = $question.find(strRivalPointsBoxSelector);
     let $rivalryPointsError = $('#rivalPointsErrorBox');
-    let $rivalryPointsTotal = $('.pts-allocated');
-    let $rivalPointsRemaining = $(".pts-remaining");
-
+    const $nextButton = $('#NextButton');
+    
+    let $rivalPointsInputs, $rivalryPointsTotal, $rivalPointsRemaining, $cboRivals;
+    
     // Returns the containers for the current or next rival row when passed a jQuery object.
     // E.g., if a user changes the Rival01 dropdown, pass that here and it will return the Rival01 container, from which you can use .find() to pull any of its elements
     const $curRivContainer = ($select) => $select.closest('.rival-container');
     const $nextRivContainer = ($select) => $curRivContainer($select).next('.rival-container');
 
-    const survIsInTestMode = $('#SurveyInTestMode').attr('id')===undefined;
+    const survIsInTestMode = $('#SurveyInTestMode').attr('id') !== undefined;
+
+    // Usually use it to return Rival01, Rival02, etc.
+    const fnRivalKey = (elem, regexToFind = "cbo", textToReplace ='') => elem.attr('id').replace(regexToFind, textToReplace);
 
 
     // Populate ents in second dropdown when user changes the grouping
@@ -83,6 +88,7 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
         isValidRivalsSelection = check100Points();
         nextBtn(isValidRivalsSelection);
 
+        // Enable or disable the next button
         function nextBtn(enableBtn){
             if (window.Qualtrics && Qualtrics.SurveyEngine) {
                 const PageBtns = Qualtrics.SurveyEngine.Page.pageButtons;
@@ -91,10 +97,16 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
                 } else {
                     PageBtns.disableNextButton();
                 }
+            } else {
+                if (enableBtn) {
+					$nextButton.removeAttr('disabled');
+				} else {
+					$nextButton.attr('disabled', 'disabled');
+				}
             }
             return enableBtn;
         }
-
+        
         function setErrorMsg(errorText, textAction = 'show', otherParams={}){
             // Fetch any current text in the error box
             let strErrorMsg = $rivalryPointsError.html() || '',
@@ -177,6 +189,85 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
     }
 
 
+    // Code that runs on $NextButton click
+    this.entRivalsNextButtonHandler = function(testingMode){
+        console.log('Next button handler clicked. testingMode= '+testingMode);
+
+        let rivalsListedEntIDs = []; // will be an array of rival entIDs
+
+        $.when(
+            // Iterate through all the cboRivals dropdown boxes
+            $cboRivals.each(function () {
+                const $this = $(this);
+                let strRivalKey = fnRivalKey($this);
+                let $points = $('#'+strRivalKey+'Points');
+
+                const cboSelection = $this.find('option:selected');
+                let entID = cboSelection.val(),
+                    name = cboSelection.text(),
+                    rivpoints = $points.val();
+                
+                if (testingMode){
+                    if (entID) {
+                        rivalsListedEntIDs.push(entID);
+                        console.log(
+                            "entID #" + entID
+                            + " would have been stored to embedded data: "
+                            + name + " (" + rivpoints + " points)"
+                            )
+                    }
+                } else {
+                    const qse = Qualtrics.SurveyEngine;
+
+                    return $.when(qse.setEmbeddedData(strRivalKey + 'EntID', entID))
+                    .then(function (returnedContent) {
+                        if (entID) {
+                            rivalsListedEntIDs.push(entID);
+                            return qse.setEmbeddedData(strRivalKey + 'Name', name);
+                        }
+                    })
+                    .then(function (returnedContent){
+                        return qse.setEmbeddedData(strRivalKey + 'Points', rivpoints);
+                    })
+                    .done(function (returnedContent){
+                        return console.log("entID #" + entID + " stored to embedded data: " + name + " (" + rivpoints + " points)")
+                    });
+                }
+            })
+        )
+        .then(function(returnedContent){
+            // These are written to Qualtrics Embedded Data
+            const
+                intNumOfRivalsListed = rivalsListedEntIDs.length,
+                intNumOfRivContainers = $cboRivals.length,
+                intEntsInKRGrouping = data.entsInKRGrouping(groupingId),
+                nonRivalTuple = determineANonRival(groupingId, rivalsListedEntIDs); // returns [1234, 'A non rival team name']
+            
+            if (testingMode){
+                console.log(
+                    'intNumOfRivalsListed', intNumOfRivalsListed,
+                    'intNumOfRivContainers', intNumOfRivContainers,
+                    'intEntsInKRGrouping', intEntsInKRGrouping,
+                    'nonRivalTuple', nonRivalTuple
+                );
+            } else {
+                const qse = Qualtrics.SurveyEngine;
+                // If there are 8 teams in the league, and the resp lists all 7 as rivals, we cannot put that respondent into the NonRival condition.
+                // The intNumOfRivalsListed and intEntsInKRGrouping are used by the Survey Flow to prevent that from happening.
+                qse.setEmbeddedData('intNumOfRivalsListed', intNumOfRivalsListed);
+                qse.setEmbeddedData('intNumOfRivContainers', intNumOfRivContainers); // just for reference
+                qse.setEmbeddedData('intEntsInKRGrouping', intEntsInKRGrouping);
+
+                // This writes the NonRival to the embedded data, even for those who aren't in the NonRival condition
+                qse.setEmbeddedData('NonRival01EntID', nonRivalTuple[0]);
+                return qse.setEmbeddedData('NonRival01Name', nonRivalTuple[1]);
+            }
+        });
+        
+        return true;
+
+    }
+
     // groups = the grouping object that has conf/div hierarchy
     function createGroupOptions(groups, $select, level) {
         // initialize level if needed
@@ -218,15 +309,94 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
 
     function shuffleElements($selector) {
         let array = $selector.children();
-        for (let iCount = array.length - 1; iCount > 0; iCount--) {
-            const jCount = Math.floor(Math.random() * (iCount + 1));
-            [array[iCount], array[jCount]] = [array[jCount], array[iCount]];
-        };
+        array = shuffleArray(array);
         let strToReturn='';
         $.each(array, (idx,$elem) => strToReturn += $elem.outerHTML );
         return strToReturn;
     }
+    function shuffleArray(array){
+        for (let iCount = array.length - 1; iCount > 0; iCount--) {
+            const jCount = Math.floor(Math.random() * (iCount + 1));
+            [array[iCount], array[jCount]] = [array[jCount], array[iCount]];
+        };
+        return array;
+    }
 
+
+    const determineANonRival = function(groupingId, currentRivals){        
+        // Create array of all entIDs in the top grouping
+        const currentGrouping = data.getEntsByGroup(groupingId);
+        let currentEntIDs = Object.keys(currentGrouping).map(key => currentGrouping[key]['entID']);
+        
+        // Remove currentRivals from array of all entIDs in the top grouping
+        currentEntIDs = currentEntIDs.filter(elem => !currentRivals.includes(elem));
+        
+        // Randomly select one of the remaining entIDs
+        const intNonRivalEntID = shuffleArray(currentEntIDs).pop();
+        
+        // Look up name of entID
+        const strNonRivalName = data.getEntData(intNonRivalEntID)["entityName"];
+
+        // Return entID and name as a tuple
+        return [intNonRivalEntID, strNonRivalName];
+    }
+
+    function createRivalContainers(groupingId){
+        // The HTML in Qualtrics only has a container for Rival01. This code uses that HTML as a template to create the rest of the containers.
+        // The number of containers depends on number of teams that could potentially be a rival, below a certain maximum.
+        // E.g., the typical maximum number someone can choose might be 10 rivals, but a fan of smaller leagues (e.g., IPL) can only choose 7 rivals (8 IPL teams - 1 for the FavEnt).
+        const maxNumOfRivalSlots = 10;
+        const totalNumOfRivContainers = Math.min(data.entsInKRGrouping(groupingId)-1, maxNumOfRivalSlots );
+
+        const templateRivalKey = "Rival01";
+        let $curContainer = $('#' + templateRivalKey + 'Container');
+        const strTemplateHTML =  $('#' + templateRivalKey + 'Container')[0].outerHTML;
+        for (let rivNum=2; rivNum <= totalNumOfRivContainers; rivNum++) { // Run for every rivalry container we need to build
+            const numTwoDigit = (rivNum) =>("0" + rivNum).slice(-2); // change 2 to 02, 3 to 03, etc.
+            const strNewRivalKey = "Rival"+numTwoDigit(rivNum);
+            const strCurRivalKey = "Rival"+numTwoDigit(rivNum-1);
+            let newHTML = strTemplateHTML.replace(new RegExp( templateRivalKey, "g"),strNewRivalKey); // Replace Rival01 with Rival02, Rival02 with Rival03, etc.
+            newHTML = newHTML.replace(/\#1/,'#'+rivNum); // Replace '#1' with '#2', '#3', etc.
+            $curContainer = $('#' + strCurRivalKey + 'Container'); // Change the focal container to be the most recent one created.
+            $(newHTML).insertAfter($curContainer);
+        };
+
+        // Enable the dropdown boxes for Rival01. They're disabled by default so the page is able to create the other boxes correctly.
+        $('#Rival01Container').find('.riv-selectors').find('select').removeAttr('disabled');
+        $('#Rival01Container').find('.ent-select').addClass('is-enabled');
+
+        return totalNumOfRivContainers;
+    }
+
+    this.repopulateDropdowns = function(){
+        const qse = Qualtrics.SurveyEngine;
+        $cboRivals.each(function () {
+            const $this = $(this);
+            const $points = $this.closest('.rival-container').find('input.riv-points-box');
+    
+            const rivalKey = fnRivalKey($this);
+    
+            let selectedEntID = 0, selectedPoints = 0, selectedName = "";
+            $.when(qse.getEmbeddedData(rivalKey + 'EntID')).then(function (returnedData) {
+                $this.val(returnedData);
+            });
+            $.when(qse.getEmbeddedData(rivalKey + 'Points')).then(function (returnedData) {
+                selectedPoints = data;
+                $this.val(returnedData);
+            });
+
+        });    
+    }
+
+    // // TESTING code for when the user changes an ent name
+    // $this.on('change', function () {
+    //     const $selected = $(this).find('option:selected');
+    //     console.log(rivalKey + 'Name: ' + $selected.text() + ' (' + + $(this).val() + ')');
+    // });
+    // // User changes the rivalry point assignment
+    // $points.on('input change', function () {
+    //     console.log(rivalKey + 'Points: ' + $(this).val());
+    // });
 
     function init() {
         if (survIsInTestMode){console.log("EntityRivals.js running in test mode.")};
@@ -243,46 +413,57 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
             // TODO: INVALID DATA, DO SOMETHING
             return;
         }
+       
+        // Create the HTML code for the rest of the rivalry rows
+        $.when(createRivalContainers(groupingId))
+        .then(function(){
 
-        // populate ents on grouping change
-        $question.on('change', 'select.grouping-select', function () {
-            changeGrouping($(this));
-            });
+            $rivalPointsInputs = $question.find(strRivalPointsBoxSelector);
+            $rivalryPointsTotal = $('.pts-allocated');
+            $rivalPointsRemaining = $(".pts-remaining");
+            $cboRivals = $('select[id^=cboRival]'); // Select all dropdown with cboRival in their name (cboRival01, cboRival02, etc.)
 
-        // determine if there are sibling groupings to choose rivals from
-        if (groups != null) {
-            let $select = $('.grouping-select');
-            createGroupOptions(groups, $select);
-            $select.change(); // trigger change
-        } else {
-            $question.find(strEntDropdownSelector).each(function () {
-                populateEnts($(this), groupingId);
-            });
-        }
+            // populate ents on grouping change
+            $question.on('change', 'select.grouping-select', function () {
+                changeGrouping($(this));
+                });
 
-        // Have the points box number change when the user moves the slider
-        const $range = $('.riv-points-slider');
-        $range.on('input change', function () {
-            let $this = $(this);
-            // Select the correct points box for this rival by taking the current id (e.g., Rival02PointsSlider) and returning Rival02Points
-            const pointsBox = $this.attr('id').replace('PointsSlider', 'Points');
-            // Set the points box to be the number of rivalry points
-            $('#' + pointsBox).val($this.val());
-            validate();
-        });
+            // determine if there are sibling groupings to choose rivals from
+            if (groups != null) {
+                let $select = $('.grouping-select');
+                createGroupOptions(groups, $select);
+                $select.change(); // trigger change
+            } else {
+                $question.find(strEntDropdownSelector).each(function () {
+                    populateEnts($(this), groupingId);
+                });
+            }
 
-        // Have the slider change if the user enters a number in the points box
-        $rivalPointsInputs.on('input change', function () {
+            // Have the points box number change when the user moves the slider
+            const $range = $('.riv-points-slider');
+            $range.on('input change', function () {
                 let $this = $(this);
-                const pointsSlider = $this.attr('id').replace('Points', 'PointsSlider');
-                $('#' + pointsSlider).val($this.val());
+                // Select the correct points box for this rival by taking the current id (e.g., Rival02PointsSlider) and returning Rival02Points
+                const pointsBox = $this.attr('id').replace('PointsSlider', 'Points');
+                // Set the points box to be the number of rivalry points
+                $('#' + pointsBox).val($this.val());
                 validate();
             });
 
-        // Whenever the Qualtrics question changes,
-        // find all the SELECT elements (dropdowns) that that have 'ent-select' as a class.
-        $question.on('change', strEntDropdownSelector, function() {
-            selectEnt($(this));
+            // Have the slider change if the user enters a number in the points box
+            $rivalPointsInputs.on('input change', function () {
+                    let $this = $(this);
+                    const pointsSlider = $this.attr('id').replace('Points', 'PointsSlider');
+                    $('#' + pointsSlider).val($this.val());
+                    validate();
+                });
+
+            // Whenever the Qualtrics question changes,
+            // find all the SELECT elements (dropdowns) that that have 'ent-select' as a class.
+            $question.on('change', strEntDropdownSelector, function() {
+                selectEnt($(this));
+            });
+
         });
 
     }

@@ -5,7 +5,7 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 	const self = this;
 
 	// Eventually, these are what will be passed to the Qualtrics embedded data
-	this.favoriteEntSelectedHandler;
+	this.favoriteEntSelectedHandler; // defined in the HTML
 	this.FavoriteEntId = -1;
 	this.FavoriteEntName = "";
 	this.FavoriteEntNameThe = "";
@@ -61,7 +61,7 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 	}
 
 	function selectEnt(entId, entName) {
-		const objEntData = data.getEntData(groupingId, entId);
+		const objEntData = data.getEntData(entId);
 		// These values are written to Qualtrics embedded data
 		self.FavoriteEntId = entId;
 		self.FavoriteEntName = !objEntData ? "" : objEntData["entityName"]; // Boston Celtics

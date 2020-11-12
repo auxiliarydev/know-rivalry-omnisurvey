@@ -116,185 +116,52 @@
             </div>
         </div>
     </div>
-    <button id="NextButton" style="margin-top: 20px;">
+    <button id="NextButton" style="margin-top: 20px;" disabled>
         I'm the fake next button
     </button>
 
     <script>
 
         (function () {
-            const OMNISURVEY_TEST = false;
+            let OMNISURVEY_TEST = false;
             let groupingId = -1, entId = -1;
             const self = this;
+            let entRivalsNextButtonHandler;
 
-            function createRivalContainers(){
-                // The HTML in Qualtrics only has a container for Rival01. This code uses that HTML as a template to create the rest of the containers.
-                // The number of container depends on number of teams that could potentially be a rival, below a certain maximum.
-                // E.g., the typical maximum number someone can choose might be 10 rivals, but a fan of smaller leagues (e.g., IPL) can only choose 7 rivals (8 IPL teams - 1 for the FavEnt).
-
-                // Number of entities in rival grouping who could potentially be rivals
-                const numOfEntsInGrouping = 32;
-
-                const maxNumOfRivals = 10;
-                const totalNumOfRivContainers = numOfEntsInGrouping<10 ? numOfEntsInGrouping-1 : maxNumOfRivals
-
-                const templateRivalKey = "Rival01";
-                let $curContainer = jQuery('#' + templateRivalKey + 'Container');
-                const strTemplateHTML =  jQuery('#' + templateRivalKey + 'Container')[0].outerHTML;
-                for (let rivNum=2; rivNum <= totalNumOfRivContainers; rivNum++) {
-                    const numTwoDigit = (rivNum) =>("0" + rivNum).slice(-2); // change 2 to 02, 3 to 03, etc.
-                    const strNewRivalKey = "Rival"+numTwoDigit(rivNum);
-                    const strCurRivalKey = "Rival"+numTwoDigit(rivNum-1);
-                    let newHTML = strTemplateHTML.replace(new RegExp( templateRivalKey, "g"),strNewRivalKey);
-                    newHTML = newHTML.replace(/\#1/,'#'+rivNum);
-                    $curContainer = jQuery('#' + strCurRivalKey + 'Container');
-                    jQuery(newHTML).insertAfter($curContainer);
-                };
-
-                // Enable the dropdown boxes for Rival01
-                jQuery('#Rival01Container').find('.riv-selectors').find('select').removeAttr('disabled');
-                jQuery('#Rival01Container').find('.ent-select').addClass('is-enabled');
-
-                return totalNumOfRivContainers;
-            }
 
             if (OMNISURVEY_TEST || !window.Qualtrics) {
 
                 /*****************************************************
                   TESTING MODE
                 *****************************************************/
+                OMNISURVEY_TEST = true;
 
                 jQuery('body').prepend('<div id="SurveyInTestMode">The survey is in test mode.</div>');
 
-                groupingId = 1364;
-                entId = 244;
-
-                // Create the HTML code for the rest of the rivalry rows
-                createRivalContainers();
-
-                // Hookup Rivalry Points stuff
-
-                // Select all dropdown with cboRival in their name (cboRival01, cboRival02, etc.)
-                const $cboRivals = jQuery('select[id^=cboRival]');
-                const fnRivalKey = (that) => that.attr('id').replace('cbo', ''); // returns Rival01, Rival02, etc.
-
-                $cboRivals.each(function () {
-                    const $this = jQuery(this);
-                    const $points = $this.closest('.rival-container').find('input.riv-points-box');
-
-                    const rivalKey = fnRivalKey($this);
-
-                    // User changes a ent name
-                    $this.on('change', function () {
-                        $selected = jQuery(this).find('option:selected');
-                        console.log(rivalKey + 'Name: ' + $selected.text() + ' (' + + jQuery(this).val() + ')');
-                    });
-                    // User changes the rivalry point assignment
-                    $points.on('input change', function () {
-                        console.log(rivalKey + 'Points: ' + jQuery(this).val());
-                    });
-                });
-
-
-                jQuery("#NextButton").click(function () {
-                    let intNumOfRivalsListed = 0;
-                    jQuery.when(
-                        $cboRivals.each(function () {
-                            let $this = jQuery(this);
-                            let strRivalKey = fnRivalKey($this);
-                            let $points = jQuery('#'+strRivalKey+'Points');
-
-                            
-                            let cboSelection = $this.find('option:selected');
-                            let entID = cboSelection.val(),
-                                name = cboSelection.text(),
-                                rivpoints = $points.val();
-
-
-                            return jQuery.when()
-                                .then(function () {
-                                    if (entID) {
-                                        intNumOfRivalsListed++;
-                                    }
-                                })
-                                .then()
-                                .done(console.log("entID #" + entID + " stored to embedded data: " + name + " (" + rivpoints + " points)"));
-                        }))
-                        .done(
-                            function (data) {
-                                return intNumOfRivalsListed;
-                            });
-                });
+                const searchParams = new URLSearchParams(window.location.search);
+                if (searchParams.has('grpID')) {
+                    groupingId = parseInt(searchParams.get('grpID'));
+                } else {
+                    groupingId = 1364;
+                }
 
                 init();
+
             } else {
 
                 Qualtrics.SurveyEngine.addOnload(function () {
+
                     const qse = Qualtrics.SurveyEngine;
 
-                    groupingId = parseInt(qse.getEmbeddedData('grpID'));
-                    entId = parseInt(qse.getEmbeddedData('FavObjEntID'));
+                    jQuery.when(() => groupingId = parseInt(qse.getEmbeddedData('grpID')) )
+                    .then(function(){
 
+                        // If someone clicks the back button on the subsequent page, this will re-populate the dropdown menus with the user's choices
+                        omnisurvey_EntRivals.repopulateDropdowns();
 
-                    // Create the HTML code for the rest of the rivalry rows
-                    createRivalContainers();
-
-                    // Hookup Rivalry Points stuff
-
-                    // Select all dropdown with cboRival in their name (cboRival01, cboRival02, etc.)
-                    const $cboRivals = jQuery('select[id^=cboRival]');
-                    const fnRivalKey = (that) => that.attr('id').replace('cbo', ''); // returns Rival01, Rival02, etc.
-
-                    $cboRivals.each(function () {
-                        const $this = jQuery(this);
-                        const $points = $this.closest('.rival-container').find('input.riv-points-box');
-
-                        const rivalKey = fnRivalKey($this);
-
-                        // If someone clicks the back button on the subsequent page,
-                        // this will re-populate the dropdown menus with the user's choices
-                        let selectedEntID = 0, selectedPoints = 0, selectedName = "";
-                        jQuery.when(qse.getEmbeddedData(rivalKey + 'EntID')).then(function (data) {
-                            selectedEntID = data;
-                            $this.val(selectedEntID);
-                        });
-                        jQuery.when(qse.getEmbeddedData(rivalKey + 'Points')).then(function (data) {
-                            selectedPoints = data;
-                            $this.val(selectedPoints);
-                        });
+                        init();
                     });
 
-                    jQuery("#NextButton").click(function () {
-                        let intNumOfRivalsListed = 0;
-                        jQuery.when(
-                            $cboRivals.each(function () {
-                                const $this = jQuery(this);
-                                let strRivalKey = fnRivalKey($this);
-                                let $points = jQuery('#'+strRivalKey+'Points');
-
-                                const cboSelection = $this.find('option:selected');
-                                let entID = cboSelection.val(),
-                                    name = cboSelection.text(),
-                                    rivpoints = $points.val();
-
-
-                                return jQuery.when(qse.setEmbeddedData(strRivalKey + 'EntID', entID))
-                                    .then(function () {
-                                        if (entID) {
-                                            intNumOfRivalsListed++;
-                                            qse.setEmbeddedData(strRivalKey + 'Name', name);
-                                        }
-                                    })
-                                    .then(qse.setEmbeddedData(strRivalKey + 'Points', rivpoints))
-                                    .done(console.log("entID #" + entID + " stored to embedded data: " + name + " (" + rivpoints + " points)"));
-                            }))
-                            .done(
-                                function (data) {
-                                    return qse.setEmbeddedData("intNumOfRivalsListed", intNumOfRivalsListed);
-                                });
-                    });
-
-                    init();
                 });
 
                 Qualtrics.SurveyEngine.addOnReady(function () {
@@ -312,16 +179,24 @@
                     loadQuestion();
                 } else {
                     jQuery(document).on('OmnisurveyReady', function () {
-                        loadQuestion();
+                        loadQuestion(); // builds the page
                     });
-
+                    
                     window.omnisurvey_data = new Omnisurvey_Data(jQuery);
                 }
+
             }
 
             function loadQuestion() {
                 var omnisurvey_EntRivals = new Omnisurvey_EntRivals(jQuery, self.omnisurvey_data, groupingId, entId); // this is what loads the Omnisurvey
+
+                entRivalsNextButtonHandler = omnisurvey_EntRivals.entRivalsNextButtonHandler;
+
+                jQuery("#NextButton").click(function () {
+                        entRivalsNextButtonHandler(OMNISURVEY_TEST);
+                    });
             }
+
         })();
 
     </script>

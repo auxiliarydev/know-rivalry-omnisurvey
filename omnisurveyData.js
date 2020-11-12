@@ -40,7 +40,7 @@ var Omnisurvey_Data = function ($) {
     }
     function mapKRDbEntData() {
         return Object.keys(jsEntData).map(function (key) {
-            return jsEntData[key];
+            return jsEntData[key]['Omnidata'];
         });
     }
 
@@ -87,21 +87,20 @@ var Omnisurvey_Data = function ($) {
         return null;
     };
 
-    this.getEntData = function (groupingId, entId) {
-        const groupingEntities = self.KRDbEntData.filter(function (ent) {
-            return ent["Omnidata"].TopGroupingID === groupingId;
-        })
-        const entities = groupingEntities.filter(function (ent) {
-            return ent["Omnidata"].entID === entId;
+    this.getEntData = function (entId) {
+        const entities = self.KRDbEntData.filter(function (ent) {
+            return ent.entID === entId;
         });
 
         // If the filter returns more than one entity's data, just return the first one
         if (entities.length > 0) {
-            return entities[0]['Omnidata'];
+            return entities[0];
         }
 
         return null;
     };
+    
+    this.entsInKRGrouping = (groupingId) => self.KRDbEntData.filter((obj) => obj.TopGroupingID === groupingId).length;
 
     // This is passed a groupingId
     this.getGroupById = function (groupId) {
@@ -254,8 +253,10 @@ var Omnisurvey_Data = function ($) {
                 } else {
                     console.log('The dataLoaded variable was false, which means there was an error loading the data.');
                 }
+            })
+            .done(function(){
+                return dataLoaded;
             });
-
     }
 
     init();
