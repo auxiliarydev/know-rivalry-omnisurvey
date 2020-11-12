@@ -11,7 +11,7 @@ var Omnisurvey_GroupingSelection = function($, data, groupingId, surveyId) {
 
 	var self = this;
 	const surveySelectionQuestionId = 'QID182';
-	const strGroupingImageRootDir = 'https://knowrivalry.com/images/logos/';
+	const strGroupingImageRootDir = 'https://knowrivalry.com/images/entlogos/';
 	
 	// A note on the variable notation:
 		// If the variable has a $ before it, it's a jQuery object. 
@@ -103,14 +103,12 @@ var Omnisurvey_GroupingSelection = function($, data, groupingId, surveyId) {
 	// change the grouping showcased on the page
 	function setGroupingInfo(groupingId) { // Danny named this selectGrouping(id)
 		$storageGroupingId.text(groupingId); // Store the groupingId in a hidden div on the page
-		const groupingSlug = data.getGrouping(groupingId).grpSlug;
-		const groupingImgFilename = strGroupingImageRootDir + 'league_' + groupingSlug + '-md.png';
+		const groupingImgFilename = strGroupingImageRootDir + 'logo_ent' + groupingId + '.svg';
 		$SplashWelcomeGroupingLogoDiv.css('background-image', 'url(' + groupingImgFilename + ')');
 	}
 
 	// This is called from the HTML when the user has clicked on a grouping selection
 	this.groupingSelectionHandler = function(selectedGroupingId) {
-		console.log("I'm groupingSelectionHandler. I was passed", selectedGroupingId);
 		if (!isNaN(selectedGroupingId)) {
 			setGroupingInfo(selectedGroupingId);
 			toggleGroupingSelect();
@@ -189,22 +187,6 @@ var Omnisurvey_GroupingSelection = function($, data, groupingId, surveyId) {
 			return submitPageData() && (typeof self.nextButtonHandler === 'function' && self.nextButtonHandler());
 		});
 
-		// TODO: NEED TO FIGURE OUT A SOLUTION FOR THIS, FOR NOW JUST UNCOMMENT FOR TESTING
-		/*$surveySelectionQuestion.find('li.Selection input[type="radio"]').on('click', function() {
-			var selectedGroupingId = '';
-
-			if (typeof self.surveySelectionHandler === 'function') {
-				selectedGroupingId = self.surveySelectionHandler();
-			} else {
-				var selectedValue = $(this).val();
-				var selectedGroupingId = parseInt(data.testChoices[''+selectedValue].RecodeValue);
-			}
-
-			if (!isNaN(selectedGroupingId)) {
-				selectGrouping(selectedGroupingId);
-				toggleGroupingSelect();
-			}
-		});*/
 	}
 
 	init();	

@@ -392,7 +392,8 @@ WELCOME PAGE
     /* This "background" image is the grouping logo at the top of the welcome page */
     #SplashWelcomeGroupingLogoDiv {
         /* max-width: 90vh; */
-        min-height: 15vh;
+        min-height: 150px;
+        max-height: 200px;
         background-repeat: no-repeat;
         background-size: contain;
         background-position: center; 
@@ -416,14 +417,14 @@ WELCOME PAGE
 
         #SplashChangeGroupingBtn .ChangeGroupingText {
             font-size: 0.8em;
-            color: rgb(50, 0, 255);
+            color: #53555f;
             text-align: center;
             }
 
         #SplashChangeGroupingBtn .ChangeGroupingText:hover{
             color: #ffffff;
             text-decoration: none;
-            background-color: rgb(50, 0, 255);
+            background-color: #53555f;
         }
     
     /* This is the custom next button I created to use instead of the Qualtrics default  */

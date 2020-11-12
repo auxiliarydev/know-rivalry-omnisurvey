@@ -91,9 +91,10 @@
                     groupingId = parseInt(qse.getEmbeddedData('grpID'));
 
                     favoriteEntSelectedHandler = function () {
-                        qse.setEmbeddedData('FavObj', this.FavoriteEntName);
-                        qse.setEmbeddedData('FavObjThe', this.FavoriteEntNameThe);
-                        qse.setEmbeddedData('FavObjEntID', this.FavoriteEntId);
+                        jQuery.when( qse.setEmbeddedData('FavObj', this.FavoriteEntName) )
+                        .then( qse.setEmbeddedData('FavObjThe', this.FavoriteEntNameThe) )
+                        .then( qse.setEmbeddedData('FavObjEntID', this.FavoriteEntId) );
+                        return true;
                     };
 
                     init();

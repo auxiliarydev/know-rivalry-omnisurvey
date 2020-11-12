@@ -62,7 +62,8 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 
 	function selectEnt(entId, entName) {
 		const objEntData = data.getEntData(groupingId, entId);
-		self.FavoriteEntId = entId; // This is the value that we'll eventually write to Qualtrics embedded data
+		// These values are written to Qualtrics embedded data
+		self.FavoriteEntId = entId;
 		self.FavoriteEntName = !objEntData ? "" : objEntData["entityName"]; // Boston Celtics
 		self.FavoriteEntNameThe = !objEntData ? "" : objEntData["entityNameThe"]; // the Boston Celtics
 		self.qtrxed_termKRQtrxManipIdenLevelQual = !objEntData ? "" : objEntData["TopGroupingNameThe"];  // the NBA
