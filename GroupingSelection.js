@@ -134,7 +134,6 @@ var Omnisurvey_GroupingSelection = function($, data, groupingId, surveyId) {
 			// e.g., {"grpID":7,"grpSport":"Cricket","termKRQualtrics":"BBL", etc.
 			grouping = data.getGrouping(groupingId);
 		}
-		console.log("grouping ==>",grouping);
 
 		if (surveyId > 0) {
 			// This means a survID was passed in the query string (i.e., it's in the embedded data)
@@ -150,8 +149,7 @@ var Omnisurvey_GroupingSelection = function($, data, groupingId, surveyId) {
 				}
 			}
 		}
-		console.log("survey ==>", survey);
-
+		
 		// By default, the survey selection question is hidden
 		// If there is a grpID assigned, hide/show the appropriate elements
 		// If not, give the user the opportunity to select the grouping

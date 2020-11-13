@@ -91,8 +91,7 @@ var Omnisurvey_Data = function ($) {
         let entities = self.KRDbEntData.filter(function (ent) {
             return ent.entID == entId;
         });
-        console.log('entities',entities);
-
+        
         // If the filter returns more than one entity's data, just return the first one
         if (entities.length > 0) {
             return entities[0];

@@ -243,14 +243,17 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
                 intNumOfRivalsListed = rivalsListedEntIDs.length,
                 intNumOfRivContainers = $cboRivals.length,
                 intEntsInKRGrouping = data.entsInKRGrouping(groupingId),
-                nonRivalTuple = determineANonRival(groupingId, rivalsListedEntIDs); // returns [1234, 'A non rival team name']
+                objNonRival = determineANonRival(entId, groupingId, rivalsListedEntIDs), // returns {entID: 1234, entityName:'A non rival team name', etc.}
+                nonrivalEntID = objNonRival.entID,
+                nonrivalName = objNonRival.entityName,
+                nonrivalNameThe = objNonRival.entityNameThe;
             
             if (testingMode){
                 console.log(
                     'intNumOfRivalsListed', intNumOfRivalsListed,
                     'intNumOfRivContainers', intNumOfRivContainers,
                     'intEntsInKRGrouping', intEntsInKRGrouping,
-                    'nonRivalTuple', nonRivalTuple
+                    'nonrivalNameThe', nonrivalNameThe
                 );
             } else {
                 const qse = Qualtrics.SurveyEngine;
@@ -261,8 +264,9 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
                 qse.setEmbeddedData('intEntsInKRGrouping', intEntsInKRGrouping);
 
                 // This writes the NonRival to the embedded data, even for those who aren't in the NonRival condition
-                qse.setEmbeddedData('NonRival01EntID', nonRivalTuple[0]);
-                return qse.setEmbeddedData('NonRival01Name', nonRivalTuple[1]);
+                qse.setEmbeddedData('NonRival01EntID', nonrivalEntID);
+                qse.setEmbeddedData('NonRival01Name', nonrivalName);
+                return qse.setEmbeddedData('NonRival01NameThe', nonrivalNameThe);
             }
         });
         
@@ -325,22 +329,22 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
     }
 
 
-    const determineANonRival = function(groupingId, currentRivals){        
-        // Create array of all entIDs in the top grouping
+    const determineANonRival = function(favteamEntId, groupingId, ineligibleEntIDs){        
+        // Create array of ALL entIDs that are in the top grouping
         const currentGrouping = data.getEntsByGroup(groupingId);
-        let currentEntIDs = Object.keys(currentGrouping).map(key => currentGrouping[key]['entID']);
+        let currentEntIDs = Object.keys(currentGrouping).map((key) => currentGrouping[key]['entID']);
         
-        // Remove currentRivals from array of all entIDs in the top grouping
-        currentEntIDs = currentEntIDs.filter(elem => !currentRivals.includes(elem));
+        // Create array of entities who can NOT be a NonRival here (rivals already listed, the Favorite Entity, etc.)
+        ineligibleEntIDs.push(favteamEntId);
+
+        // Remove ineligible entities from the array of all entIDs in the top grouping        
+        currentEntIDs = currentEntIDs.filter((elem) => !ineligibleEntIDs.includes(elem));
         
         // Randomly select one of the remaining entIDs
         const intNonRivalEntID = shuffleArray(currentEntIDs).pop();
         
-        // Look up name of entID
-        const strNonRivalName = data.getEntData(intNonRivalEntID)["entityName"];
-
-        // Return entID and name as a tuple
-        return [intNonRivalEntID, strNonRivalName];
+        // Return an object with the nonrival's info
+        return data.getEntData(intNonRivalEntID);
     }
 
     function createRivalContainers(groupingId){
@@ -466,8 +470,8 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
             const $this = $(this);
             const $points = $this.closest('.rival-container').find('input.riv-points-box');    
             const rivalKey = fnRivalKey($this);
-            $.when(qse.getEmbeddedData(rivalKey + 'EntID')).then( returnedData => $this.val(returnedData) );
-            $.when(qse.getEmbeddedData(rivalKey + 'Points')).then( returnedData => $this.val(returnedData) );
+            $.when(qse.getEmbeddedData(rivalKey + 'EntID')).then( (returnedData) => $this.val(returnedData) );
+            $.when(qse.getEmbeddedData(rivalKey + 'Points')).then( (returnedData) => $this.val(returnedData) );
         });    
     }
 */
