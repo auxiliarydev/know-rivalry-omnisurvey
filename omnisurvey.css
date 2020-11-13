@@ -80,14 +80,24 @@ QID246 is the question with grouping & ent dropdowns and points sliders and text
 ######################
 */
 
+.riv-point-header p{
+    margin-bottom: 8px;
+    font-weight:500;
+    font-size: 1.3em;
+
+}
 .riv-point-explanation p, .riv-point-instructions p{
     margin: 6px auto;
     line-height: 1.2em;
 }
 .riv-point-explanation ul, .riv-point-instructions ul{
     margin: 0px auto 4px 20px;
-    line-height: 1.2em;
+    line-height: 1.3em;
     padding-left: 10px;
+    list-style-type: none;
+}
+.riv-point-explanation ul li{
+    margin-bottom: 3px;
 }
 .riv-point-instructions p{
     font-size:0.7em;
