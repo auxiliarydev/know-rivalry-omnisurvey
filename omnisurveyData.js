@@ -48,7 +48,7 @@ var Omnisurvey_Data = function ($) {
     // e.g., (as of 20201111) if passed groupingId=1364, it returns {"grpID":1364,"grpSport":"Cricket","termKRQualtrics":"BBL",etc. 
     this.getGrouping = function (groupingId) {
         const groupings = self.Groupings.filter(function (grouping) {
-            return grouping.grpID === groupingId;
+            return grouping.grpID == groupingId;
         });
 
         // If the filter returns more than one grouping, just return the first one (MLB)
@@ -62,7 +62,7 @@ var Omnisurvey_Data = function ($) {
     // This uses the surveyId to pull all the groupings that are using that version of the survey
     this.getGroupingsBySurvey = function (surveyId) {
         const groupings = self.Groupings.filter(function (grouping) {
-            return grouping.grpCurrentSurvID === surveyId;
+            return grouping.grpCurrentSurvID == surveyId;
         });
 
         if (groupings.length > 0) {
@@ -77,7 +77,7 @@ var Omnisurvey_Data = function ($) {
     this.getSurvey = function (surveyId) {
 
         const surveys = self.Surveys.filter(function (survey) {
-            return survey.survID === surveyId;
+            return survey.survID == surveyId;
         });
 
         if (surveys.length > 0) {
@@ -88,9 +88,10 @@ var Omnisurvey_Data = function ($) {
     };
 
     this.getEntData = function (entId) {
-        const entities = self.KRDbEntData.filter(function (ent) {
-            return ent.entID === entId;
+        let entities = self.KRDbEntData.filter(function (ent) {
+            return ent.entID == entId;
         });
+        console.log('entities',entities);
 
         // If the filter returns more than one entity's data, just return the first one
         if (entities.length > 0) {
@@ -100,7 +101,7 @@ var Omnisurvey_Data = function ($) {
         return null;
     };
     
-    this.entsInKRGrouping = (groupingId) => self.KRDbEntData.filter((obj) => obj.TopGroupingID === groupingId).length;
+    this.entsInKRGrouping = (groupingId) => self.KRDbEntData.filter((obj) => obj.TopGroupingID == groupingId).length;
 
     // This is passed a groupingId
     this.getGroupById = function (groupId) {
@@ -191,7 +192,7 @@ var Omnisurvey_Data = function ($) {
     
         return groups.reduce(function(acc, group) {
           var match = group.groups && group.groups.some(function(g) {
-            return g.entID === groupId && g.groups;
+            return g.entID == groupId && g.groups;
           });
     
           return match ? acc.concat(group) : (group.groups? getParentGroup(groupId, group.groups, acc) : acc);

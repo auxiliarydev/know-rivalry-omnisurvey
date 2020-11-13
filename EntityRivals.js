@@ -203,17 +203,18 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
                 let $points = $('#'+strRivalKey+'Points');
 
                 const cboSelection = $this.find('option:selected');
-                let entID = cboSelection.val(),
+                const entID = parseInt(cboSelection.val()),
                     name = cboSelection.text(),
-                    rivpoints = $points.val();
+                    rivpoints = $points.val(),
+                    nameThe = entID ? data.getEntData(entID)["entityNameThe"] : ''
                 
                 if (testingMode){
                     if (entID) {
                         rivalsListedEntIDs.push(entID);
                         console.log(
-                            "entID #" + entID
-                            + " would have been stored to embedded data: "
-                            + name + " (" + rivpoints + " points)"
+                            name + " (entID #" + entID + ") "
+                            + "would have been stored to embedded data: "
+                            + nameThe + " (" + rivpoints + " points)"
                             )
                     }
                 } else {
@@ -223,7 +224,8 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
                     .then(function (returnedContent) {
                         if (entID) {
                             rivalsListedEntIDs.push(entID);
-                            return qse.setEmbeddedData(strRivalKey + 'Name', name);
+                            qse.setEmbeddedData(strRivalKey + 'Name', name)
+                            return qse.setEmbeddedData(strRivalKey + 'NameThe', nameThe);
                         }
                     })
                     .then(function (returnedContent){
