@@ -281,11 +281,11 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
 
         $.each(groups, function (index, childGroup) {
             // stop at ent level, skip groups that shouldn't be displayed
-            if (!childGroup.groups) { // || !childGroup.grpShowSurvSelRival) {
+            if (!childGroup.subgroups) { // || !childGroup.grpShowSurvSelRival) {
                 return;
             }
 
-            const disabled = false; //childGroup.groups && childGroup.groups[0] && childGroup.groups[0].groups,
+            const disabled = false; //childGroup.subgroups && childGroup.subgroups[0] && childGroup.subgroups[0].subgroups,
             const selected = childGroup.entID == groupingId;
 
 
@@ -307,8 +307,8 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
 
 
             // Iterate on itself. Use the level argument to avoid infinite looping
-            if (childGroup.groups) {
-                createGroupOptions(childGroup.groups, $select, level + 1);
+            if (childGroup.subgroups) {
+                createGroupOptions(childGroup.subgroups, $select, level + 1);
             }
         });
     }

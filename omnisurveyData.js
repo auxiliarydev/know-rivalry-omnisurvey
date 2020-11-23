@@ -17,7 +17,7 @@ var Omnisurvey_Data = function ($) {
 
     // I added this just to define the paths up front and switch between local an GitHub. Just comment out what you're not using.
     let pathBase = ""; // local
-    pathBase = "https://auxiliarydev.github.io/know-rivalry-omnisurvey/";
+    // pathBase = "https://auxiliarydev.github.io/know-rivalry-omnisurvey/";
     // pathBase = "https://b-d-t.github.io/know-rivalry-omnisurvey/";
     const pathJSON = {
         "GroupingHierarchy": pathBase + 'data/groupingHierarchy.json',
@@ -115,7 +115,7 @@ var Omnisurvey_Data = function ($) {
 
     this.getEntsByGroup = function (groupId, sort) {
 
-        var groups = getLowestLevelGroups(self.getGroupById(groupId).groups);
+        var groups = getLowestLevelGroups(self.getGroupById(groupId).subgroups);
 
         if (groups === null || groups.length <= 0) {
             return null;
@@ -141,7 +141,7 @@ var Omnisurvey_Data = function ($) {
         acc = typeof acc !== 'undefined' ? acc : [];
 
         return groups.reduce(function (acc, group) {
-            return group.groups ? getLowestLevelGroups(group.groups, acc) : acc.concat(group);
+            return group.subgroups ? getLowestLevelGroups(group.subgroups, acc) : acc.concat(group);
         }, acc);
     };
 
@@ -163,8 +163,8 @@ var Omnisurvey_Data = function ($) {
             }
 
             // filter child groups if there are any
-            if (groups.groups) {
-                results = self.filterGroups(groups.groups, key, value, results);
+            if (groups.subgroups) {
+                results = self.filterGroups(groups.subgroups, key, value, results);
             }
         }
 
@@ -179,7 +179,7 @@ var Omnisurvey_Data = function ($) {
     
         if (parentGroup.length > 0) {
           // remove the group with the id we are looking for so we only return siblings
-          return parentGroup[0].groups;
+          return parentGroup[0].subgroups;
         }
     
         return parentGroup;
@@ -190,11 +190,11 @@ var Omnisurvey_Data = function ($) {
         acc = typeof acc !== 'undefined' ? acc : [];
     
         return groups.reduce(function(acc, group) {
-          var match = group.groups && group.groups.some(function(g) {
-            return g.entID == groupId && g.groups;
+          var match = group.subgroups && group.subgroups.some(function(g) {
+            return g.entID == groupId && g.subgroups;
           });
     
-          return match ? acc.concat(group) : (group.groups? getParentGroup(groupId, group.groups, acc) : acc);
+          return match ? acc.concat(group) : (group.subgroups? getParentGroup(groupId, group.subgroups, acc) : acc);
         }, acc);
       }
     

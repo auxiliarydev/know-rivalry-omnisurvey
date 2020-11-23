@@ -30,7 +30,7 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 
 		$.each(groups, function (index, childGroup) {
 			// stop at team level, skip groups that shouldn't be displayed
-			if (!childGroup.groups) { // || !childGroup.grpShowSurvSelRival) {
+			if (!childGroup.subgroups) { // || !childGroup.grpShowSurvSelRival) {
 				return;
 			}
 
@@ -41,7 +41,7 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 				spacer += '&nbsp;';
 			}
 
-			const disabled = false; //childGroup.groups && childGroup.groups[0] && childGroup.groups[0].groups,
+			const disabled = false; //childGroup.subgroups && childGroup.subgroups[0] && childGroup.subgroups[0].subgroups,
 			const selected = childGroup.entID == groupingId;
 
 			const strOptionGroup = [
@@ -54,8 +54,8 @@ var Omnisurvey_FavoriteEnts = function ($, data, groupingId) {
 			const $optGroup = $(strOptionGroup).appendTo($select);
 
 			// Iterate on itself. Use the level argument to avoid infinite looping
-			if (childGroup.groups) {
-				createGroupOptions(childGroup.groups, $select, level + 1);
+			if (childGroup.subgroups) {
+				createGroupOptions(childGroup.subgroups, $select, level + 1);
 			}
 		});
 	}
