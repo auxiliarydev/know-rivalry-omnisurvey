@@ -146,11 +146,14 @@ var Omnisurvey_Data = function ($) {
     };
 
 
-    // recursive function to filter Grouping Hierarchy
+    // Recursive function to filter Grouping Hierarchy
+    // It starts at the top of the JSON and goes down until it finds the league (e.g., finds 1364 for the NBA).
+    // It returns all the NBA's children as defined by the JSON file.
     this.filterGroups = function (groups, key, value, results) {
         // initialize results if needed
         results = typeof results !== 'undefined' ? results : [];
 
+        // The first item in the JSON is an array, as is the first item within any sub-grouping.
         if (Array.isArray(groups)) {
             // groups is an array, iterate and filter
             groups.forEach(function (childGroup) {
