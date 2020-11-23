@@ -2,44 +2,37 @@
     {
         "entID": 3290,
         "termKRQualtrics": "Sports",
-        "grpTypeTerm": "Root",
         "grpShowSurvSelRival": false,
         "subgroups": [
             {
                 "entID": 3289,
                 "termKRQualtrics": "Basketball",
-                "grpTypeTerm": "Sport",
                 "grpShowSurvSelRival": false,
                 "subgroups": [
                     {
                         "entID": 928,
                         "termKRQualtrics": "Basketball (5 on 5)",
-                        "grpTypeTerm": "Sport",
                         "grpShowSurvSelRival": false,
                         "subgroups": [
                             {
                                 "entID": 2700,
                                 "termKRQualtrics": "Men's basketball (5 on 5)",
-                                "grpTypeTerm": "Sport",
                                 "grpShowSurvSelRival": false,
                                 "subgroups": [
                                     {
                                         "entID": 1364,
                                         "termKRQualtrics": "NBA",
-                                        "grpTypeTerm": "League",
                                         "grpShowSurvSelRival": true,
                                         "subgroups": [
                                             {
                                                 "entID": 1366,
                                                 "termKRQualtrics": "Eastern",
-                                                "grpTypeTerm": "Conference",
                                                 "grpShowSurvSelRival": true,
                                                 "subgroups": [
                                                     {
                                                         "entID": 2656,
                                                         "termKRQualtrics": "Atlantic",
-                                                        "grpTypeTerm": "Division",
-                                                        "grpShowSurvSelRival": false,
+                                                        "grpShowSurvSelRival": true,
                                                         "subgroups": [
                                                             {
                                                                 "entID": 244,
@@ -66,8 +59,7 @@
                                                     {
                                                         "entID": 2657,
                                                         "termKRQualtrics": "Central",
-                                                        "grpTypeTerm": "Division",
-                                                        "grpShowSurvSelRival": false,
+                                                        "grpShowSurvSelRival": true,
                                                         "subgroups": [
                                                             {
                                                                 "entID": 247,
@@ -94,8 +86,7 @@
                                                     {
                                                         "entID": 2658,
                                                         "termKRQualtrics": "Southeast",
-                                                        "grpTypeTerm": "Division",
-                                                        "grpShowSurvSelRival": false,
+                                                        "grpShowSurvSelRival": true,
                                                         "subgroups": [
                                                             {
                                                                 "entID": 243,
@@ -124,14 +115,12 @@
                                             {
                                                 "entID": 1365,
                                                 "termKRQualtrics": "Western",
-                                                "grpTypeTerm": "Conference",
                                                 "grpShowSurvSelRival": true,
                                                 "subgroups": [
                                                     {
                                                         "entID": 2660,
                                                         "termKRQualtrics": "Northwest",
-                                                        "grpTypeTerm": "Division",
-                                                        "grpShowSurvSelRival": false,
+                                                        "grpShowSurvSelRival": true,
                                                         "subgroups": [
                                                             {
                                                                 "entID": 250,
@@ -158,8 +147,7 @@
                                                     {
                                                         "entID": 2659,
                                                         "termKRQualtrics": "Pacific",
-                                                        "grpTypeTerm": "Division",
-                                                        "grpShowSurvSelRival": false,
+                                                        "grpShowSurvSelRival": true,
                                                         "subgroups": [
                                                             {
                                                                 "entID": 252,
@@ -186,8 +174,7 @@
                                                     {
                                                         "entID": 2661,
                                                         "termKRQualtrics": "Southwest",
-                                                        "grpTypeTerm": "Division",
-                                                        "grpShowSurvSelRival": false,
+                                                        "grpShowSurvSelRival": true,
                                                         "subgroups": [
                                                             {
                                                                 "entID": 249,

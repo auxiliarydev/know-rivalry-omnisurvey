@@ -182,6 +182,9 @@ var Omnisurvey_Data = function ($) {
     
         if (parentGroup.length > 0) {
           // remove the group with the id we are looking for so we only return siblings
+          // E.g., if we choose NFL in the parent 'League' dropdown,
+          // we can remove the NFL as a choice from the 'Team' dropdown and start with Arizona, Atlanta, Baltimore,...
+          // Similarly, if we select "AFC", it will start with "Baltimore, Buffalo, ..." and not show AFC.
           return parentGroup[0].subgroups;
         }
     
@@ -219,6 +222,20 @@ var Omnisurvey_Data = function ($) {
                 .done(function (data) {
                     // Store the cascading object of the entire hierarchy,
                     // starting with root, then sport (entID:2, sport:"Gridiron football"), and ending with a ent (e.g., entID:165, termKRQualtrics:"Chicago Bears")
+
+                    // A note on using grpShowSurvSelRival
+                    // // Typically, this will be false until we reach the league we want. E.g., "Men's basketball (5 on 5)" and above is FALSE, but "NBA" is TRUE.
+                    // // If "grpShowSurvSelRival": false, that entry will NOT appear in the filters.
+                    // // However, the terms UNDER that entry still appear in the parent filter.
+                    // // For example, in the follow data structure, the dropdown will show "NBA>Eastern>[Atlantic, Southeast]" (i.e., Central is missing).
+                    // // But, selecting "Eastern" still allows you to see the Bulls and Cavs as choices.
+                    // //
+                    // // NBA:{"grpShowSurvSelRival": true}
+                    // // // Eastern: {"grpShowSurvSelRival": true}
+                    // // // // Atlantic:  {"grpShowSurvSelRival": true}  Celtics, Nets as choices
+                    // // // // Central:   {"grpShowSurvSelRival": false} Bulls, Cavs as choices
+                    // // // // Southeast: {"grpShowSurvSelRival": true}  Hawks, Hornets as choices
+
                     GroupingHierarchy = data; aryJSONLoaded.push("Grouping Hierarchy");
                 }).fail(function (jqXHR, textStatus, errorThrown) { fnErrorLoadingJSON("grouping hierarchy", textStatus); }),
 

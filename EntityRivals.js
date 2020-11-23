@@ -281,7 +281,7 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
 
         $.each(groups, function (index, childGroup) {
             // stop at ent level, skip groups that shouldn't be displayed
-            if (!childGroup.subgroups) { // || !childGroup.grpShowSurvSelRival) {
+            if (!childGroup.subgroups || !childGroup.grpShowSurvSelRival) {
                 return;
             }
 
@@ -292,7 +292,7 @@ var Omnisurvey_EntRivals = function ($, data, groupingId, entId) {
             // Each subsequent child level is indented slightly more
             let spacer = '';
             const intIndent = 2;
-            for (var i = 0; i < level * intIndent; i++) {
+            for (let i = 0; i < level * intIndent; i++) {
                 spacer += '&nbsp;';
             }
 
