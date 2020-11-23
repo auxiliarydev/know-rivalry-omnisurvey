@@ -45,7 +45,7 @@ var Omnisurvey_Data = function ($) {
     }
 
     // Returns an object with the data for just one grouping. grpID is the same number as entID
-    // e.g., (as of 20201111) if passed groupingId=1364, it returns {"grpID":1364,"grpSport":"Cricket","termKRQualtrics":"BBL",etc. 
+    // e.g., (as of 20201111) if passed groupingId=1364, it returns {"grpID":1364,"grpSport":"Basketball","termKRQualtrics":"NBA",etc. 
     this.getGrouping = function (groupingId) {
         const groupings = self.Groupings.filter(function (grouping) {
             return grouping.grpID == groupingId;
