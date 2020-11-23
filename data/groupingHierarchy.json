@@ -47,7 +47,13 @@
                                                             },
                                                             {
                                                                 "entID": 245,
-                                                                "termKRQualtrics": "Brooklyn Nets"
+                                                                "termKRQualtrics": "Brooklyn Nets",
+                                                                "subgroups": [
+                                                                    {
+                                                                        "entID":265,
+                                                                        "termKRQualtrics": "Philadelphia 76ers"
+                                                                    }
+                                                                ]
                                                             },
                                                             {
                                                                 "entID": 262,
